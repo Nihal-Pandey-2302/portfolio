@@ -1,0 +1,143 @@
+---
+import Section from "./Section.astro";
+import { Image } from "astro:assets";
+import type { ProjectProps } from "@types";
+
+interface Props {
+  projects: ProjectProps[];
+}
+
+const { projects } = Astro.props;
+---
+
+<!-- This is the hidden lightbox that will appear when an image is clicked -->
+<div id="lightbox" class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+  <span id="lightbox-close" class="absolute right-5 top-5 cursor-pointer text-4xl text-white hover:text-primary">×</span>
+  <img id="lightbox-image" src="" alt="Zoomed project preview" class="max-h-[90vh] max-w-[90vw] object-contain">
+</div>
+
+
+<Section text="Featured Projects" href="projects">
+  {
+    projects.map(({ name, summary, image, linkPreview, linkSource }, index) => {
+      const top = 98 + index * 40;
+      return (
+        <div
+          style={`top: ${top}px;`}
+          class="sticky mb-12 rounded-2xl border border-neutral/20 bg-black"
+        >
+          <div class="bg-difu relative z-[1] grid h-[580px] w-full grid-rows-2 rounded-2xl bg-[#1c232d]/85 before:absolute before:inset-0 before:z-[-1] before:rounded-2xl before:bg-[url(/raja.png)] before:bg-[length:128px] before:bg-repeat before:opacity-[5%] before:content-[''] sm:grid-cols-2 sm:grid-rows-1 md:h-96">
+            <div class="px-6 pt-12">
+              <h3 class="mb-5 font-serif text-3xl font-medium text-primary">
+                {name}
+              </h3>
+              <p class="text-base text-neutral">{summary}</p>
+              <div class="flex gap-5 pt-10 text-white">
+                <a
+                  href={linkSource}
+                  target="_blank"
+                  class="after:relative after:bottom-[-5px] after:content-[url(/external.svg)] hover:underline"
+                >
+                  Source
+                </a>
+                <a
+                  href={linkPreview}
+                  target="_blank"
+                  class="after:relative after:bottom-[-5px] after:content-[url(/external.svg)] hover:underline"
+                >
+                  Preview
+                </a>
+              </div>
+            </div>
+
+            <!-- This div now contains the clickable image -->
+            <div class="flex items-center justify-center overflow-hidden p-4 sm:p-6">
+              <!-- WRAP the Image component in a link that will be targeted by the script -->
+              <a href={image} class="zoomable-image h-full w-[95%] sm:h-[85%] sm:w-full">
+                <Image
+                  class="h-full w-full rounded-ss-xl rounded-ee-2xl object-contain"
+                  src={image}
+                  alt={name}
+                  width="736"
+                  height="483"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+</Section>
+
+<!-- This script handles the lightbox functionality -->
+<script is:inline>
+  // This ensures the script runs only after the whole page is loaded and ready
+  document.addEventListener("DOMContentLoaded", () => {
+    // Get all the necessary elements from the page
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxClose = document.getElementById('lightbox-close');
+    const zoomableImages = document.querySelectorAll('.zoomable-image');
+
+    // Make sure all elements were found before adding listeners
+    if (!lightbox || !lightboxImage || !lightboxClose || !zoomableImages) {
+      console.error("Lightbox elements not found. Zoom functionality will not work.");
+      return;
+    }
+
+    // Function to open the lightbox
+    function openLightbox(event) {
+      event.preventDefault(); // Stop the link from navigating
+      const linkElement = event.currentTarget;
+      
+      // *** THE FIX IS HERE ***
+      // Find the actual <img> element inside the link that was clicked
+      const imageElement = linkElement.querySelector('img');
+
+      // If we can't find an image, do nothing
+      if (!imageElement) return;
+      
+      // Use the 'src' from the *actual rendered image*, not the link's href
+      lightboxImage.src = imageElement.src; 
+      
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+    }
+
+    // Function to close the lightbox
+    function closeLightbox() {
+      lightbox.classList.add('hidden');
+      lightbox.classList.remove('flex');
+    }
+
+    // Add click listeners to all project images
+    zoomableImages.forEach(image => {
+      image.addEventListener('click', openLightbox);
+    });
+
+    // Add click listener to the close button
+    lightboxClose.addEventListener('click', closeLightbox);
+
+    // Add click listener to the lightbox background to close it
+    lightbox.addEventListener('click', (event) => {
+      // Only close if the click is on the background itself, not the image
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Add keyboard support (Escape key to close)
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+            closeLightbox();
+        }
+    });
+  });
+</script>
+<!-- This style adds the "zoom-in" cursor hint -->
+<style>
+  .zoomable-image {
+    cursor: zoom-in;
+  }
+</style>
