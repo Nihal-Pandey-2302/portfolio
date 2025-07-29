@@ -8,9 +8,11 @@ interface Props {
 }
 
 const { projects } = Astro.props;
+
+// Calculate the height needed for the spacer div
+const spacerHeight = projects.length > 1 ? (projects.length - 1) * 40 : 0;
 ---
 
-<!-- This is the hidden lightbox that will appear when an image is clicked -->
 <div id="lightbox" class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
   <span id="lightbox-close" class="absolute right-5 top-5 cursor-pointer text-4xl text-white hover:text-primary">×</span>
   <img id="lightbox-image" src="" alt="Zoomed project preview" class="max-h-[90vh] max-w-[90vw] object-contain">
@@ -50,9 +52,7 @@ const { projects } = Astro.props;
               </div>
             </div>
 
-            <!-- This div now contains the clickable image -->
             <div class="flex items-center justify-center overflow-hidden p-4 sm:p-6">
-              <!-- WRAP the Image component in a link that will be targeted by the script -->
               <a href={image} class="zoomable-image h-full w-[95%] sm:h-[85%] sm:w-full">
                 <Image
                   class="h-full w-full rounded-ss-xl rounded-ee-2xl object-contain"
@@ -68,9 +68,11 @@ const { projects } = Astro.props;
       );
     })
   }
+
+  <div style={`height: ${spacerHeight}px;`}></div>
+
 </Section>
 
-<!-- This script handles the lightbox functionality -->
 <script is:inline>
   // This ensures the script runs only after the whole page is loaded and ready
   document.addEventListener("DOMContentLoaded", () => {
@@ -91,7 +93,6 @@ const { projects } = Astro.props;
       event.preventDefault(); // Stop the link from navigating
       const linkElement = event.currentTarget;
       
-      // *** THE FIX IS HERE ***
       // Find the actual <img> element inside the link that was clicked
       const imageElement = linkElement.querySelector('img');
 
@@ -135,7 +136,6 @@ const { projects } = Astro.props;
     });
   });
 </script>
-<!-- This style adds the "zoom-in" cursor hint -->
 <style>
   .zoomable-image {
     cursor: zoom-in;
