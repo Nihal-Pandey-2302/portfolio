@@ -89,7 +89,7 @@ export const SITE_CONTENT: SiteContent = {
       summary: "An AI-powered platform to verify real-world documents and mint them as liquid, composable RWA NFTs on the Andromeda network, featuring an automated on-chain revenue model.",
       linkPreview: "https://aria-rwa-dapp.vercel.app/",
       linkSource: "https://github.com/Nihal-Pandey-2302/aria-rwa-dapp",
-      image: "/aria-rwa.png", // Add this image to the /public folder
+      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/aria-rwa-dapp/refs/heads/main/Flowchart_final.png", // Add this image to the /public folder
     },
   ],
   // About Section
