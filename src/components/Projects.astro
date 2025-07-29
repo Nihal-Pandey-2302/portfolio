@@ -9,8 +9,8 @@ interface Props {
 
 const { projects } = Astro.props;
 
-// Calculate the height needed for the spacer div
-const spacerHeight = projects.length > 1 ? (projects.length - 1) * 40 : 0;
+// ✅ THE FIX: Increase the multiplier to create a much larger spacer.
+const spacerHeight = projects.length > 1 ? (projects.length - 1) * 150 : 0;
 ---
 
 <div id="lightbox" class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
@@ -74,61 +74,37 @@ const spacerHeight = projects.length > 1 ? (projects.length - 1) * 40 : 0;
 </Section>
 
 <script is:inline>
-  // This ensures the script runs only after the whole page is loaded and ready
   document.addEventListener("DOMContentLoaded", () => {
-    // Get all the necessary elements from the page
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightbox-image');
     const lightboxClose = document.getElementById('lightbox-close');
     const zoomableImages = document.querySelectorAll('.zoomable-image');
-
-    // Make sure all elements were found before adding listeners
     if (!lightbox || !lightboxImage || !lightboxClose || !zoomableImages) {
       console.error("Lightbox elements not found. Zoom functionality will not work.");
       return;
     }
-
-    // Function to open the lightbox
     function openLightbox(event) {
-      event.preventDefault(); // Stop the link from navigating
+      event.preventDefault();
       const linkElement = event.currentTarget;
-      
-      // Find the actual <img> element inside the link that was clicked
       const imageElement = linkElement.querySelector('img');
-
-      // If we can't find an image, do nothing
       if (!imageElement) return;
-      
-      // Use the 'src' from the *actual rendered image*, not the link's href
       lightboxImage.src = imageElement.src; 
-      
       lightbox.classList.remove('hidden');
       lightbox.classList.add('flex');
     }
-
-    // Function to close the lightbox
     function closeLightbox() {
       lightbox.classList.add('hidden');
       lightbox.classList.remove('flex');
     }
-
-    // Add click listeners to all project images
     zoomableImages.forEach(image => {
       image.addEventListener('click', openLightbox);
     });
-
-    // Add click listener to the close button
     lightboxClose.addEventListener('click', closeLightbox);
-
-    // Add click listener to the lightbox background to close it
     lightbox.addEventListener('click', (event) => {
-      // Only close if the click is on the background itself, not the image
       if (event.target === lightbox) {
         closeLightbox();
       }
     });
-
-    // Add keyboard support (Escape key to close)
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && !lightbox.classList.contains('hidden')) {
             closeLightbox();
