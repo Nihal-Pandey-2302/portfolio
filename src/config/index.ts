@@ -1,3 +1,8 @@
+Of course. Here is your updated profile with the "A.R.I.A." project added.
+
+I've added the new project to the `projects` section and used the live demo and GitHub links you provided. Make sure to add the `aria-rwa.png` image to your `/public` folder.
+
+```javascript
 import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
@@ -68,18 +73,24 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "EVM Indexer in Rust",
       summary: "A high-performance data ingester and query API for EVM chains, built from scratch to efficiently store and retrieve blocks, transactions, and logs.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer", // Use your GitHub link for both for now
+      linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       linkSource: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       image: "/evm-indexer.png", // Add this image to the /public folder
     },
     {
       name: "Aegis Protocol V3",
       summary: "An autonomous, on-chain insurance protocol that uses Chainlink Automation and Functions to proactively monitor assets and detect loss events without user intervention.",
-      linkPreview: "https://aegis-frontend-tau.vercel.app/", // Change this link
-      linkSource: "https://github.com/Nihal-Pandey-2302/Aegis-Protocol", // Change this link
+      linkPreview: "https://aegis-frontend-tau.vercel.app/",
+      linkSource: "https://github.com/Nihal-Pandey-2302/Aegis-Protocol",
       image: "/aegis-protocol.png", // Add this image to the /public folder
     },
-    
+    {
+      name: "A.R.I.A. - Automated RWA Intelligence & Authentication",
+      summary: "An AI-powered platform to verify real-world documents and mint them as liquid, composable RWA NFTs on the Andromeda network, featuring an automated on-chain revenue model.",
+      linkPreview: "https://aria-rwa-dapp.vercel.app/",
+      linkSource: "https://github.com/Nihal-Pandey-2302/aria-rwa-dapp",
+      image: "/aria-rwa.png", // Add this image to the /public folder
+    },
   ],
   // About Section
   about: {
@@ -91,3 +102,4 @@ export const SITE_CONTENT: SiteContent = {
     image: "/nihal-big.jpg", // We will add this image in the next step
   },
 };
+```
