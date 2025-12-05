@@ -1,4 +1,6 @@
 ---
+import { SITE_CONFIG, SITE_CONTENT } from "@config";
+
 export interface Props {
   name: string;
   specialty: string;
@@ -6,7 +8,7 @@ export interface Props {
   email: string;
 }
 
-const { name, specialty, summary, email } = Astro.props;
+const { name } = Astro.props;
 ---
 
 <section id="hero" class="hero-section flex items-center">
@@ -14,12 +16,25 @@ const { name, specialty, summary, email } = Astro.props;
     <div class="hero-content animate-fade-in">
       <p class="greeting mono text-accent">Hello, I'm</p>
       <h1 class="name">{name}</h1>
-      <h2 class="specialty text-muted">{specialty}</h2>
-      <p class="summary">{summary}</p>
-      
-      <div class="cta-group flex gap-sm">
-        <a href="#projects" class="btn btn-primary">View Projects</a>
-        <a href={`mailto:${email}`} class="btn btn-outline">Contact Me</a>
+      <p class="hero-summary text-muted max-w-2xl mb-lg animate-fade-in" style="animation-delay: 0.4s;">
+        {SITE_CONTENT.hero.summary}
+      </p>
+
+      <div class="hero-actions flex gap-sm animate-fade-in" style="animation-delay: 0.6s;">
+        <a href="#contact" class="btn btn-primary">
+          Get in Touch
+        </a>
+        <a href="/resume.pdf" target="_blank" class="btn btn-outline">
+          Resume
+        </a>
+      </div>
+
+      <div class="social-links flex gap-sm mt-lg animate-fade-in" style="animation-delay: 0.8s;">
+        {SITE_CONFIG.socialLinks.map((link) => (
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="social-link mono text-muted hover-text-accent">
+            {link.text} ↗
+          </a>
+        ))}
       </div>
     </div>
   </div>

@@ -110,9 +110,9 @@ export const SITE_CONTENT: SiteContent = {
   // About Section
   about: {
     description: `
-      I am a motivated engineering student specializing in Blockchain Backend and Protocol Engineering. My passion lies in developing robust enterprise blockchain solutions with hands-on experience in Rust, EVM data indexing, and cybersecurity research.
+      I'm a backend engineer obsessed with the low-level mechanics of blockchain protocols. I build secure, high-performance infrastructure using Rust and EVM—basically, the plumbing that makes Web3 work.
 
-      I have a strong track record in hackathons, including winning the aOS Andromeda Hackathon (1st/2500+ teams) and the Smart India Hackathon. My technical expertise spans the entire Web3 stack, from writing secure Smart Contracts in Solidity to building high-performance backend infrastructure in Rust and Python. I am constantly seeking opportunities to contribute to cutting-edge blockchain infrastructure and smart contract platforms.
+      I thrive on the pressure of hackathons. Winning aOS Andromeda (1st/2500+ teams) and Smart India wasn't just about the prizes; it was about proving I can ship complex, working code when it counts. I'm not just looking for a job; I'm looking for hard problems to solve in the protocol security space.
     `,
     image: "/nihal-real.jpg",
     skills: [
@@ -126,9 +126,9 @@ export const SITE_CONTENT: SiteContent = {
       "TypeScript",
     ],
     interests: [
-      "Reading",
       "Cryptography Enthusiast",
-      "Exercising",
+      "Cycling",
+      "Reading",
       "Gardening"
     ],
   },
