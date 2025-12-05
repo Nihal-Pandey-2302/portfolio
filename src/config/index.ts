@@ -1,8 +1,3 @@
-Of course. Here is your updated profile with the "A.R.I.A." project added.
-
-I've added the new project to the `projects` section and used the live demo and GitHub links you provided. Make sure to add the `aria-rwa.png` image to your `/public` folder.
-
-```javascript
 import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
@@ -32,21 +27,41 @@ export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Blockchain Protocol Engineer",
+    specialty: "Blockchain Backend & Protocol Engineer",
     summary:
-      "Passionate about building performant and secure Web3 systems. Specializing in Rust, EVM infrastructure, and autonomous on-chain protocols.",
+      "Developing robust enterprise blockchain solutions and cutting-edge infrastructure. Specializing in Rust, EVM data indexing, and cybersecurity research.",
     email: "pandeynihal232@gmail.com",
   },
   // Experience Section (Hackathons, Awards)
   experience: [
     {
+      company: "Cybersecurity Research Intern - PMO, Govt. of India",
+      position: "Security Researcher",
+      startDate: "June 2025",
+      endDate: "Sept 2025",
+      summary: [
+        "Conducted threat intelligence analysis and adversarial simulations (red team exercises) to identify vulnerabilities in critical digital infrastructure.",
+        "Performed security assessments on sensitive government systems (Details confidential under NDA)."
+      ],
+    },
+    {
+      company: "Winner - aOS Andromeda Hackathon 2025",
+      position: "Team Lead",
+      startDate: "Prize",
+      endDate: "$2,500",
+      summary: [
+        "Secured 1st place out of 2500+ teams by building a high-impact blockchain solution.",
+        "Demonstrated expertise in protocol design and rapid prototyping under pressure."
+      ],
+    },
+    {
       company: "Winner - Smart India Hackathon 2024",
       position: "Tech Lead & Backend Developer",
-      startDate: "Sept 2024",
-      endDate: "Dec 2024",
-      summary: [ // The template expects an array of strings
-        "Developed an agentless scanner for Windows vulnerabilities using Python for the backend and PowerShell for system interaction.",
-        "Automated security analysis and report generation, demonstrating skills in system scripting and security assessment, reducing manual work by 80%."
+      startDate: "Prize",
+      endDate: "INR 100K",
+      summary: [
+        "Developed an agentless scanner for Windows vulnerabilities using Python and PowerShell.",
+        "Automated security analysis and report generation, reducing manual assessment work by 80%."
       ],
     },
     {
@@ -58,48 +73,54 @@ export const SITE_CONTENT: SiteContent = {
         "Contributed to the winning project at the Technology Business Incubator event, focusing on blockchain-based solutions."
       ],
     },
-    {
-      company: "3rd Place - IEEE Sustainability Hackathon",
-      position: "Blockchain Track",
-      startDate: "IEEE India",
-      endDate: "& Hong Kong",
-      summary: [
-          "Secured a top position by designing and presenting a blockchain solution focused on sustainability challenges."
-      ],
-    },
   ],
   // Projects Section
   projects: [
     {
+      name: "A.R.I.A. - Automated RWA Intelligence",
+      summary: "The world's first AI-powered multi-document RWA verification platform on QIE Blockchain. Features instant NFT minting, fractionalization, and AI-driven document analysis for 8+ types (Deeds, Invoices, etc.). Built with Python (Flask), Gemini AI, and Solidity.",
+      linkPreview: "https://github.com/Nihal-Pandey-2302/ARIA-QIE", 
+      linkSource: "https://github.com/Nihal-Pandey-2302/ARIA-QIE",
+      image: "/aria-qie.png",
+    },
+    {
       name: "EVM Indexer in Rust",
-      summary: "A high-performance data ingester and query API for EVM chains, built from scratch to efficiently store and retrieve blocks, transactions, and logs.",
+      summary: "A high-performance data ingester and query API for EVM chains, built from scratch in Rust. Efficiently stores and retrieves blocks, transactions, and logs with a focus on data integrity and speed.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       linkSource: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
-      image: "/evm-indexer.png", // Add this image to the /public folder
+      image: "/evm-indexer.png",
     },
     {
       name: "Aegis Protocol V3",
-      summary: "An autonomous, on-chain insurance protocol that uses Chainlink Automation and Functions to proactively monitor assets and detect loss events without user intervention.",
+      summary: "An autonomous, on-chain insurance protocol using Chainlink Automation and Functions. Proactively monitors assets and detects loss events without user intervention, ensuring decentralized protection.",
       linkPreview: "https://aegis-frontend-tau.vercel.app/",
       linkSource: "https://github.com/Nihal-Pandey-2302/Aegis-Protocol",
-      image: "/aegis-protocol.png", // Add this image to the /public folder
-    },
-    {
-      name: "A.R.I.A. - Automated RWA Intelligence & Authentication",
-      summary: "An AI-powered platform to verify real-world documents and mint them as liquid, composable RWA NFTs on the Andromeda network, featuring an automated on-chain revenue model.",
-      linkPreview: "https://aria-rwa-dapp.vercel.app/",
-      linkSource: "https://github.com/Nihal-Pandey-2302/aria-rwa-dapp",
-      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/aria-rwa-dapp/refs/heads/main/Flowchart_final.png", // Add this image to the /public folder
+      image: "/aegis-protocol.png",
     },
   ],
   // About Section
   about: {
     description: `
-      I'm a highly motivated engineering student specializing in Blockchain Protocol Engineering. My passion lies in diving deep into the tech stack to build robust, performant, and secure Web3 solutions. I have hands-on experience developing core infrastructure like a high-performance EVM data indexer in Rust, which taught me the importance of efficiency and data integrity.
+      I am a motivated engineering student specializing in Blockchain Protocol and Security Engineering. My passion lies in developing robust enterprise blockchain solutions with hands-on experience in Rust, EVM data indexing, and cybersecurity research.
 
-      I thrive on complex challenges and am always eager to learn new technologies. From architecting DApps on Polygon to winning hackathons with innovative security tools, my goal is to contribute to building the foundational protocols that will power the future of the decentralized web.
+      I have a strong track record in hackathons, including winning the aOS Andromeda Hackathon (1st/2500+ teams) and the Smart India Hackathon. My technical expertise spans the entire Web3 stack, from writing secure Smart Contracts in Solidity to building high-performance backend infrastructure in Rust and Python. I am constantly seeking opportunities to contribute to cutting-edge blockchain infrastructure and smart contract platforms.
     `,
-    image: "/nihal-big.jpg", // We will add this image in the next step
+    image: "/nihal-real.jpg",
+    skills: [
+      "Rust",
+      "Solidity",
+      "EVM / Ethereum",
+      "Tokio / Axum",
+      "PostgreSQL",
+      "Python",
+      "Docker",
+      "TypeScript",
+    ],
+    interests: [
+      "Reading",
+      "Cryptography Enthusiast",
+      "Exercising",
+      "Gardening"
+    ],
   },
 };
-```

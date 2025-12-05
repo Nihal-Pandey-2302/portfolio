@@ -1,52 +1,67 @@
 ---
-import Header from "@components/Header.astro";
-import "@fontsource/be-vietnam-pro";
-import "@fontsource-variable/gabarito";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 import { SITE_CONFIG } from "@config";
-import Footer from "@components/Footer.astro";
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
 
 const {
-  title,
-  description,
-  siteLogo,
-  navLinks,
-  lang,
-  author,
-  socialLinks,
-  socialImage,
-  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
-} = SITE_CONFIG;
-
-const ogImgUrl = canonicalURL + socialImage;
+  title = SITE_CONFIG.title,
+  description = SITE_CONFIG.description,
+  image = SITE_CONFIG.socialImage,
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang={lang} class="scroll-pt-16 scroll-smooth">
+<html lang={SITE_CONFIG.lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
-    <meta name="author" content={author} />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO -->
     <title>{title}</title>
-
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE_CONFIG.author} />
+    <link rel="canonical" href={SITE_CONFIG.canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={SITE_CONFIG.canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={ogImgUrl} />
+    <meta property="og:image" content={image} />
 
+    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:url" content={SITE_CONFIG.canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={ogImgUrl} />
+    <meta property="twitter:image" content={image} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-black font-sans">
-    <Header siteLogo={siteLogo} navLinks={navLinks} />
-    <main class="mx-auto max-w-3xl px-5">
+  <body>
+    <Header />
+    <main>
       <slot />
     </main>
-    <Footer author={author} socialLinks={socialLinks} />
+    <Footer />
   </body>
 </html>
+
+<style>
+  main {
+    padding-top: var(--header-height);
+    min-height: calc(100vh - 200px); /* Adjust based on footer height */
+  }
+</style>

@@ -1,119 +1,161 @@
 ---
-import Section from "./Section.astro";
-import { Image } from "astro:assets";
-import type { ProjectProps } from "@types";
+import type { Project } from "../types";
 
-interface Props {
-  projects: ProjectProps[];
+export interface Props {
+  projects: Project[];
 }
 
 const { projects } = Astro.props;
-
-// ✅ THE FIX: Increase the multiplier to create a much larger spacer.
-const spacerHeight = projects.length > 1 ? (projects.length - 1) * 150 : 0;
 ---
 
-<div id="lightbox" class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-  <span id="lightbox-close" class="absolute right-5 top-5 cursor-pointer text-4xl text-white hover:text-primary">×</span>
-  <img id="lightbox-image" src="" alt="Zoomed project preview" class="max-h-[90vh] max-w-[90vw] object-contain">
-</div>
+<section id="projects" class="section-padding">
+  <div class="container">
+    <h2 class="section-title mono">
+      <span class="text-accent">01.</span> Featured Projects
+    </h2>
 
+    <div class="projects-grid">
+      {
+        projects.map((project) => (
+          <article class="project-card">
+            <div class="project-image">
+              <img src={project.image} alt={project.name} loading="lazy" />
+            </div>
 
-<Section text="Featured Projects" href="projects">
-  {
-    projects.map(({ name, summary, image, linkPreview, linkSource }, index) => {
-      const top = 98 + index * 40;
-      return (
-        <div
-          style={`top: ${top}px;`}
-          class="sticky mb-12 rounded-2xl border border-neutral/20 bg-black"
-        >
-          <div class="bg-difu relative z-[1] grid h-[580px] w-full grid-rows-2 rounded-2xl bg-[#1c232d]/85 before:absolute before:inset-0 before:z-[-1] before:rounded-2xl before:bg-[url(/raja.png)] before:bg-[length:128px] before:bg-repeat before:opacity-[5%] before:content-[''] sm:grid-cols-2 sm:grid-rows-1 md:h-96">
-            <div class="px-6 pt-12">
-              <h3 class="mb-5 font-serif text-3xl font-medium text-primary">
-                {name}
-              </h3>
-              <p class="text-base text-neutral">{summary}</p>
-              <div class="flex gap-5 pt-10 text-white">
+            <div class="project-content">
+              <h3 class="project-title">{project.name}</h3>
+              <p class="project-summary">{project.summary}</p>
+
+              <div class="project-links gap-sm flex">
                 <a
-                  href={linkSource}
+                  href={project.linkSource}
                   target="_blank"
-                  class="after:relative after:bottom-[-5px] after:content-[url(/external.svg)] hover:underline"
+                  rel="noopener noreferrer"
+                  class="link-icon"
+                  aria-label="GitHub Source"
                 >
-                  Source
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                  </svg>
                 </a>
                 <a
-                  href={linkPreview}
+                  href={project.linkPreview}
                   target="_blank"
-                  class="after:relative after:bottom-[-5px] after:content-[url(/external.svg)] hover:underline"
+                  rel="noopener noreferrer"
+                  class="link-icon"
+                  aria-label="Live Preview"
                 >
-                  Preview
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </>
+                  </svg>
                 </a>
               </div>
             </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
 
-            <div class="flex items-center justify-center overflow-hidden p-4 sm:p-6">
-              <a href={image} class="zoomable-image h-full w-[95%] sm:h-[85%] sm:w-full">
-                <Image
-                  class="h-full w-full rounded-ss-xl rounded-ee-2xl object-contain"
-                  src={image}
-                  alt={name}
-                  width="736"
-                  height="483"
-                />
-              </a>
-            </div>
-          </div>
-        </div>
-      );
-    })
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
   }
 
-  <div style={`height: ${spacerHeight}px;`}></div>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-md);
+  }
 
-</Section>
+  .project-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
 
-<script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxClose = document.getElementById('lightbox-close');
-    const zoomableImages = document.querySelectorAll('.zoomable-image');
-    if (!lightbox || !lightboxImage || !lightboxClose || !zoomableImages) {
-      console.error("Lightbox elements not found. Zoom functionality will not work.");
-      return;
-    }
-    function openLightbox(event) {
-      event.preventDefault();
-      const linkElement = event.currentTarget;
-      const imageElement = linkElement.querySelector('img');
-      if (!imageElement) return;
-      lightboxImage.src = imageElement.src; 
-      lightbox.classList.remove('hidden');
-      lightbox.classList.add('flex');
-    }
-    function closeLightbox() {
-      lightbox.classList.add('hidden');
-      lightbox.classList.remove('flex');
-    }
-    zoomableImages.forEach(image => {
-      image.addEventListener('click', openLightbox);
-    });
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
-      }
-    });
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !lightbox.classList.contains('hidden')) {
-            closeLightbox();
-        }
-    });
-  });
-</script>
-<style>
-  .zoomable-image {
-    cursor: zoom-in;
+  .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    border-color: var(--color-accent);
+  }
+
+  .project-image {
+    height: 200px;
+    background: #1a1a1a;
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #1a1a1a, #222);
+  }
+
+  .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .project-card:hover .project-image img {
+    transform: scale(1.05);
+  }
+
+  .project-content {
+    padding: var(--space-sm);
+  }
+
+  .project-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-main);
+  }
+
+  .project-summary {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+    line-height: 1.5;
+  }
+
+  .link-icon {
+    color: var(--color-text-muted);
+    transition: color 0.2s ease;
+  }
+
+  .link-icon:hover {
+    color: var(--color-accent);
   }
 </style>

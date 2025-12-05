@@ -1,26 +1,146 @@
 ---
-import Section from "./Section.astro";
-import { Image } from "astro:assets";
-import type { AboutProps, HeroProps } from "@types";
+export interface Props {
+  description: string;
+  name: string;
+  image?: string;
+  skills: string[];
+  interests?: string[];
+}
 
-type Props = AboutProps & Pick<HeroProps, "name">;
-
-const { description, image, name } = Astro.props;
+const { description, name, image, skills, interests } = Astro.props;
 ---
 
-<Section text="About Me" href="about">
-  <div class="flex flex-col items-center gap-12 md:flex-row md:gap-8">
-    <p class="w-auto text-base text-neutral md:pr-5">{description}</p>
-    <div
-      class="h-80 w-64 flex-shrink-0 rotate-[5deg] overflow-hidden border-[0.5px] border-gray-200 bg-white p-1 md:rotate-[7deg]"
-    >
-      <Image
-        class="h-full w-full object-contain"
-        src={image}
-        width="260"
-        height="260"
-        alt={name}
-      />
+<section id="about" class="section-padding">
+  <div class="container">
+    <h2 class="section-title mono">
+      <span class="text-accent">03.</span> About Me
+    </h2>
+
+    <div class="about-content grid grid-cols-2">
+      <div class="bio-text">
+        {
+          description
+            .split("\n")
+            .map((paragraph) => paragraph.trim() && <p>{paragraph}</p>)
+        }
+
+        <div class="skills-list mt-lg">
+          <h3 class="mono text-accent" style="font-size: 1.2rem;">
+            Tech Stack
+          </h3>
+          <ul class="skills-grid mono">
+            {skills.map((skill) => <li>{skill}</li>)}
+          </ul>
+        </div>
+
+        {
+          Astro.props.interests && (
+            <div class="interests-list mt-lg">
+              <h3 class="mono text-accent" style="font-size: 1.2rem;">
+                Interests
+              </h3>
+              <p class="text-muted" style="margin-top: 0.5rem;">
+                {Astro.props.interests.join(" • ")}
+              </p>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="bio-image flex items-center justify-center">
+        <div class="image-wrapper">
+          <img src={image} alt={name} />
+        </div>
+      </div>
     </div>
   </div>
-</Section>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
+  }
+
+  .bio-text p {
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .skills-grid li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .skills-grid li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 4px;
+    background: var(--color-accent);
+  }
+
+  .placeholder-profile {
+    width: 100%;
+    height: 100%;
+    background: #222;
+    border-radius: 4px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
+  }
+
+  .image-wrapper img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    filter: grayscale(100%) contrast(1.1);
+    transition:
+      filter 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .image-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .image-wrapper:hover .placeholder-profile {
+    transform: translate(-10px, -10px);
+  }
+
+  .image-wrapper:hover img {
+    filter: none;
+    transform: translate(-10px, -10px);
+  }
+
+  .image-wrapper:hover::after {
+    transform: translate(10px, 10px);
+  }
+</style>

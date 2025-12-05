@@ -1,27 +1,128 @@
 ---
-import type { HeroProps } from "@types";
-type Props = HeroProps;
+export interface Props {
+  name: string;
+  specialty: string;
+  summary: string;
+  email: string;
+}
 
 const { name, specialty, summary, email } = Astro.props;
 ---
 
-<section class="py-24 md:py-32" id="#hero">
-  <h1
-    class="mb-1.5 font-serif text-7xl font-bold tracking-tightest text-white sm:text-8xl md:mb-0 md:text-9xl"
-  >
-    {name}
-  </h1>
-  <p
-    class="mb-9 font-serif text-4xl leading-[46px] font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl"
-  >
-    {specialty}
-  </p>
-  <p class="mb-16 text-base font-normal text-neutral md:text-lg">
-    {summary}
-  </p>
-
-  <a
-    class="inline-block rounded-full bg-primary px-8 py-5 text-sm leading-5 font-medium text-[#fff]"
-    href={`mailto:${email}`}>Get in Touch</a
-  >
+<section id="hero" class="hero-section flex items-center">
+  <div class="container">
+    <div class="hero-content animate-fade-in">
+      <p class="greeting mono text-accent">Hello, I'm</p>
+      <h1 class="name">{name}</h1>
+      <h2 class="specialty text-muted">{specialty}</h2>
+      <p class="summary">{summary}</p>
+      
+      <div class="cta-group flex gap-sm">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href={`mailto:${email}`} class="btn btn-outline">Contact Me</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hero-background">
+    <!-- Abstract background element -->
+    <div class="glow-orb"></div>
+  </div>
 </section>
+
+<style>
+  .hero-section {
+    min-height: 90vh;
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--header-height);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 800px;
+  }
+
+  .greeting {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .name {
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1.1;
+    margin-bottom: var(--space-xs);
+    background: linear-gradient(to right, #fff, #a0a0a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .specialty {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    border-bottom: none;
+    margin-bottom: var(--space-md);
+  }
+
+  .summary {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+    max-width: 600px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: 1px solid var(--color-accent);
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--color-accent);
+    box-shadow: 0 0 20px var(--color-accent-dim);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-main);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--color-text-main);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Background Effects */
+  .glow-orb {
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+    opacity: 0.15;
+    filter: blur(80px);
+    z-index: 1;
+    animation: pulse 10s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.15; }
+    100% { transform: scale(1.2); opacity: 0.25; }
+  }
+</style>

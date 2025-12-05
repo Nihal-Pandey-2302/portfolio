@@ -1,0 +1,62 @@
+---
+export interface Props {
+  email: string;
+}
+
+const { email } = Astro.props;
+---
+
+<section id="contact" class="section-padding text-center">
+  <div class="container">
+    <h2 class="section-title mono"><span class="text-accent">04.</span> What's Next?</h2>
+    <h3 class="contact-heading">Get In Touch</h3>
+    <p class="contact-text text-muted">
+      I'm currently looking for new opportunities as a Backend or Protocol Engineer.
+      Whether you have a question or just want to say hi, I'll try my best to get back to you!
+    </p>
+    <a href={`mailto:${email}`} class="btn btn-primary mt-lg">Say Hello</a>
+  </div>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
+    margin-bottom: var(--space-lg);
+  }
+
+  .contact-heading {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-main);
+  }
+
+  .contact-text {
+    max-width: 600px;
+    margin: 0 auto var(--space-md);
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-top: var(--space-md);
+  }
+
+  .btn-primary {
+    background: transparent;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-dim);
+    box-shadow: 0 0 20px var(--color-accent-dim);
+  }
+</style>
