@@ -10,27 +10,25 @@
   --color-accent-dim: rgba(0, 255, 157, 0.1);
   --color-primary: #8a2be2; /* Blue Violet */
   --color-border: #333333;
-
+  
   /* Typography */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "Fira Code", monospace;
-
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
   /* Spacing */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 2rem;
   --space-lg: 4rem;
   --space-xl: 8rem;
-
+  
   /* Layout */
   --container-width: 1200px;
   --header-height: 80px;
 }
 
 /* Reset & Base Styles */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -65,12 +63,7 @@ img {
 }
 
 /* Typography Utilities */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: var(--space-sm);
@@ -147,16 +140,36 @@ h2 {
 
 /* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  :root {
+    --space-md: 1.5rem;
+    --space-lg: 3rem;
+    --space-xl: 5rem;
+    --header-height: 70px;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr; /* Stack on mobile */
+  }
+  
+  .container {
+    padding: 0 1.25rem;
+  }
 }
