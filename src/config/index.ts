@@ -110,9 +110,9 @@ export const SITE_CONTENT: SiteContent = {
   // About Section
   about: {
     description: `
-      I'm a backend engineer obsessed with the low-level mechanics of blockchain protocols. I build secure, high-performance infrastructure using Rust and EVM—basically, the plumbing that makes Web3 work.
+      I'm a backend engineer who enjoys diving deep into how blockchain protocols work under the hood. Most of my work revolves around building secure, high-performance infrastructure using Rust and the EVM—the low-level systems that keep decentralized networks running.
 
-      I thrive on the pressure of hackathons. Winning aOS Andromeda (1st/2500+ teams) and Smart India wasn't just about the prizes; it was about proving I can ship complex, working code when it counts. I'm not just looking for a job; I'm looking for hard problems to solve in the protocol security space.
+      Hackathons were where everything clicked for me. Hackathons like the aOS Andromeda winner (1st/2500+) and Smart India showed me that I enjoy building complex systems under tight deadlines far more than slow, abstract work. That’s why I’m drawn to protocol engineering and security—it's the kind of challenge that keeps me engaged.
     `,
     image: "/nihal-real.jpg",
     skills: [
@@ -127,8 +127,8 @@ export const SITE_CONTENT: SiteContent = {
     ],
     interests: [
       "Cryptography Enthusiast",
-      "Cycling",
       "Reading",
+      "Cycling",
       "Gardening"
     ],
   },
