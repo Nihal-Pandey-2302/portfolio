@@ -76,6 +76,15 @@ export const SITE_CONTENT: SiteContent = {
   ],
   // Projects Section
   projects: [
+    /*
+    {
+      name: "Kraken SDK (Rust)",
+      summary: "High-performance, async Rust SDK for Kraken WebSocket API. Features typed data models, auto-reconnection, and a TUI for live trading. Benchmarked at ~648k msgs/sec.",
+      linkPreview: "https://github.com/Nihal-Pandey-2302/kraken-rs",
+      linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
+      image: "/kraken-sdk.png",
+    },
+    */
     {
       name: "A.R.I.A. - Automated RWA Intelligence",
       summary: "The world's first AI-powered multi-document RWA verification platform on QIE Blockchain. Features instant NFT minting, fractionalization, and AI-driven document analysis for 8+ types (Deeds, Invoices, etc.). Built with Python (Flask), Gemini AI, and Solidity.",
@@ -101,7 +110,7 @@ export const SITE_CONTENT: SiteContent = {
   // About Section
   about: {
     description: `
-      I am a motivated engineering student specializing in Blockchain Protocol and Security Engineering. My passion lies in developing robust enterprise blockchain solutions with hands-on experience in Rust, EVM data indexing, and cybersecurity research.
+      I am a motivated engineering student specializing in Blockchain Backend and Protocol Engineering. My passion lies in developing robust enterprise blockchain solutions with hands-on experience in Rust, EVM data indexing, and cybersecurity research.
 
       I have a strong track record in hackathons, including winning the aOS Andromeda Hackathon (1st/2500+ teams) and the Smart India Hackathon. My technical expertise spans the entire Web3 stack, from writing secure Smart Contracts in Solidity to building high-performance backend infrastructure in Rust and Python. I am constantly seeking opportunities to contribute to cutting-edge blockchain infrastructure and smart contract platforms.
     `,
