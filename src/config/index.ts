@@ -77,6 +77,13 @@ export const SITE_CONTENT: SiteContent = {
   // Projects Section
   projects: [
     {
+      name: "LazorKit Solana Starter ⚡️",
+      summary: "A next-generation starter template for building Passkey-native Solana applications. Replaces seed phrases with FaceID/TouchID and includes gasless transaction sponsorship. Built with Next.js 15+ and LazorKit Paymaster.",
+      linkPreview: "https://lazorkit-solana-starter-rho.vercel.app/",
+      linkSource: "https://github.com/Nihal-Pandey-2302/lazorkit-solana-starter",
+      image: "/lazorkit-solana-starter.png",
+    },
+    {
       name: "Kraken SDK (Rust)",
       summary: "High-performance, async Rust SDK for Kraken WebSocket API. Features typed data models, auto-reconnection, and a TUI for live trading. Benchmarked at ~648k msgs/sec.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/kraken-rs",
