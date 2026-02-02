@@ -76,7 +76,6 @@ export const SITE_CONTENT: SiteContent = {
   ],
   // Projects Section
   projects: [
-    /*
     {
       name: "Kraken SDK (Rust)",
       summary: "High-performance, async Rust SDK for Kraken WebSocket API. Features typed data models, auto-reconnection, and a TUI for live trading. Benchmarked at ~648k msgs/sec.",
@@ -84,7 +83,6 @@ export const SITE_CONTENT: SiteContent = {
       linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       image: "/kraken-sdk.png",
     },
-    */
     {
       name: "A.R.I.A. - Automated RWA Intelligence",
       summary: "The world's first AI-powered multi-document RWA verification platform on QIE Blockchain. Features instant NFT minting, fractionalization, and AI-driven document analysis for 8+ types (Deeds, Invoices, etc.). Built with Python (Flask), Gemini AI, and Solidity.",
