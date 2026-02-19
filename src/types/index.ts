@@ -36,6 +36,9 @@ export interface Project {
   image: string;
   linkPreview?: string;
   linkSource?: string;
+  metrics?: string[];
+  technologies?: string[];
+  badge?: string;
 }
 
 export interface AboutProps {

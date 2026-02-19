@@ -24,7 +24,13 @@ const { experience } = Astro.props;
             <h4 class="position">{item.position}</h4>
             <ul class="achievements">
               {item.summary.map((point) => (
-                <li>{point}</li>
+                <li class={point.startsWith("Impact:") ? "impact-item" : ""}>
+                  {point.startsWith("Impact:") ? (
+                    <strong>{point}</strong>
+                  ) : (
+                    point
+                  )}
+                </li>
               ))}
             </ul>
           </div>
@@ -113,6 +119,15 @@ const { experience } = Astro.props;
     position: absolute;
     left: 0;
     color: var(--color-accent);
+  }
+
+  .impact-item {
+    color: var(--color-accent) !important;
+    margin-top: 0.5rem;
+  }
+
+  .impact-item::before {
+    content: "★" !important;
   }
 
   @media (max-width: 600px) {

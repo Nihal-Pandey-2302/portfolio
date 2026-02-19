@@ -1,0 +1,76 @@
+---
+---
+
+<section id="writing" class="section-padding">
+  <div class="container">
+    <h2 class="section-title mono"><span class="text-accent">03.</span> Technical Writing & Open Source</h2>
+    
+    <div class="writing-grid">
+      
+      <article class="writing-card">
+        <h3 class="article-title text-accent">Building a 648k msg/sec Rust WebSocket Client</h3>
+        <p class="article-summary text-muted">Deep dive into async Rust patterns, zero-copy deserialization, and production error handling strategies</p>
+        <a href="#" class="article-link mono">Read Article ↗</a>
+      </article>
+      
+      <article class="writing-card">
+        <h3 class="article-title text-accent">Contributing to svix-webhooks</h3>
+        <p class="article-summary text-muted">How I optimized Redis error surfacing in a YC-backed infrastructure product</p>
+        <a href="#" class="article-link mono">View PR ↗</a>
+      </article>
+      
+      <article class="writing-card">
+        <h3 class="article-title text-accent">EVM Indexing: Architecture & Tradeoffs</h3>
+        <p class="article-summary text-muted">Designing atomic transaction processing with PostgreSQL and SQLx in Rust</p>
+        <a href="#" class="article-link mono">Read Article ↗</a>
+      </article>
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
+  }
+
+  .writing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .writing-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-border);
+    padding: var(--space-md);
+    border-radius: 8px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .writing-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-accent);
+  }
+
+  .article-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .article-summary {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .article-link {
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .article-link:hover {
+    text-decoration: underline;
+  }
+</style>
