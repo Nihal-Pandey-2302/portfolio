@@ -32,7 +32,7 @@ export const SITE_CONTENT: SiteContent = {
       "Building production-grade blockchain infrastructure that processes 648,000 msgs/sec. Specializing in real-time WebSocket protocols, atomic transaction processing, and multi-chain indexing at scale.",
     email: "pandeynihal232@gmail.com",
   },
-  // Experience Section (Hackathons, Awards)
+  // Experience Section
   experience: [
     {
       company: "Cybersecurity Research Intern - PMO, Govt. of India",
@@ -46,6 +46,10 @@ export const SITE_CONTENT: SiteContent = {
         "Impact: Contributed to securing government systems against advanced persistent threats."
       ],
     },
+  ],
+  
+  // Achievements Section (Hackathons, Awards)
+  achievements: [
     {
       company: "Winner - aOS Andromeda Hackathon 2025",
       position: "Team Lead",

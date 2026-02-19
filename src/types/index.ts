@@ -11,6 +11,7 @@ export interface SiteConfig extends HeaderProps {
 export interface SiteContent {
   hero: HeroProps;
   experience: ExperienceItem[];
+  achievements: ExperienceItem[];
   projects: Project[];
   about: AboutProps;
 }
