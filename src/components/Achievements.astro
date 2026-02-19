@@ -38,7 +38,7 @@ const { achievements } = Astro.props;
 
   .achievements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--space-md);
   }
 
@@ -48,13 +48,29 @@ const { achievements } = Astro.props;
     padding: var(--space-md);
     border-radius: 8px;
     transition: transform 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
 
+  .achievement-card::after {
+    content: "🏆";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 4rem;
+    opacity: 0.03;
+    pointer-events: none;
+    transform: rotate(15deg);
+  }
+
+  /* ... rest of existing styles ... */
   .achievement-card:hover {
     transform: translateY(-5px);
     border-color: var(--color-accent);
   }
-
+  
+  /* ... keep existing .card-header, .award-title, etc. ... */
+  
   .card-header {
     display: flex;
     justify-content: space-between;
@@ -75,6 +91,7 @@ const { achievements } = Astro.props;
     background: rgba(0, 255, 163, 0.1);
     padding: 2px 8px;
     border-radius: 4px;
+    flex-shrink: 0;
   }
 
   .role-title {
@@ -104,5 +121,20 @@ const { achievements } = Astro.props;
     position: absolute;
     left: 0;
     color: var(--color-accent);
+  }
+
+  @media (max-width: 600px) {
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .card-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .prize-tag {
+      align-self: flex-start;
+    }
   }
 </style>
