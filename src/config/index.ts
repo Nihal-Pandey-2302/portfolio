@@ -2,10 +2,10 @@ import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
 export const SITE_CONFIG: SiteConfig = {
-  title: "Nihal Pandey | Blockchain Protocol Engineer",
+  title: "Nihal Pandey | Rust Backend & Protocol Engineer",
   author: "Nihal Pandey",
   description:
-    "Highly motivated engineering student specializing in Blockchain Protocol Engineering. Passionate about developing robust Web3 solutions with hands-on experience in Rust, EVM data indexing, and DApp development.",
+    "Building high-performance blockchain infrastructure. Rust Backend Engineer specializing in deterministic systems, EVM indexing, and resilient distributed architectures.",
   lang: "en",
   siteLogo: "/nihal-small.png", // We will add this image in the next step
   navLinks: [
