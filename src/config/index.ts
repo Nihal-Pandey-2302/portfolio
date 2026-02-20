@@ -9,8 +9,7 @@ export const SITE_CONFIG: SiteConfig = {
   lang: "en",
   siteLogo: "/nihal-small.png", // We will add this image in the next step
   navLinks: [
-    { text: "Experience", href: "#experience" },
-    { text: "Projects", href: "#projects" },
+    { text: "Work", href: "#showcase" },
     { text: "About", href: "#about" },
   ],
   socialLinks: [

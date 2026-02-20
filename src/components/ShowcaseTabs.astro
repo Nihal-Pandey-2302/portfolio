@@ -54,42 +54,64 @@ const { content } = Astro.props;
       indicator.style.left = `${element.offsetLeft}px`;
     }
 
+    function switchTab(tabId: string) {
+      const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`) as HTMLElement;
+      if (!tabBtn) return;
+
+      // Remove active class from all tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+
+      // Add active class to target tab
+      tabBtn.classList.add('active');
+      moveIndicator(tabBtn);
+
+      // Show corresponding content
+      const targetContent = document.getElementById(`tab-${tabId}`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+        // Trigger animations
+        const animatedElements = targetContent.querySelectorAll('.animate-on-scroll');
+        animatedElements.forEach(el => {
+           el.classList.remove('visible');
+           void (el as HTMLElement).offsetWidth; 
+           el.classList.add('visible');
+        });
+      }
+    }
+
     // Initialize indicator position
     const activeTab = document.querySelector('.tab-btn.active') as HTMLElement;
     if (activeTab) {
-      // Use requestAnimationFrame to ensure layout is settled
       requestAnimationFrame(() => moveIndicator(activeTab));
-      // Also on window resize
       window.addEventListener('resize', () => moveIndicator(activeTab));
     }
 
+    // Handle Clicks
     tabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
-        
-        // Remove active class from all tabs
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-
-        // Add active class to clicked tab
-        target.classList.add('active');
-        moveIndicator(target);
-
-        // Show corresponding content
-        const targetId = `tab-${target.getAttribute('data-tab')}`;
-        const targetContent = document.getElementById(targetId);
-        if (targetContent) {
-          targetContent.classList.add('active');
-          // Trigger animations
-          const animatedElements = targetContent.querySelectorAll('.animate-on-scroll');
-          animatedElements.forEach(el => {
-             el.classList.remove('visible');
-             void (el as HTMLElement).offsetWidth; 
-             el.classList.add('visible');
-          });
-        }
+        const tabId = target.getAttribute('data-tab');
+        if (tabId) switchTab(tabId);
       });
     });
+
+    // Handle Hash Navigation
+    function handleHash() {
+      const hash = window.location.hash.slice(1); // remove #
+      if (['projects', 'experience', 'awards', 'writing'].includes(hash)) {
+        switchTab(hash);
+        // Scroll to showcase section
+        const showcase = document.getElementById('showcase');
+        if (showcase) {
+          showcase.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+
+    // Check hash on load and change
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
   }
 
   setupTabs();
