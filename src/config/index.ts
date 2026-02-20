@@ -27,172 +27,101 @@ export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Rust Backend Engineer | High-Performance Systems",
+    specialty: "Backend Engineer — Rust | Distributed Systems | Real-Time Infrastructure",
     summary:
-      "Building production-grade blockchain infrastructure that processes 648,000 msgs/sec. Specializing in real-time WebSocket protocols, atomic transaction processing, and multi-chain indexing at scale.",
+      "I build backend systems focused on real-time data pipelines, concurrent services, and reliable infrastructure using Rust, PostgreSQL, and async architectures. Currently available for remote backend roles and open to contract → full-time opportunities.",
     email: "pandeynihal232@gmail.com",
   },
+  
   // Experience Section
   experience: [
     {
-      company: "Cybersecurity Research Intern - PMO, Govt. of India",
+      company: "Cybersecurity Research Intern — Government of India (PMO)",
       position: "Security Researcher",
-      startDate: "June 2025",
+      startDate: "Jun 2025",
       endDate: "Sept 2025",
-      summary: [
-        "Conducted threat intelligence analysis and adversarial simulations (red team exercises) to secure critical digital infrastructure.",
-        "Developed custom Rust-based security tooling for internal vulnerability assessment and penetration testing (Project details confidential under NDA).",
-        "Collaborated with national cybersecurity teams on incident response scenarios and threat modeling.",
-        "Impact: Contributed to securing government systems against advanced persistent threats."
+       summary: [
+        "Developed internal Rust-based tooling for vulnerability detection and infrastructure auditing",
+        "Built concurrent analysis utilities for security testing and misconfiguration detection",
+        "Simulated adversarial scenarios to evaluate system resilience",
+        "Collaborated with security teams on threat modeling and incident response exercises",
+        "Worked in restricted environment under NDA (project details confidential)"
       ],
     },
   ],
-  
-  // Achievements Section (Hackathons, Awards)
-  achievements: [
-    {
-      company: "Winner - aOS Andromeda Hackathon 2025",
-      position: "Team Lead",
-      startDate: "Prize",
-      endDate: "$2,500",
-      summary: [
-        "Built production-grade RWA tokenization platform in 48 hours under high-pressure hackathon environment.",
-        "Demonstrated expertise in rapid prototyping, CosmWasm smart contracts, and cross-chain architecture.",
-        "Rank: 1st out of 2,500+ teams"
-      ],
-    },
-    {
-      company: "Winner - Smart India Hackathon 2024 (NTRO)",
-      position: "Tech Lead & Backend Developer",
-      startDate: "Prize",
-      endDate: "INR 100K",
-      summary: [
-        "Developed agentless Windows vulnerability scanner reducing manual security analysis by 80%.",
-        "Integrated automated report generation with Python and PowerShell scripting.",
-        "Client: Government of India"
-      ],
-    },
-    {
-      company: "Winner - Graph-e-thon 2.0",
-      position: "Blockchain Developer",
-      startDate: "Prize",
-      endDate: "INR 175K",
-      summary: [
-        "Built blockchain-based analytics solution for Technology Business Incubator event.",
-        "Focused on real-time data visualization and decentralized infrastructure.",
-        "Host: TBI Graphic Era"
-      ],
-    },
-  ],
+
+  // Achievements Section - REMOVED as per request to focus on "clean infra engineer vibe"
+  achievements: [],
+
   // Projects Section
   projects: [
     {
-      name: "Kraken Market Data SDK ⚡",
-      summary: "Production-grade async WebSocket client achieving 648,000 messages/sec with complete type safety. Features auto-reconnection, CRC32 validation, HMAC-SHA512 authentication, and live trading TUI dashboard.",
+      name: "Low-Latency Market Data Ingestion System",
+      summary: "High-throughput async WebSocket ingestion system designed for real-time financial market data processing.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       image: "/kraken-sdk.png",
-      badge: "Global Finalist - Kraken Forge 2025",
+      badge: "Rust Infrastructure",
       metrics: [
-        "648k msgs/sec throughput",
-        "Sub-5ms reconnection recovery",
-        "100% schema compliance"
+        "Persistent WebSocket client",
+        "Backpressure-aware pipeline",
+        "Deterministic ordering"
       ],
-      technologies: ["Rust", "Tokio", "WebSocket", "Serde"]
+      technologies: ["Rust", "Tokio", "WebSockets", "Serde", "Async Systems"]
     },
     {
-      name: "EVM Event Watchdog 🔐",
-      summary: "Real-time exploit detection system monitoring Ethereum, Polygon, and Arbitrum with sub-second alert latency. Terminal UI dashboard with atomic state management and zero-latency updates.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
-      linkSource: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
-      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/evm_event_watchdog/refs/heads/main/tui.gif",
-      badge: "Security Infrastructure",
-      metrics: [
-        "<1s detection latency",
-        "3-chain monitoring",
-        "Zero false positives"
-      ],
-      technologies: ["Rust", "Tokio", "WebSocket", "Discord API"]
-    },
-    {
-      name: "Ethereum Data Indexer",
-      summary: "Production-grade EVM ingestion pipeline with RESTful query API. Handles 100+ concurrent requests with sub-millisecond response times. Atomic SQL transactions ensure data consistency during crashes.",
+      name: "High-Performance EVM Blockchain Indexer",
+      summary: "Production-style blockchain ingestion and query system for indexing on-chain data.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       linkSource: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       image: "/evm-indexer.png",
-      badge: "Infrastructure",
+      badge: "Backend Systems",
       metrics: [
-        "<1ms average response time",
-        "100+ concurrent requests",
-        "99.9% uptime"
+        "Crash-safe atomic transactions",
+        "Idempotent ingestion",
+        "Optimized PostgreSQL schema"
       ],
-      technologies: ["Rust", "Axum", "SQLx", "PostgreSQL", "Docker"]
+      technologies: ["Rust", "Axum", "SQLx", "PostgreSQL", "Docker", "Async"]
     },
     {
-      name: "InjectiveQL",
-      summary: "Developer-focused GraphQL API with pre-computed analytics (volatility, liquidity scoring, arbitrage detection). Multi-tier caching strategy achieving 15ms average response times.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/injectiveql",
-      linkSource: "https://github.com/Nihal-Pandey-2302/injectiveql",
-      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/injectiveql/main/docs/screenshots/market-intelligence.png",
-      badge: "Backend Architecture",
+      name: "Real-Time Multi-Chain Event Monitoring System",
+      summary: "Monitoring and alerting system for on-chain events across multiple networks.",
+      linkPreview: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
+      linkSource: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
+      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/evm_event_watchdog/refs/heads/main/tui.gif",
+      badge: "Distributed Systems",
       metrics: [
-        "<15ms average latency",
-        "80%+ cache hit rate",
-        "NFT-based rate limiting"
+        "Real-time event listeners",
+        "Concurrent stream processing",
+        "Fault-tolerant state tracking"
       ],
-      technologies: ["TypeScript", "Apollo GraphQL", "Redis", "PostgreSQL"]
-    },
-    {
-      name: "LazorKit Identity Wallet",
-      summary: "Next-generation wallet interface using WebAuthn biometrics, eliminating seed phrases. Features gasless onboarding via Paymaster for zero-balance users.",
-      linkPreview: "https://lazorkit-solana-starter-rho.vercel.app/",
-      linkSource: "https://github.com/Nihal-Pandey-2302/lazorkit-solana-starter",
-      image: "/lazorkit-solana-starter.png",
-      badge: "Web3 Innovation",
-      metrics: [
-        "90% faster onboarding",
-        "Zero seed phrase friction",
-        "Cross-platform biometric"
-      ],
-      technologies: ["Next.js 15", "Solana SDK", "WebAuthn"]
-    },
-    {
-      name: "A.R.I.A. Protocol",
-      summary: "AI-powered real-world asset verification and tokenization platform on Cosmos. Features automated revenue distribution and multi-ADO composition.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/ARIA-QIE", 
-      linkSource: "https://github.com/Nihal-Pandey-2302/ARIA-QIE",
-      image: "/aria-qie.png",
-      badge: "🥇 1st Place - Andromeda Hackathon",
-      technologies: ["Rust", "CosmWasm", "AI Integration", "IPFS"]
+      technologies: ["Rust", "WebSockets", "Tokio", "Ethereum RPC", "Async"]
     },
   ],
+
   // About Section
   about: {
     description: `
-      I'm a backend engineer who specializes in building the low-level systems that keep blockchains running smoothly. Most of my work involves Rust and the EVM—building indexers, real-time monitoring tools, and high-throughput data pipelines that can handle hundreds of thousands of events per second.
+      I’m a backend engineer focused on building reliable systems that process real-time data and power backend infrastructure. Most of my work is in Rust, where I build concurrent services, ingestion pipelines, and APIs designed for performance and fault tolerance.
 
-      What drives me is solving hard infrastructure problems under constraints. During my internship at India's Prime Minister's Office, I built custom security tooling to assess critical government infrastructure. At hackathons like Andromeda (1st/2500+) and Smart India, I learned that I perform best under pressure—tight deadlines force you to think clearly about architecture and cut straight to what matters.
+      I enjoy working on systems where correctness and reliability matter — real-time data processing, distributed services, and infrastructure-heavy backend applications. During my internship with the Government of India’s cybersecurity team, I developed internal Rust-based tooling for vulnerability analysis and infrastructure security in a restricted environment.
 
-      I'm drawn to protocol engineering and security because those are the domains where performance, correctness, and resilience aren't optional—they're the entire point. That's why I focus on Rust: when you're building infrastructure that handles financial transactions or security events, you need memory safety and predictable concurrency, not just fast code.
-
-      Currently looking for teams building L1/L2 infrastructure, high-frequency trading systems, or security-critical applications where every millisecond and every byte matters.
+      I’m currently seeking remote backend engineering roles and am open to contract or trial opportunities that can transition into full-time positions.
     `,
     image: "/nihal-real.jpg",
     skills: [
       "Rust",
-      "Solidity",
-      "EVM / Ethereum",
-      "Tokio / Axum",
       "PostgreSQL",
-      "Python",
+      "Async Systems",
       "Docker",
-      "TypeScript",
+      "Backend Infrastructure",
+      "Distributed Systems",
+      "Real-Time Data"
     ],
     interests: [
-      "Cryptography Enthusiast",
-      "Reading",
-      "Cycling",
-      "Gardening"
+      "Backend Infrastructure",
+      "Distributed Systems",
+      "Real-Time Data"
     ],
   },
 };

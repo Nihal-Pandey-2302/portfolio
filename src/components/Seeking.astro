@@ -1,0 +1,98 @@
+---
+---
+
+<section id="seeking" class="section-padding">
+  <div class="container seeking-container">
+    <div class="seeking-content">
+      <h2 class="seeking-title mono">Currently Seeking</h2>
+      <p class="seeking-role text-accent">Remote Backend Engineer opportunities.</p>
+      
+      <div class="seeking-details flex gap-lg">
+        <div class="detail-group">
+          <h3 class="detail-label mono text-muted">Open to</h3>
+          <ul class="detail-list">
+            <li>Full-time roles</li>
+            <li>Contract roles</li>
+            <li>Trial week → full-time conversion</li>
+          </ul>
+        </div>
+        
+        <div class="detail-group">
+          <h3 class="detail-label mono text-muted">Tech focus</h3>
+          <p class="tech-focus">Rust • Backend • APIs • Distributed systems • Data pipelines</p>
+        </div>
+
+        <div class="detail-group">
+          <h3 class="detail-label mono text-muted">Availability</h3>
+          <p class="availability text-accent">Immediate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-lg) 0;
+  }
+
+  .seeking-container {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-lg) var(--space-sm);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .seeking-title {
+    font-size: 1.5rem;
+    color: var(--color-text-main);
+    margin-bottom: 0.5rem;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .seeking-role {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+  }
+
+  .seeking-details {
+    flex-wrap: wrap;
+  }
+
+  .detail-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .detail-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.8rem;
+  }
+
+  .detail-list li, .tech-focus, .availability {
+    font-size: 1.1rem;
+    color: var(--color-text-main);
+    line-height: 1.6;
+  }
+
+  .detail-list li::before {
+    content: "•";
+    color: var(--color-accent);
+    margin-right: 0.5rem;
+  }
+
+  .availability {
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .seeking-details {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+  }
+</style>

@@ -14,18 +14,24 @@ const { name } = Astro.props;
 <section id="hero" class="hero-section flex items-center">
   <div class="container">
     <div class="hero-content animate-fade-in">
-      <p class="greeting mono text-accent">Hello, I'm</p>
       <h1 class="name">{name}</h1>
+      <h2 class="specialty mono text-accent">{SITE_CONTENT.hero.specialty}</h2>
       <p class="hero-summary text-muted max-w-2xl mb-lg animate-fade-in" style="animation-delay: 0.4s;">
         {SITE_CONTENT.hero.summary}
       </p>
 
       <div class="hero-actions flex gap-sm animate-fade-in" style="animation-delay: 0.6s;">
-        <a href="#contact" class="btn btn-primary">
-          Get in Touch
+        <a href="#projects" class="btn btn-primary">
+          View Projects
+        </a>
+        <a href="https://github.com/Nihal-Pandey-2302" target="_blank" class="btn btn-outline">
+          GitHub
         </a>
         <a href="https://drive.google.com/file/d/1OHGZY9Pb1_NToGa0_o_ioKpud-r6b05o/view?usp=drive_link" target="_blank" class="btn btn-outline">
           Resume
+        </a>
+        <a href="#contact" class="btn btn-outline">
+          Contact
         </a>
       </div>
 
