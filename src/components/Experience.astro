@@ -3,14 +3,15 @@ import type { ExperienceItem } from "../types";
 
 export interface Props {
   experience: ExperienceItem[];
+  hideTitle?: boolean;
 }
 
-const { experience } = Astro.props;
+const { experience, hideTitle = false } = Astro.props;
 ---
 
-<section id="experience" class="section-padding">
+<section id="experience" class={hideTitle ? "" : "section-padding"}>
   <div class="container">
-    <h2 class="section-title mono">Experience</h2>
+    {!hideTitle && <h2 class="section-title mono">Experience</h2>}
     
     <div class="timeline">
       {experience.map((item, index) => (

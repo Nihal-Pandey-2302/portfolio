@@ -3,34 +3,33 @@
 
 <section id="seeking" class="section-padding">
   <div class="container">
-    <div class="seeking-card animate-fade-in" style="animation-delay: 0.2s;">
-      <div class="header-row">
-        <h2 class="seeking-title mono">Current Status</h2>
-        <div class="status-indicator">
-          <span class="pulsing-dot"></span>
-          <span class="status-text text-accent">Open to Work</span>
-        </div>
-      </div>
-
-      <div class="content-grid">
-        <div class="main-focus">
-          <h3 class="role-title">Backend Engineer</h3>
-          <p class="role-desc text-muted">Focused on high-performance distributed systems, rust infrastructure, and real-time data pipelines.</p>
+    <div class="seeking-card">
+      <div class="card-content">
+        <div class="header-row">
+          <div class="status-badge">
+            <span class="pulse-dot"></span>
+            <span class="status-text mono">Current Status: Open to Work</span>
+          </div>
         </div>
 
-        <div class="details-grid">
-          <div class="detail-item">
-            <span class="label mono text-muted">Availability</span>
+        <div class="main-info">
+          <h2 class="role-title">Backend Engineer</h2>
+          <p class="role-description">
+            Focused on high-performance distributed systems, rust infrastructure, and real-time data pipelines.
+          </p>
+        </div>
+
+        <div class="meta-grid mono">
+          <div class="meta-item">
+            <span class="label text-muted">Availability</span>
             <span class="value text-accent">Immediate Start</span>
           </div>
-          
-          <div class="detail-item">
-            <span class="label mono text-muted">Type</span>
+          <div class="meta-item">
+            <span class="label text-muted">Type</span>
             <span class="value">Remote / Contract</span>
           </div>
-
-          <div class="detail-item">
-            <span class="label mono text-muted">Stack</span>
+          <div class="meta-item">
+            <span class="label text-muted">Stack</span>
             <span class="value">Rust • Postgres • AWS</span>
           </div>
         </div>
@@ -45,16 +44,19 @@
   }
 
   .seeking-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    padding: var(--space-md);
+    padding: var(--space-lg);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 
+  /* Distinct "System" look */
   .seeking-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -63,101 +65,92 @@
     background: var(--color-accent);
   }
 
-  .header-row {
-    display: flex;
-    justify-content: space-between;
+  .status-badge {
+    display: inline-flex;
     align-items: center;
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-sm);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .seeking-title {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0;
-  }
-
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 10px;
     background: rgba(0, 255, 163, 0.1);
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid rgba(0, 255, 163, 0.2);
+    margin-bottom: var(--space-md);
   }
 
-  .pulsing-dot {
+  .pulse-dot {
     width: 8px;
     height: 8px;
     background: var(--color-accent);
     border-radius: 50%;
+    box-shadow: 0 0 8px var(--color-accent);
     animation: pulse 2s infinite;
   }
 
   .status-text {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .content-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: var(--space-lg);
+    color: var(--color-accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .role-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
+    font-weight: 700;
     margin-bottom: var(--space-xs);
     color: var(--color-text-main);
   }
 
-  .role-desc {
-    font-size: 1rem;
+  .role-description {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin-bottom: var(--space-lg);
     line-height: 1.6;
-    max-width: 90%;
   }
 
-  .details-grid {
+  .meta-grid {
     display: grid;
-    gap: var(--space-sm);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-md);
   }
 
-  .detail-item {
+  .meta-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
   .label {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .value {
     font-size: 1rem;
-    color: var(--color-text-main);
     font-weight: 500;
+    color: var(--color-text-main);
   }
 
   @keyframes pulse {
-    0% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 163, 0.4); }
-    70% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0, 255, 163, 0); }
-    100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 163, 0); }
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
   }
 
-  @media (max-width: 768px) {
-    .content-grid {
-      grid-template-columns: 1fr;
-      gap: var(--space-md);
+  @media (max-width: 600px) {
+    .seeking-card {
+      padding: var(--space-md);
     }
-
-    .role-desc {
-      max-width: 100%;
+    
+    .role-title {
+      font-size: 1.5rem;
+    }
+    
+    .meta-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

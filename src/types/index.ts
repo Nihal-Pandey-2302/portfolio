@@ -13,7 +13,15 @@ export interface SiteContent {
   experience: ExperienceItem[];
   achievements: ExperienceItem[];
   projects: Project[];
+  writing: WritingItem[];
   about: AboutProps;
+}
+
+export interface WritingItem {
+  title: string;
+  summary: string;
+  link: string;
+  badge?: string;
 }
 
 export interface HeroProps {

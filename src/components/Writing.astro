@@ -1,0 +1,96 @@
+---
+import type { WritingItem } from "../types";
+
+export interface Props {
+  writing: WritingItem[];
+  hideTitle?: boolean;
+}
+
+const { writing, hideTitle = false } = Astro.props;
+---
+
+<section id="writing" class={hideTitle ? "" : "section-padding"}>
+  <div class="container">
+    {!hideTitle && <h2 class="section-title mono">Technical Writing</h2>}
+    
+    <div class="writing-grid">
+      {writing.map((item) => (
+        <a href={item.link} target="_blank" rel="noopener noreferrer" class="writing-card">
+          <div class="card-content">
+            {item.badge && <span class="badge mono">{item.badge}</span>}
+            <h3 class="article-title">{item.title}</h3>
+            <p class="article-summary">{item.summary}</p>
+            <div class="read-more mono text-accent">
+              Read Article ↗
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
+  }
+
+  .writing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .writing-card {
+    display: block;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-md);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    height: 100%;
+  }
+
+  .writing-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    border: 1px solid rgba(0, 255, 163, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: var(--space-sm);
+    background: rgba(0, 255, 163, 0.05);
+  }
+
+  .article-title {
+    font-size: 1.2rem;
+    color: var(--color-text-main);
+    margin-bottom: var(--space-xs);
+    line-height: 1.4;
+  }
+
+  .article-summary {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+  }
+
+  .read-more {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    .writing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

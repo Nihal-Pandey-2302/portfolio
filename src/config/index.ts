@@ -133,14 +133,30 @@ export const SITE_CONTENT: SiteContent = {
     },
   ],
 
+  // Writing Section
+  writing: [
+    {
+      title: "Building a Deterministic, High-Throughput WebSocket Ingestor",
+      summary: "A deep dive into building resilient Rust systems that handle 648k msgs/sec with zero drops. Covers actor patterns, buffer management, and error handling.",
+      link: "https://dev.to/nihalpandey2302/building-a-deterministic-high-throughput-websocket-ingestion-system-in-rust-38ia",
+      badge: "High-Performance Rust"
+    },
+    {
+      title: "Designing a Crash-Safe, Idempotent EVM Indexer",
+      summary: "Architecting a production-grade indexer using Rust and PostgreSQL. Focuses on atomic transactions, reorganization handling, and data integrity.",
+      link: "https://dev.to/nihalpandey2302/designing-a-crash-safe-idempotent-evm-indexer-in-rust-3ca8",
+      badge: "Distributed Systems"
+    },
+  ],
+
   // About Section
   about: {
     description: `
-      I’m a backend engineer focused on building reliable systems that process real-time data and power backend infrastructure. Most of my work is in Rust, where I build concurrent services, ingestion pipelines, and APIs designed for performance and fault tolerance.
+I’m a backend engineer focused on building reliable systems in Rust. I work mostly on concurrent services, real-time data pipelines, and APIs where correctness and stability matter.
 
-      I enjoy working on systems where correctness and reliability matter — real-time data processing, distributed services, and infrastructure-heavy backend applications. During my internship with the Government of India’s cybersecurity team, I developed internal Rust-based tooling for vulnerability analysis and infrastructure security in a restricted environment.
+During my internship with the Government of India’s cybersecurity team, I built internal Rust-based tooling for vulnerability analysis and infrastructure security in a restricted environment.
 
-      I’m currently seeking remote backend engineering roles and am open to contract or trial opportunities that can transition into full-time positions.
+I’m currently looking for a remote backend role and am open to contract or trial opportunities that can transition into full-time work.
     `,
     image: "/nihal-real.jpg",
     skills: [

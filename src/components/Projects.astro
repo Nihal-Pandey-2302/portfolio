@@ -3,14 +3,15 @@ import type { Project } from "../types";
 
 export interface Props {
   projects: Project[];
+  hideTitle?: boolean;
 }
 
-const { projects } = Astro.props;
+const { projects, hideTitle = false } = Astro.props;
 ---
 
-<section id="projects" class="section-padding">
+<section id="projects" class={hideTitle ? "" : "section-padding"}>
   <div class="container">
-    <h2 class="section-title mono">Featured Projects</h2>
+    {!hideTitle && <h2 class="section-title mono">Featured Projects</h2>}
 
     <div class="projects-grid">
       {

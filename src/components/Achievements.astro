@@ -3,14 +3,15 @@ import type { ExperienceItem } from "../types";
 
 export interface Props {
   achievements: ExperienceItem[];
+  hideTitle?: boolean;
 }
 
-const { achievements } = Astro.props;
+const { achievements, hideTitle = false } = Astro.props;
 ---
 
-<section id="achievements" class="section-padding">
+<section id="achievements" class={hideTitle ? "" : "section-padding"}>
   <div class="container">
-    <h2 class="section-title mono">Honors & Awards</h2>
+    {!hideTitle && <h2 class="section-title mono">Honors & Awards</h2>}
     
     <div class="achievements-grid">
       {achievements.map((item) => (
