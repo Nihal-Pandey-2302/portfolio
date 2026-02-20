@@ -135,6 +135,13 @@ const { content } = Astro.props;
     gap: var(--space-xl);
     position: relative;
     padding-bottom: 0px; /* Aligns indicator with border */
+    max-width: 100vw; /* Prevent overflow */
+    overflow-x: auto; /* Allow internal scrolling */
+    scrollbar-width: none; /* Hide scrollbar */
+  }
+  
+  .tabs-scroller::-webkit-scrollbar {
+    display: none;
   }
 
   .tab-btn {
