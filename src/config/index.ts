@@ -50,8 +50,42 @@ export const SITE_CONTENT: SiteContent = {
     },
   ],
 
-  // Achievements Section - REMOVED as per request to focus on "clean infra engineer vibe"
-  achievements: [],
+  // Achievements Section
+  achievements: [
+    {
+      company: "Winner - aOS Andromeda Hackathon 2025",
+      position: "Team Lead",
+      startDate: "Prize",
+      endDate: "$2,500",
+      summary: [
+        "Built production-grade RWA tokenization platform in 48 hours under high-pressure hackathon environment.",
+        "Demonstrated expertise in rapid prototyping, CosmWasm smart contracts, and cross-chain architecture.",
+        "Rank: 1st out of 2,500+ teams"
+      ],
+    },
+    {
+      company: "Winner - Smart India Hackathon 2024 (NTRO)",
+      position: "Tech Lead & Backend Developer",
+      startDate: "Prize",
+      endDate: "INR 100K",
+      summary: [
+        "Developed agentless Windows vulnerability scanner reducing manual security analysis by 80%.",
+        "Integrated automated report generation with Python and PowerShell scripting.",
+        "Client: Government of India"
+      ],
+    },
+    {
+      company: "Winner - Graph-e-thon 2.0",
+      position: "Blockchain Developer",
+      startDate: "Prize",
+      endDate: "INR 175K",
+      summary: [
+        "Built blockchain-based analytics solution for Technology Business Incubator event.",
+        "Focused on real-time data visualization and decentralized infrastructure.",
+        "Host: TBI Graphic Era"
+      ],
+    },
+  ],
 
   // Projects Section
   projects: [

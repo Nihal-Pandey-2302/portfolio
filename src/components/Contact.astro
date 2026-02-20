@@ -8,13 +8,21 @@ const { email } = Astro.props;
 
 <section id="contact" class="section-padding text-center">
   <div class="container">
-    <h2 class="section-title mono">Get In Touch</h2>
     <h3 class="contact-heading">Get In Touch</h3>
     <p class="contact-text text-muted">
       I'm currently looking for new opportunities as a Backend or Protocol Engineer.
       Whether you have a question or just want to say hi, I'll try my best to get back to you!
     </p>
-    <a href={`mailto:${email}`} class="btn btn-primary mt-lg">Say Hello</a>
+
+    <div class="email-container">
+      <a href={`mailto:${email}`} class="email-link mono text-accent">
+        {email}
+      </a>
+    </div>
+
+    <a href={`mailto:${email}`} class="btn btn-primary">
+      Say Hello
+    </a>
   </div>
 </section>
 
@@ -31,9 +39,28 @@ const { email } = Astro.props;
   }
 
   .contact-text {
-    max-width: 600px;
-    margin: 0 auto var(--space-md);
     font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: var(--space-lg);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .email-container {
+    margin-bottom: var(--space-md);
+  }
+
+  .email-link {
+    font-size: 1.5rem;
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .email-link:hover {
+    border-bottom-color: var(--color-accent);
   }
 
   .btn {

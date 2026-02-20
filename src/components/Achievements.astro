@@ -1,0 +1,117 @@
+---
+import type { ExperienceItem } from "../types";
+
+export interface Props {
+  achievements: ExperienceItem[];
+}
+
+const { achievements } = Astro.props;
+---
+
+<section id="achievements" class="section-padding">
+  <div class="container">
+    <h2 class="section-title mono">Honors & Awards</h2>
+    
+    <div class="achievements-grid">
+      {achievements.map((item) => (
+        <div class="achievement-card">
+          <div class="card-header">
+            <h3 class="award-title text-accent">{item.company}</h3>
+            <div class="prize-badge mono">
+              <span class="text-muted">{item.startDate}:</span> <span class="text-accent">{item.endDate}</span>
+            </div>
+          </div>
+          <h4 class="role mono">{item.position}</h4>
+          <ul class="details-list">
+            {item.summary.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-padding {
+    padding: var(--space-xl) 0;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .achievement-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-md);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .achievement-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .award-title {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  .prize-badge {
+    font-size: 0.85rem;
+    background: rgba(0, 255, 163, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .role {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .details-list li {
+    position: relative;
+    padding-left: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  .details-list li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 600px) {
+    .card-header {
+      flex-direction: column;
+    }
+  }
+</style>

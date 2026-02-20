@@ -27,6 +27,9 @@ const { name } = Astro.props;
         <a href="https://github.com/Nihal-Pandey-2302" target="_blank" class="btn btn-outline">
           GitHub
         </a>
+        <a href="https://www.linkedin.com/in/nihal-pandey-8529b6257/" target="_blank" class="btn btn-outline">
+          LinkedIn
+        </a>
         <a href="https://drive.google.com/file/d/1OHGZY9Pb1_NToGa0_o_ioKpud-r6b05o/view?usp=drive_link" target="_blank" class="btn btn-outline">
           Resume
         </a>
@@ -50,13 +53,16 @@ const { name } = Astro.props;
     min-height: 90vh;
     position: relative;
     overflow: hidden;
-    padding-top: var(--header-height);
+    padding-top: calc(var(--header-height) + 2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .hero-content {
     position: relative;
     z-index: 10;
-    max-width: 800px;
+    max-width: 900px;
   }
 
   .greeting {
@@ -83,23 +89,27 @@ const { name } = Astro.props;
   }
 
   .summary {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-lg);
-    max-width: 600px;
+    margin-bottom: var(--space-xl);
+    max-width: 650px;
+    line-height: 1.7;
   }
 
   /* Buttons */
   .btn {
-    display: inline-block;
-    padding: 1rem 2rem;
-    border-radius: 4px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: all 0.3s ease;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+    font-family: var(--font-sans); /* Use sans-serif for cleaner look */
+    text-decoration: none;
+    line-height: 1;
   }
 
   .btn-primary {
@@ -111,18 +121,20 @@ const { name } = Astro.props;
   .btn-primary:hover {
     background: transparent;
     color: var(--color-accent);
-    box-shadow: 0 0 20px var(--color-accent-dim);
+    box-shadow: 0 4px 12px rgba(0, 255, 163, 0.15);
+    transform: translateY(-1px);
   }
 
   .btn-outline {
     background: transparent;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--color-text-main);
   }
 
   .btn-outline:hover {
     border-color: var(--color-text-main);
     background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
   }
 
   /* Background Effects */
