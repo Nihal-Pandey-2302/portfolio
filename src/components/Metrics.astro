@@ -1,0 +1,131 @@
+---
+const highlights = [
+  {
+    value: "648K",
+    unit: "msgs/sec",
+    label: "WebSocket throughput benchmark",
+    sub: "Kraken Market Data Engine",
+  },
+  {
+    value: "1st",
+    unit: "/ 3,000+ Teams",
+    label: "Andromeda aOS Global Hackathon",
+    sub: "Hackathon Win",
+  },
+  {
+    value: "Global",
+    unit: "Finalist",
+    label: "Kraken Forge Hackathon",
+    sub: "Selected Submission",
+  },
+  {
+    value: "Sub-ms",
+    unit: "query latency",
+    label: "Rust + PostgreSQL indexer",
+    sub: "Production EVM Indexer",
+  },
+];
+---
+
+<section class="metrics-bar">
+  <div class="container">
+    <p class="metrics-label mono">Engineering Highlights</p>
+    <div class="metrics-grid">
+      {highlights.map((h) => (
+        <div class="metric-item">
+          <div class="metric-value">
+            <span class="value">{h.value}</span>
+            <span class="unit mono">{h.unit}</span>
+          </div>
+          <p class="metric-desc">{h.label}</p>
+          <p class="metric-sub mono">{h.sub}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .metrics-bar {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .metrics-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+  }
+
+  .metric-item {
+    padding: 1.25rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.3s ease;
+  }
+
+  .metric-item:hover {
+    border-color: rgba(0, 255, 163, 0.2);
+  }
+
+  .metric-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .unit {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  .metric-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-main);
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-sub {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    opacity: 0.6;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 768px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .value {
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .metrics-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -48,6 +48,7 @@ export interface Project {
   metrics?: string[];
   technologies?: string[];
   badge?: string;
+  flagship?: boolean;
 }
 
 export interface AboutProps {
@@ -55,6 +56,7 @@ export interface AboutProps {
   image: string;
   skills: string[];
   interests?: string[];
+  systemsInterests?: string;
 }
 
 export interface HeaderProps {

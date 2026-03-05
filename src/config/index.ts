@@ -95,8 +95,9 @@ export const SITE_CONTENT: SiteContent = {
       linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       image: "/kraken-sdk.png",
       badge: "Rust Infrastructure",
+      flagship: true,
       metrics: [
-        "Persistent WebSocket client",
+        "648,000 msgs/sec throughput",
         "Backpressure-aware pipeline",
         "Deterministic ordering"
       ],
@@ -104,7 +105,7 @@ export const SITE_CONTENT: SiteContent = {
     },
     {
       name: "High-Performance EVM Blockchain Indexer",
-      summary: "Production-style blockchain ingestion and query system for indexing on-chain data.",
+      summary: "Production-style blockchain ingestion and query system for indexing on-chain data with crash-safe, idempotent guarantees.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       linkSource: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
       image: "/evm-indexer.png",
@@ -112,23 +113,23 @@ export const SITE_CONTENT: SiteContent = {
       metrics: [
         "Crash-safe atomic transactions",
         "Idempotent ingestion",
-        "Optimized PostgreSQL schema"
+        "Sub-ms PostgreSQL queries"
       ],
       technologies: ["Rust", "Axum", "SQLx", "PostgreSQL", "Docker", "Async"]
     },
     {
-      name: "Real-Time Multi-Chain Event Monitoring System",
-      summary: "Monitoring and alerting system for on-chain events across multiple networks.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
-      linkSource: "https://github.com/Nihal-Pandey-2302/evm_event_watchdog",
-      image: "https://raw.githubusercontent.com/Nihal-Pandey-2302/evm_event_watchdog/refs/heads/main/tui.gif",
-      badge: "Distributed Systems",
+      name: "RWA Verification & Tokenization Protocol",
+      summary: "Protocol for verifying real-world documents and minting ERC-721 NFTs with IPFS metadata and on-chain authenticity verification.",
+      linkPreview: "https://github.com/Nihal-Pandey-2302/ARIA-Mantle",
+      linkSource: "https://github.com/Nihal-Pandey-2302/ARIA-Mantle",
+      image: "/aria-qie.png",
+      badge: "Blockchain Protocols",
       metrics: [
-        "Real-time event listeners",
-        "Concurrent stream processing",
-        "Fault-tolerant state tracking"
+        "ERC-721 smart contracts",
+        "IPFS metadata storage",
+        "Oracle-based pricing"
       ],
-      technologies: ["Rust", "WebSockets", "Tokio", "Ethereum RPC", "Async"]
+      technologies: ["Solidity", "Hardhat", "IPFS", "React", "Python"]
     },
   ],
 
@@ -151,11 +152,11 @@ export const SITE_CONTENT: SiteContent = {
   // About Section
   about: {
     description: `
-I’m a backend engineer focused on building reliable systems in Rust. I work mostly on concurrent services, real-time data pipelines, and APIs where correctness and stability matter.
+I'm a backend engineer focused on building reliable systems in Rust.
 
-During my internship with the Government of India’s cybersecurity team, I built internal Rust-based tooling for vulnerability analysis and infrastructure security in a restricted environment.
+My work centers around concurrent services, real-time data pipelines, and backend infrastructure where correctness and stability matter.
 
-I’m currently looking for a remote backend role and am open to contract or trial opportunities that can transition into full-time work.
+Previously I built internal Rust tooling for vulnerability analysis during my cybersecurity internship with the Government of India.
     `,
     image: "/nihal-real.jpg",
     skills: [
@@ -172,5 +173,6 @@ I’m currently looking for a remote backend role and am open to contract or tri
       "Distributed Systems",
       "Real-Time Data"
     ],
+    systemsInterests: "Market data systems • Blockchain infrastructure • Event streaming • Distributed systems",
   },
 };

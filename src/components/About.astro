@@ -5,9 +5,10 @@ export interface Props {
   image?: string;
   skills: string[];
   interests?: string[];
+  systemsInterests?: string;
 }
 
-const { description, name, image, skills, interests } = Astro.props;
+const { description, name, image, skills, systemsInterests } = Astro.props;
 ---
 
 <section id="about" class="section-padding">
@@ -32,13 +33,13 @@ const { description, name, image, skills, interests } = Astro.props;
         </div>
 
         {
-          Astro.props.interests && (
-            <div class="interests-list mt-lg">
+          systemsInterests && (
+            <div class="systems-interests mt-lg">
               <h3 class="mono text-accent" style="font-size: 1.2rem;">
-                Interests
+                Systems Interests
               </h3>
-              <p class="text-muted" style="margin-top: 0.5rem;">
-                {Astro.props.interests.join(" • ")}
+              <p class="text-muted mono" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.7;">
+                {systemsInterests}
               </p>
             </div>
           )

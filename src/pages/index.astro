@@ -6,6 +6,7 @@ import ShowcaseTabs from "../components/ShowcaseTabs.astro";
 import About from "../components/About.astro";
 import Contact from "../components/Contact.astro";
 import Seeking from "../components/Seeking.astro";
+import Metrics from "../components/Metrics.astro";
 
 import "../styles/global.css";
 ---
@@ -13,6 +14,7 @@ import "../styles/global.css";
 <Layout>
   <Hero {...SITE_CONTENT.hero} />
   <Seeking />
+  <Metrics />
   <ShowcaseTabs content={SITE_CONTENT} />
   <About {...SITE_CONTENT.about} name={SITE_CONTENT.hero.name} />
   <Contact email={SITE_CONTENT.hero.email} />
