@@ -93,7 +93,7 @@ export const SITE_CONTENT: SiteContent = {
       summary: "High-throughput async WebSocket ingestion system designed for real-time financial market data processing.",
       linkPreview: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
-      image: "/kraken-sdk.png",
+      image: "/kraken.gif",
       badge: "Rust Infrastructure",
       flagship: true,
       metrics: [
@@ -120,8 +120,8 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "RWA Verification & Tokenization Protocol",
       summary: "Protocol for verifying real-world documents and minting ERC-721 NFTs with IPFS metadata and on-chain authenticity verification.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/ARIA-Mantle",
-      linkSource: "https://github.com/Nihal-Pandey-2302/ARIA-Mantle",
+      linkPreview: "https://github.com/Nihal-Pandey-2302/ARIA-QIE",
+      linkSource: "https://github.com/Nihal-Pandey-2302/ARIA-QIE",
       image: "/aria-qie.png",
       badge: "Blockchain Protocols",
       metrics: [
