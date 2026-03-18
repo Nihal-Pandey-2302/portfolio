@@ -49,6 +49,7 @@ export interface Project {
   technologies?: string[];
   badge?: string;
   flagship?: boolean;
+  subsection?: string;
 }
 
 export interface AboutProps {
