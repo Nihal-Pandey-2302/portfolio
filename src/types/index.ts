@@ -42,7 +42,7 @@ export interface ExperienceItem {
 export interface Project {
   name: string;
   summary: string;
-  image: string;
+  image?: string;
   linkPreview?: string;
   linkSource?: string;
   metrics?: string[];

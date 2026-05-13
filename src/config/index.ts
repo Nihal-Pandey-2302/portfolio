@@ -2,10 +2,10 @@ import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
 export const SITE_CONFIG: SiteConfig = {
-  title: "Nihal Pandey | Rust Backend & Protocol Engineer",
+  title: "Nihal Pandey | Rust Backend & OSS Contributor",
   author: "Nihal Pandey",
   description:
-    "Building high-performance blockchain infrastructure. Rust Backend Engineer specializing in deterministic systems, EVM indexing, and resilient distributed architectures.",
+    "Backend Engineer and OSS contributor at ParadeDB (YC S23). Rust, Node.js, PostgreSQL.",
   lang: "en",
   siteLogo: "/nihal-small.png", // We will add this image in the next step
   navLinks: [
@@ -26,68 +26,147 @@ export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Blockchain and Backend Engineer | Rust · Solana · Node.js · TypeScript",
+    specialty: "Backend Engineer | OSS Contributor at ParadeDB (YC S23) · Rust · Node.js · PostgreSQL",
     summary:
-      "I build blockchain infrastructure and the backend systems around it. My work spans a Token-2022 stablecoin SDK on Solana, a production Node.js webhook processor, a Rust WebSocket engine at 648k msgs/sec, and an EVM indexer handling 10M+ transactions. I write Rust for performance-critical systems and Node.js with TypeScript for everything else. Currently available for remote roles.",
+      "I build high-throughput backend systems in Rust and Node.js. Currently contributing to ParadeDB (YC S23) with a merged PR in the query pipeline internals and several more in review. Previously built Rust security tooling at the Prime Minister's Office, Government of India. I write Rust for performance-critical systems and Node.js with TypeScript for everything else.",
     email: "pandeynihal232@gmail.com",
   },
   
   // Experience Section
   experience: [
-    {
-      company: "Cybersecurity Research Intern — Government of India (PMO)",
-      position: "Security Researcher",
-      startDate: "Jun 2025",
-      endDate: "Sept 2025",
-       summary: [
-        "Developed internal Rust-based tooling for vulnerability detection and infrastructure auditing",
-        "Built concurrent analysis utilities for security testing and misconfiguration detection",
-        "Simulated adversarial scenarios to evaluate system resilience",
-        "Collaborated with security teams on threat modeling and incident response exercises",
-        "Worked in restricted environment under NDA (project details confidential)"
-      ],
-    },
-  ],
+  {
+    company: "ParadeDB (YC S23)",
+    position: "Open Source Contributor · Rust / PostgreSQL",
+    startDate: "Apr 2026",
+    endDate: "Present",
+    summary: [
+      "Merged PR #4765 into production codebase — refactored ctid lookup across 6 files, consolidated 5 duplicate code blocks, 265 lines changed",
+      "PR #4924 in review — fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16, replaced depth-counter with RAII FrameGuard after identifying second correctness bug mid-review",
+      "PR #4763 in review — fixed JoinScan returning wrong rows on self-joins with duplicate sort keys, rebuilt column mapping using physical indices",
+      "PR #4752 in review — added partition-aware BM25 search via SPI expansion, fixed lifecycle panics in begin_custom_scan and rescan",
+    ],
+  },
+  {
+    company: "Prime Minister's Office, Government of India",
+    position: "Cybersecurity Research Intern",
+    startDate: "Jun 2025",
+    endDate: "Sept 2025",
+    summary: [
+      "Built Rust/Tokio vulnerability scanner deployed across critical government infrastructure",
+      "Cut manual vulnerability assessment time by 60% with zero downtime across distributed systems",
+      "Adopted by 2 internal security teams. Details under NDA.",
+    ],
+  },
+],
 
   // Achievements Section
   achievements: [
-    {
-      company: "Winner - aOS Andromeda Hackathon 2025",
-      position: "Team Lead",
-      startDate: "Prize",
-      endDate: "$2,500",
-      summary: [
-        "Built production-grade RWA tokenization platform in 48 hours under high-pressure hackathon environment.",
-        "Demonstrated expertise in rapid prototyping, CosmWasm smart contracts, and cross-chain architecture.",
-        "Rank: 1st out of 2,500+ teams"
-      ],
-    },
-    {
-      company: "Winner - Smart India Hackathon 2024 (NTRO)",
-      position: "Tech Lead & Backend Developer",
-      startDate: "Prize",
-      endDate: "INR 100K",
-      summary: [
-        "Developed agentless Windows vulnerability scanner reducing manual security analysis by 80%.",
-        "Integrated automated report generation with Python and PowerShell scripting.",
-        "Client: Government of India"
-      ],
-    },
-    {
-      company: "Winner - Graph-e-thon 2.0",
-      position: "Blockchain Developer",
-      startDate: "Prize",
-      endDate: "INR 175K",
-      summary: [
-        "Built blockchain-based analytics solution for Technology Business Incubator event.",
-        "Focused on real-time data visualization and decentralized infrastructure.",
-        "Host: TBI Graphic Era"
-      ],
-    },
-  ],
-
+  {
+    company: "Winner — aOS Andromeda Hackathon 2025",
+    position: "Team Lead",
+    startDate: "Prize",
+    endDate: "$2,500",
+    summary: [
+      "1st place out of 2,500+ global teams",
+      "Built production RWA tokenization platform with ERC-721 contracts and IPFS metadata in 48 hours",
+    ],
+  },
+  {
+    company: "Winner — Smart India Hackathon 2024 (NTRO)",
+    position: "Tech Lead & Backend Developer",
+    startDate: "Prize",
+    endDate: "INR 100K",
+    summary: [
+      "1st place out of 50,000+ participants",
+      "Built agentless Windows vulnerability scanner reducing manual security analysis by 80%",
+      "Client: Government of India (NTRO)",
+    ],
+  },
+  {
+    company: "4th Place — Kaspa Hackathon 2024",
+    position: "Backend Developer",
+    startDate: "Prize",
+    endDate: "$1,250",
+    summary: [
+      "4th overall out of international field",
+      "Won Most Creative Use of Kaspa and Best Real-Time Data Project",
+    ],
+  },
+  {
+    company: "Finalist — Kraken Forge Hackathon 2025",
+    position: "Backend Developer",
+    startDate: "Prize",
+    endDate: "Global Top Tier",
+    summary: [
+      "Selected as global top-tier finalist in performance optimization category",
+    ],
+  },
+  {
+    company: "Winner — Graph-e-thon 2.0",
+    position: "Blockchain Developer",
+    startDate: "Prize",
+    endDate: "INR 175K",
+    summary: [
+      "Built blockchain-based analytics solution for Technology Business Incubator event",
+      "Host: TBI Graphic Era",
+    ],
+  },
+],
   // Projects Section
   projects: [
+    // ─── ParadeDB (Current Contribution) ───────────────────────────────────────
+    {
+  name: "ParadeDB — ctid Refactor (Merged)",
+  summary: "Removed ctid from SearchIndexScore and consolidated duplicate lookup logic into a centralized resolve_ctid helper across 5 execution paths in the query pipeline.",
+  linkSource: "https://github.com/paradedb/paradedb/pull/4765",
+  badge: "Open Source · Merged",
+  subsection: "Open Source",
+  metrics: [
+    "265 lines changed across 6 files",
+    "Merged into production codebase",
+    "Eliminated 5 duplicate code blocks",
+  ],
+  technologies: ["Rust", "PostgreSQL", "Tantivy", "pgrx"]
+},
+{
+  name: "ParadeDB — RAII FrameGuard Fix",
+  summary: "Fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16. Identified a second correctness bug mid-review and replaced depth-counter approach with a proper RAII FrameGuard.",
+  linkSource: "https://github.com/paradedb/paradedb/pull/4924",
+  badge: "Open Source · In Review",
+  subsection: "Open Source",
+  metrics: [
+    "Fixes unreachable! panic on PG16",
+    "RAII guard handles nested DML correctly",
+    "282 lines changed",
+  ],
+  technologies: ["Rust", "PostgreSQL", "pgrx"]
+},
+{
+  name: "ParadeDB — JoinScan Sort Key Fix",
+  summary: "Fixed JoinScan returning wrong rows on self-joins with duplicate sort keys. Caught a column misbinding in my own fix during review and rebuilt using physical index mapping.",
+  linkSource: "https://github.com/paradedb/paradedb/pull/4763",
+  badge: "Open Source · In Review",
+  subsection: "Open Source",
+  metrics: [
+    "Fixes incorrect row ordering on self-joins",
+    "Rebuilt column mapping using physical indices",
+    "261 lines changed",
+  ],
+  technologies: ["Rust", "PostgreSQL", "DataFusion"]
+},
+{
+  name: "ParadeDB — Partitioned Table BM25",
+  summary: "Added partition-aware BM25 search via SPI expansion. Fixed lifecycle panics in begin_custom_scan and rescan for partitioned index relations.",
+  linkSource: "https://github.com/paradedb/paradedb/pull/4752",
+  badge: "Open Source · In Review",
+  subsection: "Open Source",
+  metrics: [
+    "BM25 search now works on partitioned tables",
+    "Fixed begin_custom_scan lifecycle panic",
+    "225 lines changed",
+  ],
+  technologies: ["Rust", "PostgreSQL", "pgrx", "SPI"]
+},
     // ─── Solana ────────────────────────────────────────────────────────────────
     {
       name: "Solana Stablecoin Standard (SSS)",
@@ -238,35 +317,20 @@ export const SITE_CONTENT: SiteContent = {
 
   // About Section
   about: {
-    description: `
-I build blockchain infrastructure and the backend systems around it. On Solana I have shipped a Token-2022 stablecoin SDK with Transfer Hooks and ZK proofs, an on-chain job queue with a native binary max-heap, and a production Helius webhook processor. On EVM I built an indexer handling 10M+ transactions and a Solidity tokenization protocol that won 1st place out of 2,500+ global teams. I also built VatanPay, a live remittance protocol on Stellar using Soroban smart contracts and DEX path payments.
+  description: `
+I build high-throughput backend systems in Rust and Node.js, with a focus on performance, reliability, and correctness. Currently contributing to ParadeDB (YC S23) with a merged PR in the query pipeline and several more in review touching BM25 scan internals and JoinScan correctness. Previously built Rust security tooling at the Prime Minister's Office, Government of India, deployed across critical infrastructure.
 
-I write Rust for performance-critical systems and on-chain programs, and Node.js with TypeScript for backend services and APIs. Previously I built internal Rust security tooling during my cybersecurity internship at the Prime Minister's Office, Government of India.
-    `,
-    image: "/nihal-real.jpg",
-    skills: [
-      "Rust",
-      "Solana",
-      "Anchor",
-      "Token-2022",
-      "Node.js",
-      "TypeScript",
-      "Express",
-      "Bull",
-      "Redis",
-      "Next.js",
-      "Solidity",
-      "Hardhat",
-      "IPFS",
-      "PostgreSQL",
-      "Docker",
-      "Async Systems"
-    ],
-    interests: [
-      "Blockchain Infrastructure",
-      "Solana Programs",
-      "DeFi Infrastructure"
-    ],
-    systemsInterests: "Solana programs · DeFi infrastructure · Node.js backend · Rust systems · EVM indexing · Real-time pipelines",
-  },
+On the blockchain side I have shipped production systems on Solana, EVM, and Stellar — from a Token-2022 stablecoin SDK with ZK proofs to an EVM indexer handling 10M+ transactions with atomic SQL guarantees.
+  `,
+  image: "/nihal-real.jpg",
+  skills: [
+    "Rust", "Node.js", "TypeScript", "PostgreSQL", "Redis",
+    "Tokio", "Axum", "SQLx", "Express", "Bull",
+    "Docker", "AWS", "Solana", "Anchor", "Solidity"
+  ],
+  interests: [
+    "Database Internals", "Backend Infrastructure", "OSS Contributions"
+  ],
+  systemsInterests: "PostgreSQL internals · Rust systems · Node.js backend · Real-time pipelines · OSS infrastructure",
+},
 };

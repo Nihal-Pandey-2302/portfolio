@@ -8,7 +8,7 @@ export interface Props {
 
 const { projects, hideTitle = false } = Astro.props;
 
-const SUBSECTION_ORDER = ["Solana", "Backend and Systems", "Web3 and DeFi"];
+const SUBSECTION_ORDER = ["Open Source","Backend and Systems","Solana", "Web3 and DeFi"];
 const grouped = new Map<string, Project[]>();
 for (const label of SUBSECTION_ORDER) grouped.set(label, []);
 for (const project of projects) {
@@ -46,14 +46,16 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
         id={`subtab-${slug(label)}`}
         hidden={i !== 0 ? true : undefined}
       >
-        <div class="projects-grid">
+        <div class={`projects-grid${label === "Open Source" ? " open-source-grid" : ""}`}>
           {groupProjects.map((project) => (
             <article class={`project-card${project.flagship ? " project-flagship" : ""}`}>
               {project.flagship && <div class="flagship-flag">⭐ Flagship Project</div>}
-              <div class="project-image">
-                <img src={project.image} alt={project.name} loading="lazy" />
-                {project.badge && <div class="project-badge">{project.badge}</div>}
-              </div>
+              {project.image && (
+                <div class="project-image">
+                  <img src={project.image} alt={project.name} loading="lazy" />
+                  {project.badge && <div class="project-badge">{project.badge}</div>}
+                </div>
+              )}
 
               <div class="project-content">
                 <h3 class="project-title">{project.name}</h3>
@@ -234,15 +236,23 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
 
   /* ── Grid ────────────────────────────────────── */
   .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--space-md);
-  }
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-md);
+}
 
-  @media (max-width: 768px) {
-    .projects-grid { grid-template-columns: 1fr; }
-    .sub-tab-btn { font-size: 0.9rem; }
-  }
+.projects-grid.open-source-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .projects-grid.open-source-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .projects-grid { grid-template-columns: 1fr; }
+  .projects-grid.open-source-grid { grid-template-columns: 1fr; }
+}
 
   /* ── Cards ───────────────────────────────────── */
   .project-card {
