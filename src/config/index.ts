@@ -28,7 +28,7 @@ export const SITE_CONTENT: SiteContent = {
     name: "Nihal Pandey",
     specialty: "Backend Engineer | OSS Contributor at ParadeDB (YC S23) · Rust · Node.js · PostgreSQL",
     summary:
-      "I build high-throughput backend systems in Rust and Node.js. Currently contributing to ParadeDB (YC S23) with a merged PR in the query pipeline internals and several more in review. Previously built Rust security tooling at the Prime Minister's Office, Government of India. I write Rust for performance-critical systems and Node.js with TypeScript for everything else.",
+      "I build high-throughput backend systems in Rust and Node.js. Currently contributing to ParadeDB (YC S23) with 3 PRs merged into the production codebase touching query pipeline internals, JoinScan correctness, and PostgreSQL executor hooks. Previously built Rust security tooling at the Prime Minister's Office, Government of India.",
     email: "pandeynihal232@gmail.com",
   },
   
@@ -39,10 +39,11 @@ export const SITE_CONTENT: SiteContent = {
     position: "Open Source Contributor · Rust / PostgreSQL",
     startDate: "Apr 2026",
     endDate: "Present",
-    summary: [
+      summary: [
+      "3 PRs merged into production Rust codebase -> query pipeline, scan execution, and PostgreSQL executor hook internals; 787 lines changed across 15+ files",
       "Merged PR #4765 into production codebase — refactored ctid lookup across 6 files, consolidated 5 duplicate code blocks, 265 lines changed",
-      "PR #4924 in review — fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16, replaced depth-counter with RAII FrameGuard after identifying second correctness bug mid-review",
-      "PR #4763 in review — fixed JoinScan returning wrong rows on self-joins with duplicate sort keys, rebuilt column mapping using physical indices",
+      "Merged PR #4924 into production codebase — fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16; identified second correctness bug mid-review on recursive DML path; replaced depth-counter approach with RAII FrameGuard giving each nesting level an independent frame; 290 lines across 4 files",
+      "Merged PR #4763 into production codebase — fixed JoinScan returning wrong rows on self-joins with duplicate sort keys; debugged late materialization in query optimizer; rewrote physical projection to use column indices instead of name-based dedup; caught column misbinding in own fix mid-review and rebuilt; 312 lines across 5 files",
       "PR #4752 in review — added partition-aware BM25 search via SPI expansion, fixed lifecycle panics in begin_custom_scan and rescan",
     ],
   },
@@ -129,10 +130,10 @@ export const SITE_CONTENT: SiteContent = {
   technologies: ["Rust", "PostgreSQL", "Tantivy", "pgrx"]
 },
 {
-  name: "ParadeDB — RAII FrameGuard Fix",
+  name: "ParadeDB — RAII FrameGuard Fix (Merged)",
   summary: "Fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16. Identified a second correctness bug mid-review and replaced depth-counter approach with a proper RAII FrameGuard.",
   linkSource: "https://github.com/paradedb/paradedb/pull/4924",
-  badge: "Open Source · In Review",
+  badge: "Open Source · Merged",
   subsection: "Open Source",
   metrics: [
     "Fixes unreachable! panic on PG16",
@@ -142,10 +143,10 @@ export const SITE_CONTENT: SiteContent = {
   technologies: ["Rust", "PostgreSQL", "pgrx"]
 },
 {
-  name: "ParadeDB — JoinScan Sort Key Fix",
+  name: "ParadeDB — JoinScan Sort Key Fix (Merged)",
   summary: "Fixed JoinScan returning wrong rows on self-joins with duplicate sort keys. Caught a column misbinding in my own fix during review and rebuilt using physical index mapping.",
   linkSource: "https://github.com/paradedb/paradedb/pull/4763",
-  badge: "Open Source · In Review",
+  badge: "Open Source · Merged",
   subsection: "Open Source",
   metrics: [
     "Fixes incorrect row ordering on self-joins",
@@ -318,10 +319,8 @@ export const SITE_CONTENT: SiteContent = {
   // About Section
   about: {
   description: `
-I build high-throughput backend systems in Rust and Node.js, with a focus on performance, reliability, and correctness. Currently contributing to ParadeDB (YC S23) with a merged PR in the query pipeline and several more in review touching BM25 scan internals and JoinScan correctness. Previously built Rust security tooling at the Prime Minister's Office, Government of India, deployed across critical infrastructure.
-
-On the blockchain side I have shipped production systems on Solana, EVM, and Stellar — from a Token-2022 stablecoin SDK with ZK proofs to an EVM indexer handling 10M+ transactions with atomic SQL guarantees.
-  `,
+I build high-throughput backend systems in Rust and Node.js, with a focus on performance, reliability, and correctness. Currently contributing to ParadeDB (YC S23) — 3 PRs merged into the production Rust codebase touching ctid lookup refactoring, JoinScan duplicate sort key correctness, and nested ExecutorRun panic fixes in PostgreSQL executor hooks. A fourth PR fixing partition-aware BM25 search is in review. Previously built Rust security tooling at the Prime Minister's Office, Government of India, deployed across critical government infrastructure.
+On the blockchain side I have shipped production systems on Solana, EVM, and Stellar — from a Token-2022 stablecoin SDK with ZK Confidential Transfers to an EVM indexer handling 10M+ transactions with atomic SQL guarantees and a WebSocket engine at 648k msgs/sec via zero-copy deserialization.`,
   image: "/nihal-real.jpg",
   skills: [
     "Rust", "Node.js", "TypeScript", "PostgreSQL", "Redis",
