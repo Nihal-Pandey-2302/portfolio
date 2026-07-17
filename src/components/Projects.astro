@@ -8,7 +8,7 @@ export interface Props {
 
 const { projects, hideTitle = false } = Astro.props;
 
-const SUBSECTION_ORDER = ["Open Source","Backend and Systems","Solana", "Web3 and DeFi"];
+const SUBSECTION_ORDER = ["Current Work", "Open Source", "Systems & Performance", "Earlier Work"];
 const grouped = new Map<string, Project[]>();
 for (const label of SUBSECTION_ORDER) grouped.set(label, []);
 for (const project of projects) {
@@ -39,17 +39,16 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
       </div>
     </div>
 
-    <!-- Sub-tab content panels — non-active ones use `hidden` attribute so browser hides them natively -->
+    <!-- Sub-tab content panels: non-active ones use `hidden` attribute so browser hides them natively -->
     {groupEntries.map(([label, groupProjects], i) => (
       <div
         class="sub-tab-panel"
         id={`subtab-${slug(label)}`}
         hidden={i !== 0 ? true : undefined}
       >
-        <div class={`projects-grid${label === "Open Source" ? " open-source-grid" : ""}`}>
+        <div class={`projects-grid${label === "Open Source" ? " open-source-grid" : ""}${label === "Current Work" ? " production-grid" : ""}`}>
           {groupProjects.map((project) => (
             <article class={`project-card${project.flagship ? " project-flagship" : ""}`}>
-              {project.flagship && <div class="flagship-flag">⭐ Flagship Project</div>}
               {project.image && (
                 <div class="project-image">
                   <img src={project.image} alt={project.name} loading="lazy" />
@@ -58,7 +57,16 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
               )}
 
               <div class="project-content">
-                <h3 class="project-title">{project.name}</h3>
+                {!project.image && project.badge && (
+                  <div class="project-badge-inline mono">{project.badge}</div>
+                )}
+                <h3 class="project-title">
+                  {project.linkPage ? (
+                    <a href={project.linkPage} class="title-link">{project.name}</a>
+                  ) : (
+                    project.name
+                  )}
+                </h3>
                 <p class="project-summary">{project.summary}</p>
 
                 {project.metrics && (
@@ -78,6 +86,11 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
                 )}
 
                 <div class="project-links gap-sm flex mt-auto">
+                  {project.linkPage && (
+                    <a href={project.linkPage} class="case-study-link mono">
+                      View case study →
+                    </a>
+                  )}
                   {project.linkSource && (
                     <a href={project.linkSource} target="_blank" rel="noopener noreferrer" class="link-icon" aria-label="GitHub Source">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -231,7 +244,7 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
     height: 2px;
     background: var(--color-accent);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 -2px 10px rgba(0, 255, 163, 0.4);
+    box-shadow: 0 -2px 10px rgba(52, 211, 153, 0.4);
   }
 
   /* ── Grid ────────────────────────────────────── */
@@ -243,6 +256,22 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
 
 .projects-grid.open-source-grid {
   grid-template-columns: repeat(4, 1fr);
+}
+
+.projects-grid.production-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.production-grid .project-card {
+  min-height: 0;
+}
+
+.production-grid .project-content {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+}
+
+@media (max-width: 900px) {
+  .projects-grid.production-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 1200px) {
@@ -268,15 +297,15 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
   }
 
   .project-flagship {
-    border-color: rgba(0, 255, 163, 0.35);
-    box-shadow: 0 0 30px -10px rgba(0, 255, 163, 0.15);
+    border-color: rgba(52, 211, 153, 0.35);
+    box-shadow: 0 0 30px -10px rgba(52, 211, 153, 0.15);
   }
 
   .flagship-flag {
     position: absolute;
     top: 0; left: 0; right: 0;
-    background: rgba(0, 255, 163, 0.08);
-    border-bottom: 1px solid rgba(0, 255, 163, 0.2);
+    background: rgba(52, 211, 153, 0.08);
+    border-bottom: 1px solid rgba(52, 211, 153, 0.2);
     color: var(--color-accent);
     font-size: 0.7rem;
     font-family: var(--font-mono);
@@ -349,8 +378,8 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
   }
 
   .metric-badge {
-    background: rgba(0, 255, 163, 0.05);
-    border: 1px solid rgba(0, 255, 163, 0.2);
+    background: rgba(52, 211, 153, 0.05);
+    border: 1px solid rgba(52, 211, 153, 0.2);
     color: var(--color-accent);
     padding: 2px 8px;
     border-radius: 4px;
@@ -380,4 +409,36 @@ const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0
   }
 
   .link-icon:hover { color: var(--color-accent); }
+
+  .project-badge-inline {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(52, 211, 153, 0.08);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    color: var(--color-accent);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .title-link:hover { color: var(--color-accent); }
+
+  .case-study-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .case-study-link:hover { opacity: 0.8; }
 </style>

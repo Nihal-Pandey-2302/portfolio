@@ -6,8 +6,8 @@
   --color-bg-secondary: #111114;
   --color-text-main: #e0e0e0;
   --color-text-muted: #a0a0a0;
-  --color-accent: #00ff9d; /* Neon Green */
-  --color-accent-dim: rgba(0, 255, 157, 0.1);
+  --color-accent: #34d399; /* Neon Green */
+  --color-accent-dim: rgba(52, 211, 153, 0.1);
   --color-primary: #8a2be2; /* Blue Violet */
   --color-border: #333333;
   
@@ -19,8 +19,8 @@
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 2rem;
-  --space-lg: 4rem;
-  --space-xl: 8rem;
+  --space-lg: 3.5rem;
+  --space-xl: 6rem;
   
   /* Layout */
   --container-width: 1200px;
@@ -75,12 +75,18 @@ h1 {
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--color-text-main);
   border-bottom: 2px solid var(--color-accent);
   display: inline-block;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
   margin-bottom: var(--space-md);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .mono {
@@ -121,6 +127,10 @@ html, body {
 }
 
 /* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
 .flex {
   display: flex;
 }
@@ -159,8 +169,8 @@ html, body {
 @media (max-width: 768px) {
   :root {
     --space-md: 1.5rem;
-    --space-lg: 3rem;
-    --space-xl: 5rem;
+    --space-lg: 2.5rem;
+    --space-xl: 4rem;
     --header-height: 70px;
   }
 

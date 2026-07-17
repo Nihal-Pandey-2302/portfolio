@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# private product drafts - never commit (founder approval + SOP required before any of this is published)
+drafts/

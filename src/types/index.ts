@@ -20,8 +20,9 @@ export interface SiteContent {
 export interface WritingItem {
   title: string;
   summary: string;
-  link: string;
+  link?: string;
   badge?: string;
+  status?: "published" | "in-progress";
 }
 
 export interface HeroProps {
@@ -37,6 +38,7 @@ export interface ExperienceItem {
   startDate: string;
   endDate: string;
   summary: string[];
+  url?: string;
 }
 
 export interface Project {
@@ -45,6 +47,7 @@ export interface Project {
   image?: string;
   linkPreview?: string;
   linkSource?: string;
+  linkPage?: string;
   metrics?: string[];
   technologies?: string[];
   badge?: string;

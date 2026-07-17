@@ -8,29 +8,30 @@
         <div class="header-row">
           <div class="status-badge">
             <span class="pulse-dot"></span>
-            <span class="status-text mono">Current Status: Open to Work</span>
+            <span class="status-text mono">Now Building</span>
           </div>
         </div>
 
         <div class="main-info">
-          <h2 class="role-title">Backend Engineer · OSS Contributor at ParadeDB (YC S23)</h2>
+          <h2 class="role-title">Founding Engineer @ <a href="https://tvaram.com" target="_blank" rel="noopener noreferrer" class="company-link">Tvaram</a></h2>
           <p class="role-description">
-            Rust systems, PostgreSQL internals, Node.js backend infrastructure, and open source contributions.
+            Building two products at Tvaram: Tasvam, the data intelligence layer, and MailTitan,
+            email sending infrastructure. Both announced, launching soon.
           </p>
         </div>
 
         <div class="meta-grid mono">
           <div class="meta-item">
-            <span class="label text-muted">Availability</span>
-            <span class="value text-accent">Immediate Start</span>
+            <span class="label text-muted">Building</span>
+            <span class="value text-accent">Tasvam · MailTitan</span>
           </div>
           <div class="meta-item">
-            <span class="label text-muted">Type</span>
-            <span class="value">Full-time · Bangalore or Remote</span>
+            <span class="label text-muted">Open Source</span>
+            <span class="value">ParadeDB (YC S23) · PostgreSQL internals</span>
           </div>
           <div class="meta-item">
-            <span class="label text-muted">Stack</span>
-            <span class="value">Rust · Node.js · PostgreSQL · TypeScript</span>
+            <span class="label text-muted">Core Stack</span>
+            <span class="value">Go · Python · Rust · PostgreSQL</span>
           </div>
         </div>
       </div>
@@ -69,10 +70,10 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: rgba(0, 255, 163, 0.1);
+    background: rgba(52, 211, 153, 0.1);
     padding: 6px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(0, 255, 163, 0.2);
+    border: 1px solid rgba(52, 211, 153, 0.2);
     margin-bottom: var(--space-md);
   }
 
@@ -106,6 +107,28 @@
     max-width: 600px;
     margin-bottom: var(--space-lg);
     line-height: 1.6;
+  }
+
+  .company-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-accent);
+    transition: color 0.2s ease;
+  }
+
+  .company-link:hover {
+    color: var(--color-accent);
+  }
+
+  .inline-link {
+    color: var(--color-text-main);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(52, 211, 153, 0.4);
+    transition: color 0.2s ease;
+  }
+
+  .inline-link:hover {
+    color: var(--color-accent);
   }
 
   .meta-grid {
