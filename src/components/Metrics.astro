@@ -1,36 +1,11 @@
 ---
-const highlights = [
-  {
-    value: "2",
-    unit: "systems",
-    label: "Building Tasvam and MailTitan end to end",
-    sub: "Founding Engineer @ Tvaram",
-  },
-  {
-    value: "4",
-    unit: "PRs",
-    label: "ParadeDB (YC S23) · PostgreSQL internals",
-    sub: "3 merged · 1 in review",
-  },
-  {
-    value: "648K",
-    unit: "msgs/sec",
-    label: "WebSocket throughput benchmark",
-    sub: "Kraken Market Data Engine",
-  },
-  {
-    value: "10M+",
-    unit: "transactions",
-    label: "Atomic SQL guarantees, zero data loss",
-    sub: "Production EVM Indexer",
-  },
-  {
-    value: "5x",
-    unit: "Winner",
-    label: "Hackathon wins incl. Smart India Hackathon",
-    sub: "Client: Government of India (NTRO)",
-  },
-];
+import type { MetricHighlight } from "../types";
+
+export interface Props {
+  highlights: MetricHighlight[];
+}
+
+const { highlights } = Astro.props;
 ---
 
 <section class="metrics-bar">
@@ -66,9 +41,10 @@ const highlights = [
     opacity: 0.6;
   }
 
+  /* auto-fit: layout adapts to however many highlights config provides */
   .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: var(--space-md);
   }
 
@@ -78,15 +54,17 @@ const highlights = [
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
     transition: border-color 0.3s ease;
+    min-width: 0;
   }
 
   .metric-item:hover {
-    border-color: rgba(52, 211, 153, 0.2);
+    border-color: rgba(var(--color-accent-rgb), 0.2);
   }
 
   .metric-value {
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 0.4rem;
     margin-bottom: 0.5rem;
   }
@@ -120,18 +98,17 @@ const highlights = [
 
   @media (max-width: 768px) {
     .metrics-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-sm);
+    }
+
+    /* an odd trailing tile spans the row instead of orphaning beside a gap */
+    .metric-item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
     }
 
     .value {
       font-size: 1.6rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .metrics-grid {
-      grid-template-columns: 1fr 1fr;
     }
   }
 </style>

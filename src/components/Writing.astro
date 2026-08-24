@@ -14,31 +14,29 @@ const { writing, hideTitle = false } = Astro.props;
     {!hideTitle && <h2 class="section-title mono">Technical Writing</h2>}
     
     <div class="writing-grid">
-      {writing.map((item) =>
-        item.link ? (
-          <a href={item.link} target="_blank" rel="noopener noreferrer" class="writing-card">
+      {writing.map((item) => {
+        const published = item.status === "published";
+        const Wrapper = published ? "a" : "div";
+        return (
+          <Wrapper
+            class:list={["writing-card", { "writing-card-upcoming": !published }]}
+            href={item.link}
+            target={published ? "_blank" : undefined}
+            rel={published ? "noopener noreferrer" : undefined}
+          >
             <div class="card-content">
-              {item.badge && <span class="badge mono">{item.badge}</span>}
+              {item.badge && <span class="badge-accent badge">{item.badge}</span>}
               <h3 class="article-title">{item.title}</h3>
               <p class="article-summary">{item.summary}</p>
-              <div class="read-more mono text-accent">
-                Read Article ↗
-              </div>
+              {published ? (
+                <div class="read-more mono text-accent">Read Article ↗</div>
+              ) : (
+                <div class="read-more mono in-progress-label">In Progress</div>
+              )}
             </div>
-          </a>
-        ) : (
-          <div class="writing-card writing-card-upcoming">
-            <div class="card-content">
-              {item.badge && <span class="badge mono">{item.badge}</span>}
-              <h3 class="article-title">{item.title}</h3>
-              <p class="article-summary">{item.summary}</p>
-              <div class="read-more mono in-progress-label">
-                In Progress
-              </div>
-            </div>
-          </div>
-        )
-      )}
+          </Wrapper>
+        );
+      })}
     </div>
   </div>
 </section>
@@ -71,15 +69,10 @@ const { writing, hideTitle = false } = Astro.props;
     background: rgba(255, 255, 255, 0.05);
   }
 
+  /* shares .badge-accent (global.css); only spacing/fill differ */
   .badge {
-    display: inline-block;
-    font-size: 0.75rem;
-    color: var(--color-accent);
-    border: 1px solid rgba(52, 211, 153, 0.2);
-    padding: 2px 8px;
-    border-radius: 4px;
     margin-bottom: var(--space-sm);
-    background: rgba(52, 211, 153, 0.05);
+    background: rgba(var(--color-accent-rgb), 0.05);
   }
 
   .writing-card-upcoming {

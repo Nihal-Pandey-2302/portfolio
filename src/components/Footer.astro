@@ -8,14 +8,14 @@ const currentYear = new Date().getFullYear();
     <div class="footer-content text-center">
       <div class="social-links flex justify-center gap-md mb-md">
         {SITE_CONFIG.socialLinks.map((link) => (
-          <a href={link.href} target="_blank" rel="noopener noreferrer" class="social-link mono text-muted hover-text-accent">
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="social-link mono text-muted">
             {link.text}
           </a>
         ))}
       </div>
 
       <p class="copyright text-muted mono">
-        &copy; {new Date().getFullYear()} {SITE_CONTENT.hero.name}. All rights reserved.
+        &copy; {currentYear} {SITE_CONTENT.hero.name}. All rights reserved.
       </p>
     </div>
   </div>
@@ -49,23 +49,5 @@ const currentYear = new Date().getFullYear();
 
   .copyright {
     font-size: 0.8rem;
-  }
-
-  .availability-banner {
-    background: rgba(52, 211, 153, 0.05);
-    border: 1px solid rgba(52, 211, 153, 0.2);
-    padding: var(--space-md) var(--space-lg);
-    border-radius: 8px;
-    width: 100%;
-    max-width: 600px;
-  }
-
-  .status-indicator {
-    width: 8px;
-    height: 8px;
-    background: var(--color-accent);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--color-accent);
-    display: inline-block;
   }
 </style>

@@ -24,7 +24,7 @@ import { SITE_CONFIG } from "@config";
     </nav>
 
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Menu">
+    <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Menu" aria-controls="mobile-nav" aria-expanded="false">
       <span class="bar"></span>
       <span class="bar"></span>
       <span class="bar"></span>
@@ -53,19 +53,39 @@ import { SITE_CONFIG } from "@config";
   const mobileLinks = document.querySelectorAll('.mobile-nav-link');
 
   if (menuBtn && mobileNav) {
+    function onEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        closeMenu();
+        menuBtn!.focus();
+      }
+    }
+
+    function closeMenu() {
+      menuBtn!.classList.remove('active');
+      mobileNav!.classList.remove('active');
+      document.body.classList.remove('no-scroll');
+      menuBtn!.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('keydown', onEscape);
+    }
+
     menuBtn.addEventListener('click', () => {
-      menuBtn.classList.toggle('active');
-      mobileNav.classList.toggle('active');
-      document.body.classList.toggle('no-scroll');
+      const open = menuBtn.classList.toggle('active');
+      mobileNav.classList.toggle('active', open);
+      document.body.classList.toggle('no-scroll', open);
+      menuBtn.setAttribute('aria-expanded', String(open));
+      if (open) document.addEventListener('keydown', onEscape);
+      else document.removeEventListener('keydown', onEscape);
     });
 
     // Close menu when a link is clicked
     mobileLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        menuBtn.classList.remove('active');
-        mobileNav.classList.remove('active');
-        document.body.classList.remove('no-scroll');
-      });
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close if the viewport grows past the mobile breakpoint while open
+    // (the hamburger disappears at >768px, which would trap the overlay)
+    matchMedia('(min-width: 769px)').addEventListener('change', (e) => {
+      if (e.matches) closeMenu();
     });
   }
 </script>
@@ -137,12 +157,15 @@ import { SITE_CONFIG } from "@config";
     justify-content: center;
     align-items: center;
     transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
+    /* visibility keeps the closed menu out of the tab order and a11y tree */
+    visibility: hidden;
+    transition: transform 0.3s ease-in-out, visibility 0.3s;
     z-index: 1000;
   }
 
   .mobile-nav.active {
     transform: translateX(0);
+    visibility: visible;
   }
 
   .mobile-nav-link {

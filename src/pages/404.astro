@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { SITE_CONFIG } from "@config";
+---
+
+<Layout title={`404 | ${SITE_CONFIG.author}`} description="Page not found.">
+  <section class="not-found flex items-center">
+    <div class="container text-center">
+      <p class="code mono text-accent">404</p>
+      <h1 class="title">Page not found</h1>
+      <p class="text-muted">
+        This page doesn't exist — it may have moved with a site update.
+      </p>
+      <a href="/" class="home-link mono">← Back to the homepage</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .not-found {
+    min-height: calc(100vh - var(--header-height) - 200px);
+    padding: var(--space-xl) 0;
+  }
+
+  .code {
+    font-size: 4rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: var(--space-sm);
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .home-link {
+    display: inline-block;
+    margin-top: var(--space-md);
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .home-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+</style>

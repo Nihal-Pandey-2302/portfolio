@@ -12,9 +12,13 @@ import "../styles/global.css";
 ---
 
 <Layout>
-  <Hero {...SITE_CONTENT.hero} />
-  <Seeking />
-  <Metrics />
+  <Hero
+    name={SITE_CONTENT.hero.name}
+    specialty={SITE_CONTENT.hero.specialty}
+    summary={SITE_CONTENT.hero.summary}
+  />
+  <Seeking seeking={SITE_CONTENT.seeking} />
+  <Metrics highlights={SITE_CONTENT.highlights} />
   <ShowcaseTabs content={SITE_CONTENT} />
   <About {...SITE_CONTENT.about} name={SITE_CONTENT.hero.name} />
   <Contact email={SITE_CONTENT.hero.email} />

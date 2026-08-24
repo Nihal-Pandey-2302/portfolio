@@ -8,7 +8,7 @@ const { email } = Astro.props;
 
 <section id="contact" class="section-padding text-center">
   <div class="container">
-    <h3 class="contact-heading">Get in Touch</h3>
+    <h2 class="section-title mono">Get in Touch</h2>
     <p class="contact-text text-muted">
       Email is the fastest way to reach me. Happy to talk backend architecture, PostgreSQL internals, email infrastructure, or open source.
     </p>
@@ -31,12 +31,6 @@ const { email } = Astro.props;
     margin-bottom: var(--space-lg);
   }
 
-  .contact-heading {
-    font-size: 2.25rem;
-    margin-bottom: var(--space-sm);
-    color: var(--color-text-main);
-  }
-
   .contact-text {
     font-size: 1.1rem;
     line-height: 1.6;
@@ -51,7 +45,8 @@ const { email } = Astro.props;
   }
 
   .email-link {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 6vw, 1.5rem);
+    overflow-wrap: anywhere;
     text-decoration: none;
     padding-bottom: 2px;
     border-bottom: 1px solid transparent;

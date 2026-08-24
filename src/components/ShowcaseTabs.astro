@@ -10,43 +10,63 @@ interface Props {
 }
 
 const { content } = Astro.props;
+
+// Single source of truth for the tab set: buttons, panels, and ARIA ids
+// all render from this array; the script derives its hash list from data-tab.
+const TABS: { id: string; label: string; Panel: any; props: Record<string, any> }[] = [
+  { id: "projects", label: "Featured Projects", Panel: Projects, props: { projects: content.projects, hideTitle: true } },
+  { id: "experience", label: "Experience", Panel: Experience, props: { experience: content.experience, hideTitle: true } },
+  { id: "awards", label: "Honors & Awards", Panel: Achievements, props: { achievements: content.achievements, hideTitle: true } },
+  { id: "writing", label: "Technical Writing", Panel: Writing, props: { writing: content.writing, hideTitle: true } },
+];
 ---
 
 <section id="showcase" class="section-padding">
   <div class="container">
     <div class="tabs-header mb-sm">
-      <div class="tabs-scroller">
-        <button class="tab-btn active mono" data-tab="projects">Featured Projects</button>
-        <button class="tab-btn mono" data-tab="experience">Experience</button>
-        <button class="tab-btn mono" data-tab="awards">Honors & Awards</button>
-        <button class="tab-btn mono" data-tab="writing">Technical Writing</button>
+      <div class="tabs-scroller" role="tablist" aria-label="Showcase sections">
+        {TABS.map((t, i) => (
+          <button
+            class:list={["tab-btn", "mono", { active: i === 0 }]}
+            data-tab={t.id}
+            id={`tab-btn-${t.id}`}
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            aria-controls={`tab-${t.id}`}
+            tabindex={i === 0 ? undefined : -1}
+          >
+            {t.label}
+          </button>
+        ))}
         <div class="tab-indicator"></div>
       </div>
     </div>
 
-    <div class="tab-content active" id="tab-projects">
-      <Projects projects={content.projects} hideTitle={true} />
-    </div>
-
-    <div class="tab-content" id="tab-experience">
-      <Experience experience={content.experience} hideTitle={true} />
-    </div>
-
-    <div class="tab-content" id="tab-awards">
-      <Achievements achievements={content.achievements} hideTitle={true} />
-    </div>
-
-    <div class="tab-content" id="tab-writing">
-      <Writing writing={content.writing} hideTitle={true} />
-    </div>
+    {TABS.map((t, i) => (
+      <div
+        class:list={["tab-content", { active: i === 0 }]}
+        id={`tab-${t.id}`}
+        role="tabpanel"
+        aria-labelledby={`tab-btn-${t.id}`}
+      >
+        <t.Panel {...t.props} />
+      </div>
+    ))}
   </div>
 </section>
 
 <script>
   function setupTabs() {
-    const tabs = document.querySelectorAll('.tab-btn');
+    const tablist = document.querySelector('.tabs-scroller') as HTMLElement | null;
+    const tabs = Array.from(document.querySelectorAll<HTMLElement>('.tab-btn'));
     const contents = document.querySelectorAll('.tab-content');
     const indicator = document.querySelector('.tab-indicator') as HTMLElement;
+    const TAB_IDS = tabs.map(t => t.dataset.tab!);
+    // The awards tab wraps <section id="achievements">, so accept that hash too
+    const HASH_ALIASES: Record<string, string> = { achievements: 'awards' };
+
+    const scrollBehavior = (): ScrollBehavior =>
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
     function moveIndicator(element: HTMLElement) {
       if (!indicator) return;
@@ -58,60 +78,97 @@ const { content } = Astro.props;
       const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`) as HTMLElement;
       if (!tabBtn) return;
 
-      // Remove active class from all tabs
-      tabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
+      });
       contents.forEach(c => c.classList.remove('active'));
 
-      // Add active class to target tab
       tabBtn.classList.add('active');
+      tabBtn.setAttribute('aria-selected', 'true');
+      tabBtn.removeAttribute('tabindex');
       moveIndicator(tabBtn);
 
-      // Show corresponding content
-      const targetContent = document.getElementById(`tab-${tabId}`);
-      if (targetContent) {
-        targetContent.classList.add('active');
-        // Trigger animations
-        const animatedElements = targetContent.querySelectorAll('.animate-on-scroll');
-        animatedElements.forEach(el => {
-           el.classList.remove('visible');
-           void (el as HTMLElement).offsetWidth; 
-           el.classList.add('visible');
-        });
-      }
+      document.getElementById(`tab-${tabId}`)?.classList.add('active');
     }
 
-    // Initialize indicator position
-    const activeTab = document.querySelector('.tab-btn.active') as HTMLElement;
-    if (activeTab) {
-      requestAnimationFrame(() => moveIndicator(activeTab));
-      window.addEventListener('resize', () => moveIndicator(activeTab));
-    }
+    // Indicator: initialize, and re-query the CURRENT active tab on resize
+    const initialTab = document.querySelector('.tab-btn.active') as HTMLElement;
+    if (initialTab) requestAnimationFrame(() => moveIndicator(initialTab));
+    window.addEventListener('resize', () => {
+      const current = document.querySelector('.tab-btn.active') as HTMLElement;
+      if (current) moveIndicator(current);
+    });
 
-    // Handle Clicks
+    // Tab button clicks
     tabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const tabId = target.getAttribute('data-tab');
+        const tabId = (e.currentTarget as HTMLElement).getAttribute('data-tab');
         if (tabId) switchTab(tabId);
       });
     });
 
-    // Handle Hash Navigation
-    function handleHash() {
-      const hash = window.location.hash.slice(1); // remove #
-      if (['projects', 'experience', 'awards', 'writing'].includes(hash)) {
-        switchTab(hash);
-        // Scroll to showcase section
-        const showcase = document.getElementById('showcase');
-        if (showcase) {
-          showcase.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
+    // Arrow-key navigation, delegated to the tablist (roving tabindex)
+    tablist?.addEventListener('keydown', (e) => {
+      const target = (e.target as HTMLElement).closest('.tab-btn') as HTMLElement | null;
+      if (!target) return;
+      const i = tabs.indexOf(target);
+      let next = -1;
+      if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      if (next === -1) return;
+      e.preventDefault();
+      const tabId = tabs[next].dataset.tab;
+      if (tabId) switchTab(tabId);
+      tabs[next].focus();
+    });
+
+    function activateFromHash(hash: string) {
+      const tabId = HASH_ALIASES[hash] ?? hash;
+      if (!TAB_IDS.includes(tabId)) return;
+      switchTab(tabId);
+      document.getElementById('showcase')?.scrollIntoView({ behavior: scrollBehavior() });
     }
 
-    // Check hash on load and change
+    function handleHash() {
+      activateFromHash(window.location.hash.slice(1));
+    }
+
+    // On load, and on hash traversal (back/forward, external hash changes)
     handleHash();
     window.addEventListener('hashchange', handleHash);
+
+    // In-page nav clicks: preventDefault + pushState so exactly one scroll runs
+    // (covers same-hash re-clicks, which fire no hashchange, and stops the
+    // native fragment jump racing our scroll). Modified clicks pass through.
+    document.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = (e.target as Element).closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+      if (!anchor || anchor.target === '_blank') return;
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname) return;
+      const hash = url.hash.slice(1);
+      if (!TAB_IDS.includes(HASH_ALIASES[hash] ?? hash)) return;
+      e.preventDefault();
+      if (window.location.hash !== url.hash) history.pushState(null, '', url.hash);
+      activateFromHash(hash);
+    });
+
+    // Edge fade while the tab strip has more content to the right
+    if (tablist) {
+      const updateFade = () => {
+        tablist.classList.toggle(
+          'has-overflow-right',
+          tablist.scrollLeft + tablist.clientWidth < tablist.scrollWidth - 4
+        );
+      };
+      tablist.addEventListener('scroll', updateFade, { passive: true });
+      window.addEventListener('resize', updateFade);
+      updateFade();
+    }
   }
 
   setupTabs();
@@ -121,6 +178,10 @@ const { content } = Astro.props;
 <style>
   .section-padding {
     padding: var(--space-xl) 0;
+  }
+
+  #showcase {
+    scroll-margin-top: var(--header-height);
   }
 
   .tabs-header {
@@ -139,9 +200,15 @@ const { content } = Astro.props;
     overflow-x: auto; /* Allow internal scrolling */
     scrollbar-width: none; /* Hide scrollbar */
   }
-  
+
   .tabs-scroller::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Hint that more tabs exist past the right edge */
+  .tabs-scroller.has-overflow-right {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);
   }
 
   .tab-btn {
@@ -174,7 +241,7 @@ const { content } = Astro.props;
     height: 2px;
     background: var(--color-accent);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 -2px 10px rgba(52, 211, 153, 0.5);
+    box-shadow: 0 -2px 10px rgba(var(--color-accent-rgb), 0.5);
   }
 
   .tab-content {
@@ -202,12 +269,12 @@ const { content } = Astro.props;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
-    
+
     .tab-btn {
       font-size: 1rem;
       white-space: nowrap;
     }
-    
+
     .tabs-header {
       justify-content: flex-start;
     }

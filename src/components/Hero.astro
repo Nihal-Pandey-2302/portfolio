@@ -1,38 +1,45 @@
 ---
-import { SITE_CONTENT } from "@config";
+import { SITE_CONFIG } from "@config";
 
 export interface Props {
   name: string;
   specialty: string;
   summary: string;
-  email: string;
 }
 
-const { name } = Astro.props;
+const { name, specialty, summary } = Astro.props;
+
+const github = SITE_CONFIG.socialLinks.find((l) => l.text === "Github");
+const linkedin = SITE_CONFIG.socialLinks.find((l) => l.text === "LinkedIn");
 ---
 
 <section id="hero" class="hero-section flex items-center">
   <div class="container">
     <div class="hero-content animate-fade-in">
       <h1 class="name">{name}</h1>
-      <h2 class="specialty mono text-accent">{SITE_CONTENT.hero.specialty}</h2>
+      <h2 class="specialty mono text-accent">{specialty}</h2>
       <p class="hero-summary text-muted">
-        {SITE_CONTENT.hero.summary}
+        {summary}
       </p>
 
       <div class="hero-actions flex gap-sm" style="flex-wrap: wrap;">
         <a href="#projects" class="btn btn-primary">
           See What I'm Building
         </a>
-        <a href="https://github.com/Nihal-Pandey-2302" target="_blank" class="btn btn-outline">
-          GitHub
-        </a>
-        <a href="https://www.linkedin.com/in/nihal-pandey-8529b6257/" target="_blank" class="btn btn-outline">
-          LinkedIn
+        {github && (
+          <a href={github.href} target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+            GitHub
+          </a>
+        )}
+        {linkedin && (
+          <a href={linkedin.href} target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+            LinkedIn
+          </a>
+        )}
+        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+          Resume
         </a>
       </div>
-
-
     </div>
   </div>
 </section>
@@ -52,14 +59,7 @@ const { name } = Astro.props;
   }
 
   .hero-content {
-    position: relative;
-    z-index: 10;
     max-width: 900px;
-  }
-
-  .greeting {
-    font-size: 1.2rem;
-    margin-bottom: var(--space-xs);
   }
 
   .name {
@@ -75,7 +75,6 @@ const { name } = Astro.props;
     font-size: clamp(1.1rem, 2.5vw, 1.4rem);
     font-weight: 500;
     color: var(--color-text-main);
-    border-bottom: none;
     margin-bottom: var(--space-md);
     opacity: 0.9;
   }
@@ -112,7 +111,7 @@ const { name } = Astro.props;
   .btn-primary:hover {
     background: transparent;
     color: var(--color-accent);
-    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.15);
     transform: translateY(-1px);
   }
 

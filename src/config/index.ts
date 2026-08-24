@@ -7,12 +7,12 @@ export const SITE_CONFIG: SiteConfig = {
   description:
     "Founding engineer at Tvaram, building Tasvam and MailTitan. Open source contributor to ParadeDB (YC S23), working on PostgreSQL internals.",
   lang: "en",
-  siteLogo: "/nihal-small.png",
   navLinks: [
     { text: "Work", href: "/#projects" },
     { text: "Experience", href: "/#experience" },
     { text: "Writing", href: "/#writing" },
     { text: "About", href: "/#about" },
+    { text: "Contact", href: "/#contact" },
   ],
   socialLinks: [
     { text: "X", href: "https://x.com/PandeyNihal23" },
@@ -20,7 +20,6 @@ export const SITE_CONFIG: SiteConfig = {
     { text: "Github", href: "https://github.com/Nihal-Pandey-2302" },
   ],
   socialImage: "/nihal-og.png",
-  canonicalURL: "https://your-domain.com", // TODO: set to the real portfolio domain
 };
 
 // PAGE-SPECIFIC CONTENT
@@ -34,6 +33,54 @@ export const SITE_CONTENT: SiteContent = {
     email: "pandeynihal232@gmail.com",
   },
 
+  // "Now Building" card
+  seeking: {
+    status: "Now Building",
+    role: "Founding Engineer",
+    company: "Tvaram",
+    companyUrl: "https://tvaram.com",
+    description:
+      "Building two products at Tvaram: Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both announced, launching soon.",
+    meta: [
+      { label: "Building", value: "Tasvam · MailTitan", accent: true },
+      { label: "Open Source", value: "ParadeDB (YC S23) · PostgreSQL internals" },
+    ],
+  },
+
+  // Engineering Highlights (Metrics bar)
+  highlights: [
+    {
+      value: "2",
+      unit: "systems",
+      label: "Building Tasvam and MailTitan end to end",
+      sub: "Founding Engineer @ Tvaram",
+    },
+    {
+      value: "4",
+      unit: "PRs",
+      label: "ParadeDB (YC S23) · PostgreSQL internals",
+      sub: "3 merged · 1 in review",
+    },
+    {
+      value: "648K",
+      unit: "msgs/sec",
+      label: "WebSocket throughput benchmark",
+      sub: "Kraken Market Data Engine",
+    },
+    {
+      value: "10M+",
+      unit: "transactions",
+      label: "Atomic SQL guarantees, zero data loss",
+      sub: "Production EVM Indexer",
+    },
+    {
+      value: "5x",
+      unit: "Winner",
+      label: "Hackathon wins incl. Smart India Hackathon",
+      sub: "Client: Government of India (NTRO)",
+    },
+  ],
+
   // Experience Section
   experience: [
     {
@@ -44,7 +91,7 @@ export const SITE_CONTENT: SiteContent = {
       url: "https://tvaram.com",
       summary: [
         "Sole engineer across Tvaram's product suite, including MailTitan (enterprise email sending infrastructure) and Tasvam (the data intelligence layer). Both announced, launching soon.",
-        "Own the backend end to end on both products: architecture, data models, reliability, security, CI, and deployment.",
+        "Own the backend end to end on both products.",
         "Engineering write-ups and case studies coming once the products are live.",
       ],
     },
@@ -135,7 +182,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "Tasvam",
       summary:
-        "The data intelligence engine behind the Tvaram ecosystem: audience insights, segmentation, and decision support. I'm building the entire backend as founding engineer.",
+        "The data intelligence layer of the Tvaram ecosystem. I'm building the entire backend as founding engineer.",
       linkPreview: "https://tvaram.com",
       badge: "Tvaram · Launching soon",
       flagship: true,
@@ -145,7 +192,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "MailTitan",
       summary:
-        "Enterprise email relay and sending infrastructure built for high-volume, mission-critical delivery. I'm building the entire platform as founding engineer.",
+        "Enterprise email sending infrastructure built for high-volume, mission-critical delivery. I'm building the entire platform as founding engineer.",
       linkPreview: "https://tvaram.com",
       badge: "Tvaram · Launching soon",
       flagship: true,
@@ -322,9 +369,6 @@ Right now that means Tasvam and MailTitan at Tvaram, plus PRs into ParadeDB's Ru
     skills: [
       "Go", "Python", "Rust", "TypeScript / Node.js",
       "PostgreSQL", "Redis", "Docker",
-    ],
-    interests: [
-      "Database Internals", "Backend Infrastructure", "OSS Contributions",
     ],
     systemsInterests:
       "PostgreSQL internals · Distributed systems · Email infrastructure · Rust",
