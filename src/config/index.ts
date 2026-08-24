@@ -29,7 +29,7 @@ export const SITE_CONTENT: SiteContent = {
     name: "Nihal Pandey",
     specialty: "Founding Engineer @ Tvaram · Building Tasvam & MailTitan",
     summary:
-      "I'm the founding engineer at Tvaram, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure — both launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
+      "I'm the founding engineer at Tvaram, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
     email: "pandeynihal232@gmail.com",
   },
 
@@ -74,7 +74,7 @@ export const SITE_CONTENT: SiteContent = {
       sub: "Production EVM Indexer",
     },
     {
-      value: "5x",
+      value: "6x",
       unit: "Winner",
       label: "Hackathon wins incl. Smart India Hackathon",
       sub: "Client: Government of India (NTRO)",
@@ -124,6 +124,16 @@ export const SITE_CONTENT: SiteContent = {
 
   // Achievements Section
   achievements: [
+    {
+      company: "Winner: UK AI Agent Hackathon 2026 (Kaspa Track)",
+      position: "Team KaspaSwarm",
+      startDate: "Prize",
+      endDate: "1st Place",
+      summary: [
+        "1st place in the Kaspa track with KaspaSwarm",
+        "AI agent hackathon hosted by Imperial College London",
+      ],
+    },
     {
       company: "Winner: aOS Andromeda Hackathon 2025",
       position: "Team Lead",

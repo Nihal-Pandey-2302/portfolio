@@ -21,7 +21,7 @@ const {
   image = SITE_CONFIG.socialImage,
 } = Astro.props;
 
-if (!Astro.site) throw new Error("Set `site` in astro.config.mjs — canonical and OG URLs derive from it.");
+if (!Astro.site) throw new Error("Set `site` in astro.config.mjs: canonical and OG URLs derive from it.");
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
 const socialImageURL = new URL(image, Astro.site).href;
 ---
