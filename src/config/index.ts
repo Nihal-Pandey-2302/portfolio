@@ -183,7 +183,7 @@ export const SITE_CONTENT: SiteContent = {
       name: "Tasvam",
       summary:
         "The data intelligence layer of the Tvaram ecosystem. I'm building the entire backend as founding engineer.",
-      linkPreview: "https://tvaram.com",
+      linkPreview: "https://tasvam.ai",
       badge: "Tvaram · Launching soon",
       flagship: true,
       subsection: "Current Work",
@@ -193,7 +193,7 @@ export const SITE_CONTENT: SiteContent = {
       name: "MailTitan",
       summary:
         "Enterprise email sending infrastructure built for high-volume, mission-critical delivery. I'm building the entire platform as founding engineer.",
-      linkPreview: "https://tvaram.com",
+      linkPreview: "https://mailtitan.ai",
       badge: "Tvaram · Launching soon",
       flagship: true,
       subsection: "Current Work",
