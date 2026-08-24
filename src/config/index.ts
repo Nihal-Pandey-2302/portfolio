@@ -29,7 +29,7 @@ export const SITE_CONTENT: SiteContent = {
     name: "Nihal Pandey",
     specialty: "Founding Engineer @ Tvaram · Building Tasvam & MailTitan",
     summary:
-      "I'm the founding engineer at Tvaram, building the backend for its product suite: Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are announced and launching soon. I also contribute to ParadeDB (YC S23), with merged PRs in PostgreSQL executor and query pipeline internals. Before this I built Rust security tooling at the Prime Minister's Office, Government of India.",
+      "I'm the founding engineer at Tvaram, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure — both launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
     email: "pandeynihal232@gmail.com",
   },
 
@@ -90,7 +90,7 @@ export const SITE_CONTENT: SiteContent = {
       endDate: "Present",
       url: "https://tvaram.com",
       summary: [
-        "Sole engineer across Tvaram's product suite, including MailTitan (enterprise email sending infrastructure) and Tasvam (the data intelligence layer). Both announced, launching soon.",
+        "Sole engineer across Tvaram's product suite: MailTitan (email sending infrastructure) and Tasvam (the data intelligence layer), both launching soon.",
         "Own the backend end to end on both products.",
         "Engineering write-ups and case studies coming once the products are live.",
       ],
@@ -182,7 +182,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "Tasvam",
       summary:
-        "The data intelligence layer of the Tvaram ecosystem. I'm building the entire backend as founding engineer.",
+        "The data intelligence layer of the Tvaram ecosystem. Designed and built end to end as the sole engineer.",
       linkPreview: "https://tasvam.ai",
       badge: "Tvaram · Launching soon",
       flagship: true,
@@ -192,7 +192,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "MailTitan",
       summary:
-        "Enterprise email sending infrastructure built for high-volume, mission-critical delivery. I'm building the entire platform as founding engineer.",
+        "Enterprise email sending infrastructure for high-volume, mission-critical delivery. Sole engineer, backend to deploy.",
       linkPreview: "https://mailtitan.ai",
       badge: "Tvaram · Launching soon",
       flagship: true,
