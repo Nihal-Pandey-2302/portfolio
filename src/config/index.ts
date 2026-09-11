@@ -36,7 +36,7 @@ export const SITE_CONTENT: SiteContent = {
   // "Now Building" card
   seeking: {
     status: "Now Building",
-    role: "Founding Engineer",
+    role: "Senior Founding Engineer & Tech Lead",
     company: "Tvaram",
     companyUrl: "https://tvaram.com",
     description:
@@ -85,12 +85,14 @@ export const SITE_CONTENT: SiteContent = {
   experience: [
     {
       company: "Tvaram",
-      position: "Founding Engineer",
+      position: "Senior Founding Engineer & Tech Lead",
       startDate: "Jun 2026",
       endDate: "Present",
       url: "https://tvaram.com",
       summary: [
-        "Sole engineer across Tvaram's product suite: MailTitan (email sending infrastructure) and Tasvam (the data intelligence layer), both launching soon.",
+        "Built the backend for both products solo: MailTitan (email sending infrastructure) and Tasvam (the data intelligence layer), both launching soon.",
+        "Promoted from Founding Engineer to Senior Founding Engineer & Tech Lead within three months.",
+        "Now leading a team of interns as the first full-time engineers are hired.",
         "Own the backend end to end on both products.",
         "Engineering write-ups and case studies coming once the products are live.",
       ],
@@ -202,7 +204,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "MailTitan",
       summary:
-        "Enterprise email sending infrastructure for high-volume, mission-critical delivery. Sole engineer, backend to deploy.",
+        "Enterprise email sending infrastructure for high-volume, mission-critical delivery. Built solo, backend to deploy.",
       linkPreview: "https://mailtitan.ai",
       badge: "Tvaram · Launching soon",
       flagship: true,
