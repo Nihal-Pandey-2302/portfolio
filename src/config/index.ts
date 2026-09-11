@@ -27,7 +27,7 @@ export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Senior Founding Engineer & Tech Lead @ Tvaram · Building Tasvam & MailTitan",
+    specialty: "Senior Founding Engineer & Tech Lead @ Tvaram",
     summary:
       "I'm Tvaram's senior founding engineer and tech lead, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
     email: "pandeynihal232@gmail.com",
