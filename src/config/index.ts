@@ -2,10 +2,10 @@ import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
 export const SITE_CONFIG: SiteConfig = {
-  title: "Nihal Pandey | Founding Engineer at Tvaram",
+  title: "Nihal Pandey | Senior Founding Engineer & Tech Lead at Tvaram",
   author: "Nihal Pandey",
   description:
-    "Founding engineer at Tvaram, building Tasvam and MailTitan. Open source contributor to ParadeDB (YC S23), working on PostgreSQL internals.",
+    "Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan. Open source contributor to ParadeDB (YC S23), working on PostgreSQL internals.",
   lang: "en",
   navLinks: [
     { text: "Work", href: "/#projects" },
@@ -27,9 +27,9 @@ export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Founding Engineer @ Tvaram · Building Tasvam & MailTitan",
+    specialty: "Senior Founding Engineer & Tech Lead @ Tvaram · Building Tasvam & MailTitan",
     summary:
-      "I'm the founding engineer at Tvaram, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
+      "I'm Tvaram's senior founding engineer and tech lead, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
     email: "pandeynihal232@gmail.com",
   },
 
@@ -53,7 +53,7 @@ export const SITE_CONTENT: SiteContent = {
       value: "2",
       unit: "systems",
       label: "Building Tasvam and MailTitan end to end",
-      sub: "Founding Engineer @ Tvaram",
+      sub: "Sr. Founding Engineer & Tech Lead @ Tvaram",
     },
     {
       value: "4",
