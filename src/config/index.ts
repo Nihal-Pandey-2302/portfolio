@@ -2,10 +2,10 @@ import type { SiteConfig, SiteContent } from "../types";
 
 // SITE-WIDE CONFIGURATION
 export const SITE_CONFIG: SiteConfig = {
-  title: "Nihal Pandey | Senior Founding Engineer & Tech Lead at Tvaram",
+  title: "Nihal Pandey | Backend & Database Systems Engineer",
   author: "Nihal Pandey",
   description:
-    "Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan. Open source contributor to ParadeDB (YC S23), working on PostgreSQL internals.",
+    "Backend and database systems engineer focused on PostgreSQL internals and correctness. Open source contributor to ParadeDB (YC S23). Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan.",
   lang: "en",
   navLinks: [
     { text: "Work", href: "/#projects" },
