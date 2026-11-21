@@ -43,6 +43,9 @@ const { projects, more } = Astro.props;
         </div>
         <p class="project-stack mono">{project.stack.join(" · ")}</p>
         <p class="project-summary" set:html={rich(project.summary)} />
+        {project.story && (
+          <p class="project-story"><a href={project.story} class="link">Read how it went</a></p>
+        )}
       </div>
     </article>
   ))}
@@ -155,6 +158,11 @@ const { projects, more } = Astro.props;
   .project-summary {
     max-width: 40rem;
     color: var(--color-text-muted);
+  }
+
+  .project-story {
+    margin-top: 0.6rem;
+    font-size: var(--text-small);
   }
 
   .more {

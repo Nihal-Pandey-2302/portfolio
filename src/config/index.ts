@@ -190,9 +190,10 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "Ethereum EVM Indexer",
       summary:
-        "Ingests Ethereum blocks, transactions and logs into Postgres. Each block and the sync checkpoint commit in **one transaction**, so a crash never leaves a half-written block or a checkpoint ahead of the data. Detects reorgs by parent hash; read API on Axum with cursor pagination.",
+        "Ingests Ethereum blocks, transactions and logs into Postgres. Each block and the sync checkpoint commit in **one transaction**. Reorgs roll back to the fork point, up to 64 blocks, in one transaction; writes are idempotent, logs included. 11 integration tests against a real Postgres. Read API on Axum with cursor pagination.",
       stack: ["Rust", "Tokio", "Axum", "SQLx", "PostgreSQL"],
       source: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
+      story: "/work/evm-indexer",
       figure: { value: "1", label: "Postgres transaction per block, checkpoint included" },
     },
     {

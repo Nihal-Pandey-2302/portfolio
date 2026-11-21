@@ -124,6 +124,7 @@ export interface Project {
   // With a video, image is its poster (the first frame).
   image?: string;
   video?: string[]; // sources, most efficient format first
+  story?: string; // path of its case-study page under /work
   figure?: { value: string; label: string };
 }
 

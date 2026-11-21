@@ -1,0 +1,224 @@
+---
+// Case study for rust-evm-indexer.
+//
+// Source: docs/integrity-fixes-record.md in that repository, checked against the
+// commits (554b6b5, 327fd40, f44a694 .. 8c64933) and fact-checked by the session that
+// made the fixes. Do not claim "10M+ transactions" or latency figures: neither is
+// backed by anything checked in. The migration is tested only on a copy of the old schema.
+import { Code } from "astro:components";
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const REPO = "https://github.com/Nihal-Pandey-2302/rust-evm-indexer";
+
+// rust-evm-indexer src/db.rs on integrity-fixes, verbatim
+const ROLLBACK = `pub async fn rollback_to(pool: &PgPool, keep_height: u64) -> Result<(), sqlx::Error> {
+    let height = keep_height as i64;
+    let mut tx = pool.begin().await?;
+    sqlx::query("DELETE FROM logs WHERE block_number > $1")
+        .bind(height)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM transactions WHERE block_number > $1")
+        .bind(height)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM blocks WHERE block_number > $1")
+        .bind(height)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE indexer_status SET last_processed_block = $2 WHERE indexer_name = $1")
+        .bind(INDEXER_NAME)
+        .bind(height)
+        .execute(&mut *tx)
+        .await?;
+    tx.commit().await
+}`;
+
+// What each test showed on 1741604, the commit before the fixes
+const TESTS = [
+  ["one_block_reorg_reingests_replaced_block", "checkpoint 103, expected 102: the replaced block is never fetched again"],
+  ["two_block_reorg_rolls_back_to_fork_point", "checkpoint 103, expected 101: a stale block from the old fork stays"],
+  ["failed_rollback_leaves_data_and_checkpoint_unchanged", "6 transactions and 12 logs left, expected 8 and 16"],
+  ["reorg_deeper_than_limit_is_not_rolled_back", "no error: one block rolled back regardless of depth"],
+  ["failed_receipt_does_not_commit_block", "block committed with a transaction that has no status and no logs"],
+  ["missing_receipt_does_not_commit_block", "same, for a receipt the node returns as null"],
+  ["receipt_from_another_block_does_not_commit_block", "a receipt from the other fork stored with its logs"],
+  ["reapplying_a_block_keeps_one_copy_of_each_log", "16 logs, expected 8"],
+  ["second_block_at_same_height_is_rejected", "the second block was inserted"],
+  ["block_missing_from_rpc_does_not_skip_height", "checkpoint 102 with no block 101"],
+];
+---
+
+<CaseStudy
+  title="Re-reading a crash-safe indexer"
+  dek="An Ethereum indexer that writes each block and its checkpoint in one Postgres transaction, designed so a crash cannot leave half a block. That part held up. Re-reading the rest found three ways it could still lose or duplicate data, and making it testable turned up two more."
+  source={{ label: "The repository on GitHub", url: REPO }}
+  meta={[
+    { text: "Nihal-Pandey-2302/rust-evm-indexer", href: REPO },
+    { text: "the fix commits", href: `${REPO}/compare/30932cf...8c64933` },
+    { text: "Rust, Tokio, SQLx, PostgreSQL" },
+    { text: "10 tests fail on the old code; all 11 pass after the fixes" },
+  ]}
+>
+  <section class="cs-section">
+    <h2>The question</h2>
+    <p>
+      An indexer copies blocks, transactions and logs from an Ethereum node into Postgres. The question that decides
+      whether it can be trusted: if the process dies halfway through a block, what is in the database when it comes
+      back?
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The first design</h2>
+    <p>
+      The first version, in May 2025, wrote each row straight to the pool, with no transaction around a block and no
+      record of where it had got to. The log insert already carried a note to myself:
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-term"><span class="is-dim">// Relies on 'id' BIGSERIAL for conflict. Consider unique constraint on (tx_hash, log_index_in_tx) for content-based idempotency.</span></div>
+      <figcaption>
+        From the log insert in the first version
+        (<a href={`${REPO}/commit/554b6b5`} target="_blank" rel="noopener noreferrer" class="link">554b6b5</a>).
+        It took eighteen months to act on.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-section">
+    <h2>The part that held up</h2>
+    <p>
+      Two days later
+      (<a href={`${REPO}/commit/327fd40`} target="_blank" rel="noopener noreferrer" class="link">327fd40</a>)
+      every block was written in one Postgres transaction, with the sync checkpoint inside it: the block,
+      its transactions, their logs, then the checkpoint, then commit. A crash before the commit leaves nothing behind. A
+      crash after it leaves a complete block and a checkpoint at that block, so the next run starts after it and the
+      block is never processed twice. On the later re-read, this part still held.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Re-reading the rest</h2>
+    <p>
+      A re-read in November 2026, made to check what this site could honestly say about the project, went through the
+      rest. The README claimed reorg handling and idempotent writes. Three things did not hold.
+    </p>
+
+    <h3>1. A reorg left a hole</h3>
+    <p>
+      When a new block's parent did not match the stored block below it, the code deleted that stored block and
+      everything above it, in three separate statements, and left the checkpoint where it was.
+    </p>
+    <figure class="cs-figure">
+      <dl class="cs-panel cs-term cs-kv">
+        <div><dt>stored</dt><dd>100  101  102  103</dd></div>
+        <div><dt>block 104 arrives</dt><dd>its parent is not the stored 103</dd></div>
+        <div><dt>old rollback</dt><dd class="is-bad">deletes 103, checkpoint stays at 103, next cycle fetches 104: the new 103 is never fetched</dd></div>
+        <div><dt>fixed rollback</dt><dd class="is-good">walks back to 102, the last height that matches the chain, deletes above it and rewinds the checkpoint to 102 in one transaction: 103 is fetched again</dd></div>
+      </dl>
+      <figcaption>The one-block case. The old code also only ever looked one block back, and a crash between its deletes left logs gone with their transactions still in place.</figcaption>
+    </figure>
+
+    <h3>2. A failed receipt committed an incomplete block</h3>
+    <p>
+      Receipts carry a transaction's status and logs. If fetching one still failed after three tries, the error was
+      turned into "no receipt": the transaction was written with no status and no logs, and the checkpoint moved on. The
+      block was never revisited, which is exactly the state the README said could not happen.
+    </p>
+
+    <h3>3. Logs were not idempotent</h3>
+    <p>
+      Blocks and transactions ignored duplicates on insert. Logs had nothing to conflict on, the note from the first
+      version still unacted on. Only the checkpoint kept them from being written twice, so any path that re-applied a
+      block would have duplicated every log.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Making it testable first</h2>
+    <p>
+      The repository had no tests. Before changing anything, the ingester moved behind a small trait for the chain, so a
+      stub node could serve blocks, forks and failures on demand, with a real Postgres underneath. Eight tests were
+      written against the old behaviour first, and every one failed. Two more, added while fixing, also fail on the old
+      code.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The fixes</h2>
+    <p>
+      A reorg now walks back from the stored tip until the stored hash matches the chain, up to 64 blocks. Then one
+      transaction deletes everything above that height and rewinds the checkpoint to it. A reorg deeper than 64 blocks
+      stops ingestion and changes nothing, rather than guessing.
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-code"><Code code={ROLLBACK} lang="rust" theme="css-variables" /></div>
+      <figcaption>
+        The rollback, from src/db.rs
+        (<a href={`${REPO}/commit/df82957`} target="_blank" rel="noopener noreferrer" class="link">df82957</a>).
+        The checkpoint rewind is in the same transaction as the deletes.
+      </figcaption>
+    </figure>
+    <p>
+      A receipt that fails, comes back empty, or belongs to a different block now fails the whole block before its
+      transaction starts, so the checkpoint stays put and the block is retried. Logs gained a key, and checking what to
+      key them on turned up a mislabelled column: the stored index was the log's position in the block, not in its
+      transaction. They are now unique on block hash and log index, and a migration for existing databases, tested on a copy of the
+      old schema, adds the key and removes duplicates.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Two more, found while writing the tests</h2>
+    <p>
+      If the node did not return a block yet (a lagging node), the old loop skipped that height, committed the next one
+      and moved the checkpoint past the gap. And a receipt fetched just after the node itself reorged could belong to the
+      other fork, and was stored with its logs. Both now fail the block instead.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>What the tests showed</h2>
+    <p>Run against the commit before the fixes, then after:</p>
+    <figure class="cs-figure">
+      <dl class="cs-panel cs-term cs-kv cs-kv-wide">
+        {TESTS.map(([name, before]) => (
+          <div><dt>{name}</dt><dd class="is-bad">{before}</dd></div>
+        ))}
+      </dl>
+      <figcaption>What each test found on the old code. With the fixes, all 11 pass, including a test of the migration, which is new code with no "before".</figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-section">
+    <h2>Who did what</h2>
+    <p>
+      The first design and the per-block transaction with its checkpoint are mine. The November re-read, the five fixes
+      and the tests were done with Claude, as every
+      <a href={`${REPO}/compare/30932cf...8c64933`} target="_blank" rel="noopener noreferrer" class="link">fix commit</a>
+      records.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>What is still open</h2>
+    <ul class="cs-list">
+      <li>A reorg is noticed only when the next block arrives. If the new chain is shorter than what is stored, the stale tip stays until the chain grows past it.</li>
+      <li>A reorg deeper than 64 blocks needs a manual rollback; the repository has the statement.</li>
+      <li>The tests run against a stub node, not the real HTTP client.</li>
+      <li>A process crash in the middle of a block write is not tested directly. It rests on Postgres transactions; the injected mid-rollback failure is the closest test.</li>
+      <li>Databases written by the old code may still hold gaps. A check script finds them; the migration does not repair them.</li>
+    </ul>
+  </section>
+</CaseStudy>
+
+<style>
+  /* test names are long: give the name column more room on wide screens */
+  .cs-kv-wide > div {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .cs-kv-wide dt {
+    overflow-wrap: anywhere;
+  }
+</style>
