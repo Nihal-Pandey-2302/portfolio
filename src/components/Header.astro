@@ -1,20 +1,21 @@
 ---
-import { SITE_CONFIG } from "@config";
+import { SITE_CONFIG, SITE_CONTENT } from "@config";
 ---
 
 <header class="site-header">
-  <div class="container flex justify-between items-center" style="max-width: 100vw;">
-    <a href="/" class="logo mono">
-      <span class="text-accent">&lt;</span>{SITE_CONFIG.author} <span class="text-accent">/&gt;</span>
+  <div class="container bar">
+    <a href="/" class="brand">
+      <img src={SITE_CONTENT.hero.image} alt="" width="28" height="28" decoding="async" />
+      <span>{SITE_CONFIG.author}</span>
     </a>
-    
+
     <!-- Desktop Nav -->
-    <nav class="desktop-nav">
-      <ul class="flex gap-sm">
+    <nav class="desktop-nav" aria-label="Primary">
+      <ul>
         {
           SITE_CONFIG.navLinks.map((link) => (
             <li>
-              <a href={link.href} class="nav-link mono">
+              <a href={link.href} class="nav-link" data-nav>
                 {link.text}
               </a>
             </li>
@@ -23,23 +24,28 @@ import { SITE_CONFIG } from "@config";
       </ul>
     </nav>
 
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Menu" aria-controls="mobile-nav" aria-expanded="false">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
+    <div class="tools">
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+          <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5Z" fill="currentColor"></path>
+        </svg>
+      </button>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-btn" class="menu-btn" type="button" aria-controls="mobile-nav" aria-expanded="false">
+        Menu
+      </button>
+    </div>
   </div>
 
-  <!-- Mobile Nav Overlay -->
-  <nav id="mobile-nav" class="mobile-nav">
-    <ul class="flex flex-col items-center gap-sm">
+  <!-- Mobile Nav Panel -->
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile">
+    <ul class="container">
       {
         SITE_CONFIG.navLinks.map((link) => (
           <li>
-            <a href={link.href} class="mobile-nav-link mono">
-              {link.text}
-            </a>
+            <a href={link.href} class="mobile-nav-link">{link.text}</a>
           </li>
         ))
       }
@@ -48,6 +54,20 @@ import { SITE_CONFIG } from "@config";
 </header>
 
 <script>
+  // Theme toggle: flips the attribute Layout.astro resolved on load and remembers the choice
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    // the browser's own chrome follows the page (see the inline script in Layout.astro)
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'light' ? '#fbfcfb' : '#0c0e0d');
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+  });
+
+  // Mobile menu
   const menuBtn = document.getElementById('mobile-menu-btn');
   const mobileNav = document.getElementById('mobile-nav');
   const mobileLinks = document.querySelectorAll('.mobile-nav-link');
@@ -61,18 +81,16 @@ import { SITE_CONFIG } from "@config";
     }
 
     function closeMenu() {
-      menuBtn!.classList.remove('active');
       mobileNav!.classList.remove('active');
-      document.body.classList.remove('no-scroll');
       menuBtn!.setAttribute('aria-expanded', 'false');
+      menuBtn!.textContent = 'Menu';
       document.removeEventListener('keydown', onEscape);
     }
 
     menuBtn.addEventListener('click', () => {
-      const open = menuBtn.classList.toggle('active');
-      mobileNav.classList.toggle('active', open);
-      document.body.classList.toggle('no-scroll', open);
+      const open = mobileNav.classList.toggle('active');
       menuBtn.setAttribute('aria-expanded', String(open));
+      menuBtn.textContent = open ? 'Close' : 'Menu';
       if (open) document.addEventListener('keydown', onEscape);
       else document.removeEventListener('keydown', onEscape);
     });
@@ -83,126 +101,193 @@ import { SITE_CONFIG } from "@config";
     });
 
     // Close if the viewport grows past the mobile breakpoint while open
-    // (the hamburger disappears at >768px, which would trap the overlay)
-    matchMedia('(min-width: 769px)').addEventListener('change', (e) => {
+    // (the Menu button disappears at >820px, which would strand the panel)
+    matchMedia('(min-width: 821px)').addEventListener('change', (e) => {
       if (e.matches) closeMenu();
     });
   }
+
+  // Scroll-spy: mark the nav link for the section the reader is in, meaning the
+  // last one whose top has passed a line a third of the way down the viewport
+  const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav]'));
+  const targets = navLinks
+    .map((link) => ({ link, section: document.getElementById(new URL(link.href).hash.slice(1)) }))
+    .filter((t): t is { link: HTMLAnchorElement; section: HTMLElement } => t.section !== null);
+  const header = document.querySelector('.site-header');
+
+  let queued = false;
+
+  function onScroll() {
+    queued = false;
+    // the header gains its rule once the page has moved
+    header?.classList.toggle('is-scrolled', window.scrollY > 8);
+    if (targets.length === 0) return;
+
+    const line = window.innerHeight / 3;
+    let current = targets.filter((t) => t.section.getBoundingClientRect().top <= line).pop();
+    // the last section is too short to reach that line: at the end of the page it wins
+    const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (atEnd) current = targets[targets.length - 1];
+    for (const t of targets) {
+      if (t === current) t.link.setAttribute('aria-current', 'true');
+      else t.link.removeAttribute('aria-current');
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(onScroll);
+  }, { passive: true });
+  onScroll();
 </script>
 
 <style>
   .site-header {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    background: rgba(10, 10, 12, 0.9);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
+    z-index: 100;
+    /* solid fallback first: color-mix is skipped by browsers that lack it */
+    background: var(--color-bg);
+    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
   }
 
-  .logo {
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    z-index: 1001; /* Above mobile menu */
-  }
-
-  .nav-link {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-  }
-
-  .nav-link:hover {
-    color: var(--color-accent);
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  /* Mobile Menu Styles */
-  .mobile-menu-btn {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 21px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    z-index: 1001;
-    padding: 0;
+  .site-header:global(.is-scrolled) {
+    border-bottom-color: var(--color-border);
   }
 
   .bar {
-    width: 100%;
-    height: 3px;
-    background-color: var(--color-text-main);
-    border-radius: 3px;
-    transition: all 0.3s ease;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .brand img {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+    filter: grayscale(100%);
+  }
+
+  .desktop-nav {
+    margin-left: auto;
+  }
+
+  .desktop-nav ul {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+    transition: color 0.15s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current="true"] {
+    color: var(--color-text-main);
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 8px;
+    color: var(--color-text-muted);
+    transition: color 0.15s ease, transform 0.4s ease;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-text-main);
+  }
+
+  /* the half-filled disc turns over with the theme */
+  :global([data-theme="light"]) .theme-toggle {
+    transform: rotate(180deg);
+  }
+
+  /* Mobile Menu Styles */
+  .menu-btn {
+    display: none;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 8px;
+    font-size: var(--text-small);
   }
 
   .mobile-nav {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: 100%;
     left: 0;
     width: 100%;
-    height: 100vh;
     background: var(--color-bg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: translateX(100%);
+    border-bottom: 1px solid var(--color-border);
     /* visibility keeps the closed menu out of the tab order and a11y tree */
     visibility: hidden;
-    transition: transform 0.3s ease-in-out, visibility 0.3s;
-    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
   }
 
   .mobile-nav.active {
-    transform: translateX(0);
     visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+
+  .mobile-nav ul {
+    padding-top: 0.25rem;
+    padding-bottom: 1rem;
   }
 
   .mobile-nav-link {
-    font-size: 1.5rem;
-    color: var(--color-text-main);
-    padding: 1rem;
     display: block;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 1.25rem;
+    letter-spacing: -0.015em;
   }
 
-  .mobile-nav-link:hover {
-    color: var(--color-accent);
+  .mobile-nav li:last-child .mobile-nav-link {
+    border-bottom: none;
   }
 
-  /* Hamburger Animation */
-  .mobile-menu-btn.active .bar:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
-  }
-
-  .mobile-menu-btn.active .bar:nth-child(2) {
-    opacity: 0;
-  }
-
-  .mobile-menu-btn.active .bar:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
-  }
-
-  :global(body.no-scroll) {
-    overflow: hidden;
-  }
-
-  @media (max-width: 768px) {
+  @media (max-width: 820px) {
     .desktop-nav {
       display: none;
     }
 
-    .mobile-menu-btn {
-      display: flex;
+    .tools {
+      margin-left: auto;
+    }
+
+    .menu-btn {
+      display: block;
     }
   }
 </style>

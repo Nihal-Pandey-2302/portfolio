@@ -1,0 +1,480 @@
+---
+// The poolproof results grid, explorable: every scenario (columns) through
+// every pooler version and configuration (rows). Selecting a cell shows what
+// the scenario checks and, for a failure, exactly what differed.
+// Data: src/data/poolproof.json (built in) and /poolproof-details.json (fetched on demand).
+import data from "../data/poolproof.json";
+
+const { counts, scenarios, trace } = data;
+
+// number the rows across groups: the details file is keyed "row:column"
+let rowCount = 0;
+const groups = data.groups.map((group) => ({
+  product: group.product,
+  targets: group.targets.map((target) => ({ ...target, row: rowCount++, name: `${group.product} ${target.label}` })),
+}));
+const rowNames = groups.flatMap((g) => g.targets.map((t) => t.name));
+
+// One <i> per result, classed by its state letter (see scripts/snapshot-poolproof.mjs).
+// Built as a string so 1,200 cells don't each carry a scoped-style attribute.
+const cells = (states: string) => [...states].map((state) => `<i class="${state}"></i>`).join("");
+
+const LEGEND = [
+  { state: "p", count: counts.pass, label: "pass" },
+  { state: "s", count: counts.silent, label: "silent failures" },
+  { state: "e", count: counts.errorOrHang, label: "errors and hangs" },
+  { state: "S", count: counts.expected, label: "documented limitations" },
+];
+
+// Selected on load: the hero's example, so the two figures tell one story
+const startRow = Math.max(0, rowNames.indexOf(trace.target));
+const startColumn = Math.max(0, scenarios.findIndex((s) => s.name === trace.scenario));
+const startStep = trace.steps.findIndex((step) => step.differs);
+const KIND: Record<string, string> = { silent: "silent failure", error: "pooler error", hang: "hang" };
+
+const summary =
+  `Grid of poolproof results on Postgres ${data.postgres}: ${scenarios.length} scenarios by ${rowCount} pooler versions and configurations. ` +
+  `${counts.pass} pass, ${counts.silent} fail silently, ${counts.errorOrHang} error or hang, ${counts.expected} are documented limitations. ` +
+  `Arrow keys move between results.`;
+---
+
+<figure class="matrix">
+  <div class="panel">
+    <div class="mx-head">
+      <span class="mono">Results on Postgres {data.postgres}</span>
+      <ul class="mx-legend">
+        {LEGEND.map((item) => (
+          <li>
+            <i class={item.state}></i>
+            <span class="mono">{item.count}</span> {item.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="mx" tabindex="0" role="group" aria-label={summary} data-start={`${startRow}:${startColumn}`}>
+      {groups.map((group) => (
+        <div class="mx-group">
+          <span class="mx-label">{group.product}</span>
+          <div class="mx-rows">
+            {group.targets.map((target) => (
+              <div class="mx-row" data-row={target.row} set:html={cells(target.cells)} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- The selected cell, spelled out. Rendered for the starting cell; the script takes over from there. -->
+    <div class="mx-inspect" aria-live="polite" data-state={trace.kind === "silent" ? "s" : "e"}>
+      <div>
+        <p class="mx-scenario mono">{trace.scenario}</p>
+        <p class="mx-desc">{trace.description}</p>
+      </div>
+      <div>
+        <p class="mx-outcome"><span class="mx-target">{trace.target}</span><span class="mx-word">{KIND[trace.kind] ?? trace.kind}</span></p>
+        <div class="mx-detail mono">
+          {startStep !== -1 && (
+            <>
+              <p class="mx-step"><span>step {startStep + 1}</span>{trace.steps[startStep].actor} {trace.steps[startStep].action}</p>
+              <p class="mx-answer is-postgres"><span>Postgres</span>{trace.steps[startStep].postgres}</p>
+              <p class="mx-answer is-pooler"><span>{trace.target.split(" ")[0]}</span>{trace.steps[startStep].pooler}</p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <figcaption class="mx-caption">
+    poolproof {data.poolproof} results, snapshot of {data.generatedAt}. Columns are the {scenarios.length} scenarios, rows the {rowCount} pooler
+    versions and configurations. Select a cell to see what it checks.
+    <a href={data.source} target="_blank" rel="noopener noreferrer" class="link">Full results with every trace</a>
+  </figcaption>
+
+  <script is:inline type="application/json" class="mx-data" set:html={JSON.stringify({ scenarios, rows: rowNames })} />
+</figure>
+
+<script>
+  type Details = { docs: { url: string; quote: string }[]; cells: Record<string, string | [number, string, string, string, string, number]> };
+
+  const root = document.querySelector<HTMLElement>('.matrix');
+  const mx = root?.querySelector<HTMLElement>('.mx');
+  const inspect = root?.querySelector<HTMLElement>('.mx-inspect');
+
+  if (root && mx && inspect) {
+    const meta: { scenarios: { name: string; description: string }[]; rows: string[] } =
+      JSON.parse(root.querySelector('.mx-data')!.textContent!);
+    const rowEls = Array.from(mx.querySelectorAll<HTMLElement>('.mx-row'));
+    const WORDS: Record<string, string> = {
+      p: 'pass',
+      s: 'silent failure',
+      e: 'pooler error',
+      h: 'hang',
+      S: 'documented limitation',
+      E: 'documented limitation',
+      k: 'not run',
+    };
+    const el = {
+      scenario: inspect.querySelector<HTMLElement>('.mx-scenario')!,
+      desc: inspect.querySelector<HTMLElement>('.mx-desc')!,
+      target: inspect.querySelector<HTMLElement>('.mx-target')!,
+      word: inspect.querySelector<HTMLElement>('.mx-word')!,
+      detail: inspect.querySelector<HTMLElement>('.mx-detail')!,
+    };
+
+    type At = [row: number, column: number];
+    const parse = (s: string): At => s.split(':').map(Number) as At;
+    let pinned = parse(mx.dataset.start ?? '0:0');
+    let shown = pinned;
+    let details: Details | null = null;
+    let requested = false;
+
+    const cellAt = ([row, column]: At) => rowEls[row]?.children[column] as HTMLElement | undefined;
+    // the state letter is the cell's first class; "is-on" may follow it
+    const stateOf = (cell: HTMLElement) => cell.classList.item(0) ?? 'p';
+
+    // What differed is only needed once someone looks: fetch it on first approach
+    function load() {
+      if (requested) return;
+      requested = true;
+      fetch('/poolproof-details.json')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          details = json;
+          render();
+        })
+        .catch(() => { /* the grid still names every cell without it */ });
+    }
+
+    function line(className: string, label: string, text: string) {
+      const p = document.createElement('p');
+      p.className = className;
+      const span = document.createElement('span');
+      span.textContent = label;
+      p.append(span, text);
+      return p;
+    }
+
+    function render() {
+      const cell = cellAt(shown);
+      if (!cell) return;
+      const [row, column] = shown;
+      const state = stateOf(cell);
+      const scenario = meta.scenarios[column];
+
+      inspect!.dataset.state = state;
+      el.scenario.textContent = scenario.name;
+      el.desc.textContent = scenario.description;
+      el.target.textContent = meta.rows[row];
+      el.word.textContent = WORDS[state] ?? '';
+
+      const info = details?.cells[`${row}:${column}`];
+      const lines: HTMLElement[] = [];
+      if (state === 'p') {
+        lines.push(line('mx-note', '', 'Same answer as plain Postgres at every step.'));
+      } else if (typeof info === 'string') {
+        lines.push(line('mx-note', '', `Not run: ${info}.`));
+      } else if (info) {
+        const [step, actor, action, postgres, pooler, doc] = info;
+        lines.push(
+          line('mx-step', `step ${step}`, `${actor} ${action}`),
+          line('mx-answer is-postgres', 'Postgres', postgres),
+          line('mx-answer is-pooler', meta.rows[row].split(' ')[0], pooler),
+        );
+        const source = details!.docs[doc];
+        if (source) {
+          const p = line('mx-note', '', `The pooler's documentation covers this: "${source.quote}" `);
+          const a = document.createElement('a');
+          a.href = source.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.className = 'link';
+          a.textContent = 'source';
+          p.append(a);
+          lines.push(p);
+        }
+      } else if (!details) {
+        lines.push(line('mx-note', '', 'Loading what differed…'));
+      }
+      el.detail.replaceChildren(...lines);
+    }
+
+    function pin(at: At) {
+      cellAt(pinned)?.classList.remove('is-on');
+      pinned = shown = at;
+      cellAt(pinned)?.classList.add('is-on');
+      render();
+    }
+
+    // Read a cell's position back from the DOM
+    function where(target: EventTarget | null): At | null {
+      const cell = target as HTMLElement | null;
+      const row = cell?.parentElement;
+      if (!cell || cell.tagName !== 'I' || !row?.dataset.row) return null;
+      return [Number(row.dataset.row), Array.prototype.indexOf.call(row.children, cell)];
+    }
+
+    // Pointer: hovering previews a cell, clicking keeps it
+    mx.addEventListener('pointerover', (e) => {
+      const at = where(e.target);
+      if (!at) return;
+      load();
+      shown = at;
+      render();
+    });
+    mx.addEventListener('pointerleave', () => {
+      shown = pinned;
+      render();
+    });
+    mx.addEventListener('click', (e) => {
+      const at = where(e.target);
+      if (at) pin(at);
+    });
+
+    // Keyboard: arrows walk the grid
+    const MOVES: Record<string, At> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+    mx.addEventListener('keydown', (e) => {
+      const move = MOVES[e.key];
+      if (!move) return;
+      e.preventDefault();
+      load();
+      pin([
+        Math.min(Math.max(pinned[0] + move[0], 0), rowEls.length - 1),
+        Math.min(Math.max(pinned[1] + move[1], 0), meta.scenarios.length - 1),
+      ]);
+    });
+    mx.addEventListener('focus', load);
+
+    cellAt(pinned)?.classList.add('is-on');
+
+    // Have the details ready by the time the grid scrolls into view
+    new IntersectionObserver((entries, observer) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        load();
+        observer.disconnect();
+      }
+    }, { rootMargin: '600px' }).observe(root);
+  }
+</script>
+
+<style>
+  .panel {
+    padding: clamp(0.9rem, 2.2vw, 1.4rem);
+  }
+
+  .mx-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1.1rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .mx-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.1rem;
+  }
+
+  .mx-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .mx-legend i {
+    width: 0.625rem;
+  }
+
+  .mx-legend .mono {
+    color: var(--color-text-main);
+  }
+
+  .mx {
+    display: grid;
+    gap: 0.55rem;
+    border-radius: 6px;
+    outline-offset: 6px;
+  }
+
+  .mx-group {
+    display: grid;
+    grid-template-columns: 4.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .mx-label {
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+  }
+
+  .mx-rows {
+    display: grid;
+    gap: 2px;
+  }
+
+  .mx-row {
+    display: grid;
+    grid-template-columns: repeat(50, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  /* ── Inspector ───────────────────────────────── */
+  .mx-inspect {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 1rem 2.5rem;
+    /* tall enough for a typical failure, so moving between cells doesn't shift the page */
+    min-height: 8.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-small);
+  }
+
+  .mx-scenario {
+    margin-bottom: 0.3rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .mx-desc {
+    color: var(--color-text-muted);
+  }
+
+  .mx-outcome {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.75rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .mx-target {
+    font-weight: 500;
+  }
+
+  .mx-word {
+    color: var(--color-text-muted);
+  }
+
+  .mx-inspect[data-state="p"] .mx-word { color: var(--color-pass-ink); }
+  .mx-inspect[data-state="s"] .mx-word { color: var(--color-silent-ink); }
+  .mx-inspect[data-state="e"] .mx-word { color: var(--color-error); }
+  .mx-inspect[data-state="h"] .mx-word { color: var(--color-hang); }
+
+  .mx-detail {
+    display: grid;
+    gap: 0.15rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+
+  .mx-caption {
+    margin-top: 0.9rem;
+    font-size: var(--text-tiny);
+    line-height: 1.55;
+    color: var(--color-text-faint);
+  }
+
+  @media (max-width: 700px) {
+    .mx-inspect {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 13rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    /* product names move above their rows so the cells get the full width */
+    .mx-group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.35rem;
+    }
+
+    .mx-row,
+    .mx-rows {
+      gap: 1px;
+    }
+  }
+</style>
+
+<!-- Cells and inspector lines. Global because they are created outside the template
+     (cells as a string, inspector lines by the script) and carry no scope attribute. -->
+<style is:global>
+  .matrix i {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 2px;
+    background: var(--color-pass);
+  }
+
+  .matrix i.s { background: var(--color-silent); }
+  .matrix i.e { background: var(--color-error); }
+  .matrix i.h { background: var(--color-hang); }
+  .matrix i.k { background: var(--color-skip); }
+
+  /* a failure the pooler's own docs describe: still a failure, drawn hollow
+     (and quieter than a bug: the solid cells are the findings) */
+  .matrix i.S,
+  .matrix i.E {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-silent) 62%, transparent);
+  }
+
+  .matrix i.E {
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-error) 62%, transparent);
+  }
+
+  .matrix .mx-row i {
+    cursor: pointer;
+  }
+
+  .matrix .mx-row i:hover,
+  .matrix .mx-row i.is-on {
+    outline: 1.5px solid var(--color-text-main);
+    outline-offset: 1.5px;
+  }
+
+  .matrix .mx-step,
+  .matrix .mx-answer {
+    display: grid;
+    /* wide enough for the longest pooler name, "PgBouncer" */
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .matrix .mx-step {
+    color: var(--color-text-main);
+  }
+
+  .matrix .mx-step span,
+  .matrix .mx-answer span {
+    color: var(--color-text-faint);
+  }
+
+  .matrix .mx-answer.is-postgres {
+    color: var(--color-pass-ink);
+  }
+
+  .matrix .mx-answer.is-pooler,
+  .matrix .mx-answer.is-pooler span {
+    color: var(--color-silent-ink);
+  }
+
+  .matrix .mx-note {
+    font-family: var(--font-sans);
+    font-size: var(--text-small);
+  }
+
+  .matrix .mx-note + .mx-note,
+  .matrix .mx-answer + .mx-note {
+    margin-top: 0.4rem;
+  }
+</style>

@@ -1,0 +1,376 @@
+{
+ "source": "https://nihal-pandey-2302.github.io/poolproof/",
+ "repo": {
+  "release": "v0.1.1",
+  "releasedAt": "2026-11-04",
+  "pushedAt": "2026-11-20",
+  "license": "Apache-2.0"
+ },
+ "poolproof": "0.1.1",
+ "generatedAt": "2026-11-04",
+ "postgres": "18.4",
+ "counts": {
+  "pass": 698,
+  "silent": 132,
+  "errorOrHang": 95,
+  "expected": 136,
+  "skipped": 139
+ },
+ "scenarios": [
+  {
+   "name": "abandoned-query-does-not-block-pool",
+   "description": "A client that drops its connection mid-query must not block the next client until the query ends."
+  },
+  {
+   "name": "aborted-transaction-not-reused",
+   "description": "A client that disconnects inside an aborted transaction must not pass it to the next client."
+  },
+  {
+   "name": "advisory-lock-released-on-disconnect",
+   "description": "A session advisory lock must be released when the client that took it disconnects."
+  },
+  {
+   "name": "advisory-lock-survives-own-transactions",
+   "description": "A session advisory lock must stay held by the client that took it, across its later transactions."
+  },
+  {
+   "name": "cancel-from-idle-client-is-harmless",
+   "description": "A CancelRequest from a client with no running query must not cancel another client's query."
+  },
+  {
+   "name": "cancel-reaches-running-query",
+   "description": "A CancelRequest must cancel the client's running query."
+  },
+  {
+   "name": "cancel-under-saturated-pool",
+   "description": "A CancelRequest must still cancel the query when other clients are queued for a server connection."
+  },
+  {
+   "name": "copy-from-stdin",
+   "description": "COPY FROM STDIN through the pooler must load every row."
+  },
+  {
+   "name": "copy-to-stdout",
+   "description": "COPY TO STDOUT through the pooler must return every row unchanged, over the simple and the extended protocol."
+  },
+  {
+   "name": "cursor-isolated-between-clients",
+   "description": "A WITH HOLD cursor declared by one client must not be visible to another client."
+  },
+  {
+   "name": "cursor-survives-own-transactions",
+   "description": "A WITH HOLD cursor must stay usable by the client that declared it, across its later transactions."
+  },
+  {
+   "name": "deallocate-all-isolated",
+   "description": "DEALLOCATE ALL from one client must not remove another client's prepared statements."
+  },
+  {
+   "name": "discard-all-in-transaction-fails",
+   "description": "DISCARD ALL inside a transaction block must fail with 25001, not be answered by the pooler."
+  },
+  {
+   "name": "discard-all-resets-settings",
+   "description": "DISCARD ALL must reset the client's settings to their defaults."
+  },
+  {
+   "name": "empty-search-path-from-set-config",
+   "description": "An empty search_path set with set_config() must survive another client changing it."
+  },
+  {
+   "name": "listen-notify-delivered",
+   "description": "A client that ran LISTEN must receive NOTIFY messages sent by another client."
+  },
+  {
+   "name": "load-isolated-between-clients",
+   "description": "A library one client loads with LOAD must not show up for another client."
+  },
+  {
+   "name": "multi-statement-begin-error",
+   "description": "An error in BEGIN; ...; COMMIT must return the error and leave the transaction aborted, as Postgres does. Otherwise the app's next statements run outside any transaction."
+  },
+  {
+   "name": "multi-statement-begin-left-open",
+   "description": "BEGIN; ... without COMMIT in the same string must leave the transaction open on the client's server connection. Otherwise its statements are lost or run outside the transaction."
+  },
+  {
+   "name": "multi-statement-begin-not-first",
+   "description": "A simple query with BEGIN after its first statement must run every statement, and a transaction it leaves open must stay open."
+  },
+  {
+   "name": "multi-statement-begin-variants",
+   "description": "Every way to write BEGIN or START TRANSACTION at the start of a simple query must run every statement, with its options. Otherwise statements silently don't run, or run at the wrong isolation level."
+  },
+  {
+   "name": "multi-statement-begin",
+   "description": "A simple query that starts with BEGIN must run every statement in the string."
+  },
+  {
+   "name": "multi-statement-commit-first",
+   "description": "A simple query that starts with COMMIT, ROLLBACK or END must run the statements after it. Otherwise the app's later statements in the string silently don't run."
+  },
+  {
+   "name": "multi-statement-error-aborts-transaction",
+   "description": "A simple query that opens a transaction and fails inside it must leave that transaction aborted. Otherwise the app's next statements are committed one by one instead of rejected."
+  },
+  {
+   "name": "parameter-status-after-set",
+   "description": "After a SET of a parameter Postgres reports, the client must get a ParameterStatus with the new value."
+  },
+  {
+   "name": "prepare-in-aborted-transaction",
+   "description": "Parse inside a failed transaction must return 25P02, not succeed from a cache."
+  },
+  {
+   "name": "prepared-statement-survives-other-clients",
+   "description": "A protocol-level prepared statement must still work after other clients used the pool."
+  },
+  {
+   "name": "protocol-error-after-flush",
+   "description": "An error in a request that ends with Flush instead of Sync must be sent right away, and Sync must recover."
+  },
+  {
+   "name": "protocol-four-pipelined-requests",
+   "description": "Four requests pipelined on one connection, each ending in Sync, must all get their results."
+  },
+  {
+   "name": "protocol-multi-statement-transaction",
+   "description": "Transaction control over the extended protocol must behave as on Postgres: a multi-statement Parse fails, and BEGIN and COMMIT in a pipeline or in their own Sync run on the server."
+  },
+  {
+   "name": "protocol-pipeline-recovers-after-error",
+   "description": "In a pipeline, a failing request must not affect the request after the next Sync."
+  },
+  {
+   "name": "protocol-pipelined-statements",
+   "description": "Several named statements prepared and run in one pipeline must all return their own results."
+  },
+  {
+   "name": "protocol-prepare-survives-server-change",
+   "description": "A protocol-level prepared statement must stay usable by its client while another client holds the server connection it was prepared on."
+  },
+  {
+   "name": "protocol-statement-names-isolated",
+   "description": "Two clients can prepare protocol-level statements with the same name, and each runs its own."
+  },
+  {
+   "name": "protocol-statement-reparsed-after-close",
+   "description": "After Close, a statement name can be prepared again with different SQL, and the new SQL runs."
+  },
+  {
+   "name": "protocol-unnamed-statement-survives-other-clients",
+   "description": "The unnamed statement stays usable until the same client replaces it, even if other clients ran queries."
+  },
+  {
+   "name": "search-path-isolated-between-clients",
+   "description": "A client's empty search_path must still be empty after another client changed it."
+  },
+  {
+   "name": "set-does-not-leak-after-disconnect",
+   "description": "Settings from a client that disconnected must not show up for the next client."
+  },
+  {
+   "name": "set-isolated-between-clients",
+   "description": "A plain SET from one client must not change the setting another client sees."
+  },
+  {
+   "name": "set-local-default-after-set-local",
+   "description": "SET LOCAL ... TO DEFAULT after an earlier SET LOCAL in the same transaction, then COMMIT, must leave the session value."
+  },
+  {
+   "name": "set-local-reverts-after-commit",
+   "description": "SET LOCAL ... TO DEFAULT must not change the session value, outside or inside a transaction."
+  },
+  {
+   "name": "set-role-isolated-between-clients",
+   "description": "SET ROLE from one client must not change the role another client runs as."
+  },
+  {
+   "name": "set-role-reset-after-pinned-disconnect",
+   "description": "A client that held an advisory lock and ran SET ROLE must not pass its role to the next client."
+  },
+  {
+   "name": "set-role-reset-after-temp-table-disconnect",
+   "description": "A client that created a temp table and ran SET ROLE must not pass its role to the next client."
+  },
+  {
+   "name": "set-survives-server-change",
+   "description": "A session setting must stay in effect for its client while another client holds the server connection it was set on."
+  },
+  {
+   "name": "sql-prepare-isolated-between-clients",
+   "description": "A statement made with SQL PREPARE must be usable by the client that made it, and only by it."
+  },
+  {
+   "name": "sql-prepare-survives-server-change",
+   "description": "A statement prepared with SQL PREPARE must stay usable by its client while another client holds the server connection it was prepared on."
+  },
+  {
+   "name": "temp-table-isolated-between-clients",
+   "description": "A temp table created by one client must not be visible to another client."
+  },
+  {
+   "name": "temp-table-survives-own-transactions",
+   "description": "A temp table must stay usable by the client that created it, across its later transactions."
+  },
+  {
+   "name": "temp-table-survives-server-change",
+   "description": "A temp table must stay usable by its client while another client holds the server connection it was created on."
+  }
+ ],
+ "groups": [
+  {
+   "product": "PgBouncer",
+   "targets": [
+    {
+     "label": "1.24.1",
+     "cells": "ppSppppppSppppsSSpppppppppppppppkppeSSSppSSSkSkSpk"
+    },
+    {
+     "label": "1.25.2",
+     "cells": "ppSppppppSppppsSSpppppppppppppppkppeSSSppSSSkSkSpk"
+    },
+    {
+     "label": "1.26.1",
+     "cells": "ppSppppppSppppeSSpppppppppppppppkppepSSppSSSkSkSpk"
+    },
+    {
+     "label": "1.26.1 tls",
+     "cells": "ppSppppppSppppeSSpppppppppppppppkppepSSppSSSkSkSpk"
+    },
+    {
+     "label": "1.26.1 session",
+     "cells": "ppppkpkppkpkppkkkpkkppppppkppkppkkkkkpkppkppkkkkpk"
+    },
+    {
+     "label": "1.26.1 pool4",
+     "cells": "kpSpppkppSppppeSSppppppppppppppppppepSSppSSSsSeSpe"
+    },
+    {
+     "label": "1.26.1 noprep",
+     "cells": "ppSppppppSpeppeSSpppppppppppppppkepepSSppSSSkSkSpk"
+    },
+    {
+     "label": "1.26.1 reset-always",
+     "cells": "pppsppppppepppeSSpppppppppppppppkppeppSsspppkekpek"
+    }
+   ]
+  },
+  {
+   "product": "PgDog",
+   "targets": [
+    {
+     "label": "0.1.50",
+     "cells": "eeSppppppspppssessspsssssppppsppkpppppppppppkskspk"
+    },
+    {
+     "label": "0.1.56",
+     "cells": "epSppppppspppssessspsssssppppsppkppppppsspppkskspk"
+    },
+    {
+     "label": "0.1.62",
+     "cells": "epSppppppsppppsessspsssssppppsppkppppppsspppkskspk"
+    },
+    {
+     "label": "0.1.62 pubsub",
+     "cells": "epSppppppsppppspssspsssssppppsppkppppppsspppkskspk"
+    },
+    {
+     "label": "0.1.62 session",
+     "cells": "epppkpkppkpkppkkkpkkppppspkppkppkkkkkpkspkppkkkkpk"
+    },
+    {
+     "label": "0.1.62 pool4",
+     "cells": "kpSpppkppsppppsessspsssssppppspppppppppssppppsespe"
+    },
+    {
+     "label": "0.1.62 full",
+     "cells": "eppppppppsppppsessspsssssppspsppkppppppsspsskekepk"
+    }
+   ]
+  },
+  {
+   "product": "PgCat",
+   "targets": [
+    {
+     "label": "1.2.0",
+     "cells": "epSppppppspEppssspppppppppEhpppEkEEeSpSsspppkEkspk"
+    },
+    {
+     "label": "1.2.0 prepcache",
+     "cells": "epSppppppspeppssspppppppppphpsppkpppSpSsspppkekspk"
+    }
+   ]
+  },
+  {
+   "product": "Odyssey",
+   "targets": [
+    {
+     "label": "1.5.2",
+     "cells": "pppsppppppepppssspppppppppppppppkpppspssspppkskpek"
+    }
+   ]
+  },
+  {
+   "product": "Supavisor",
+   "targets": [
+    {
+     "label": "2.9.13",
+     "cells": "kpSpppkppSpeppsSSppppppppppphphpeepeSSSppSSSsSeSpe"
+    },
+    {
+     "label": "2.10.0-rc.1",
+     "cells": "kpSpppkppSpeppsSSpppppppppppppppeepeSSSppSSSsSeSpe"
+    },
+    {
+     "label": "2.10.0-rc.1 strict",
+     "cells": "kpeeppkppeeeeeeeepppppppepppppppeepeeeeeeeeeeseeee"
+    },
+    {
+     "label": "2.10.0-rc.1 session",
+     "cells": "ppppkpkppkpkppkkkpkkppppppkppkppkkkkkpkppkppkkkkpk"
+    },
+    {
+     "label": "2.10.0-rc.1 pool4",
+     "cells": "kpSpppkppSpeppsSSpppppppppppppppeepeSSSppSSSsSeSpe"
+    },
+    {
+     "label": "2.10.0-rc.1 named-prepared",
+     "cells": "kpSpppkppSpeppsSSppppppppppppppppppeSSSppSSSsSeSpe"
+    }
+   ]
+  }
+ ],
+ "trace": {
+  "scenario": "multi-statement-begin",
+  "description": "A simple query that starts with BEGIN must run every statement in the string.",
+  "refs": [
+   "https://github.com/pgdogdev/pgdog/issues/1849"
+  ],
+  "target": "PgDog 0.1.62",
+  "kind": "silent",
+  "steps": [
+   {
+    "actor": "app",
+    "action": "simple: BEGIN; INSERT INTO pp_multi VALUES (1); COMMIT",
+    "postgres": "ok  tags 0,1,0",
+    "pooler": "ok  tags 0",
+    "differs": true
+   },
+   {
+    "actor": "app",
+    "action": "disconnect",
+    "postgres": "ok",
+    "pooler": "ok",
+    "differs": false
+   },
+   {
+    "actor": "check (direct)",
+    "action": "simple: SELECT count(*) FROM pp_multi",
+    "postgres": "ok (\"1\")  tags 1",
+    "pooler": "ok (\"0\")  tags 1",
+    "differs": true
+   }
+  ]
+ }
+}

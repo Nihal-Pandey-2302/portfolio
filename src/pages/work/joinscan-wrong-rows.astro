@@ -1,0 +1,191 @@
+---
+// Case study for paradedb#4763. Queries, rows and plan fragments are quoted
+// from the issue (#4567) and the pull request thread; nothing here is re-run.
+import { Code } from "astro:components";
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const QUERY = `SELECT a.ord AS a_ord, b.ord AS b_ord, a.id AS a_id, b.id AS b_id
+FROM dup_items a
+JOIN dup_items b ON a.grp = b.grp
+WHERE a.body @@@ 'left'
+  AND b.body @@@ 'right'
+ORDER BY a.ord ASC, b.ord ASC
+LIMIT 3;`;
+
+const COLUMNS = ["a_ord", "b_ord", "a_id", "b_id"];
+// As reported: what JoinScan returned, and what Postgres returns with JoinScan off
+const JOINSCAN = [
+  ["z100", "a001", "100", "1"],
+  ["z200", "a001", "200", "1"],
+  ["z300", "a001", "300", "1"],
+];
+const POSTGRES = [
+  ["z100", "a001", "100", "1"],
+  ["z100", "a002", "100", "2"],
+  ["z100", "a003", "100", "3"],
+];
+
+const CAUSE = `active_deferred.dedup_by(|a, b| a.name == b.name);`;
+
+const RESOLVE = `let physical_idx = match matches.len() {
+    0 => {
+        // Name not found — fall back to the logical index.
+        // This should not normally happen; a missing name suggests a
+        // plan-construction bug where the SortExec column does not exist
+        // in the lookup child schema.
+        // …
+        logical_idx
+    }
+    1 => {
+        // Unique name — use the exact physical position from the schema.
+        matches[0]
+    }
+    _ => {
+        // Duplicate names (self-join) — DataFusion already set col.index()
+        // to the correct physical position when building the SortExec.
+        // TODO: this relies on a DataFusion invariant that col.index() is
+        // correct for the duplicate-name case. It breaks for 3-way self-joins
+        // or intermediate Projections that reorder same-name groups.
+        // Proper fix: thread explicit column lineage similar to trace_column
+        // in late_materialization.rs. Tracked in issue #5093.
+        logical_idx
+    }
+};`;
+---
+
+<CaseStudy
+  title="Wrong rows from a self-join"
+  dek="ParadeDB's JoinScan returned the wrong three rows when a self-join sorted on a column name that both sides share. The cause was one line that compared columns by name. My first fix had the same kind of mistake in it."
+  pr={{ ref: "#4763", url: "https://github.com/paradedb/paradedb/pull/4763", merged: "17 May 2026", additions: 274, deletions: 38, files: 5 }}
+  issue={{ ref: "#4567", url: "https://github.com/paradedb/paradedb/issues/4567" }}
+  next={{ title: "A panic on PG16, and the fix that needed fixing", href: "/work/nested-executor-run" }}
+>
+  <section class="cs-section">
+    <h2>The query</h2>
+    <p>
+      The report came with a ten-row table joined to itself. Both sides expose a column called <code>ord</code>, and
+      the query sorts by both of them.
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-code"><Code code={QUERY} lang="sql" theme="css-variables" /></div>
+    </figure>
+  </section>
+
+  <section class="cs-section">
+    <h2>The wrong rows</h2>
+    <p>With JoinScan on, the query returned three rows. With it off, Postgres returned a different three.</p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-rows">
+        <div>
+          <p class="cs-rows-title">JoinScan returned</p>
+          <table>
+            <thead><tr>{COLUMNS.map((c) => <th>{c}</th>)}</tr></thead>
+            <tbody>
+              {JOINSCAN.map((row, r) => (
+                <tr>{row.map((value, c) => <td class={value !== POSTGRES[r][c] ? "is-off" : undefined}>{value}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <p class="cs-rows-title">Postgres returns</p>
+          <table>
+            <thead><tr>{COLUMNS.map((c) => <th>{c}</th>)}</tr></thead>
+            <tbody class="is-reference">
+              {POSTGRES.map((row) => <tr>{row.map((value) => <td>{value}</td>)}</tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>From the issue. Values in red differ from what Postgres returns for the same query.</figcaption>
+    </figure>
+    <p>
+      Every value JoinScan returned is a real row, and the first row is even right. It is only wrong as an answer to
+      this query: the rows are ordered by one of the two sort keys.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The clue</h2>
+    <p>
+      <code>EXPLAIN</code> showed the top-K node, <code>SegmentedTopKExec</code>, sorting on a single physical column,
+      <code>[ord@1 ASC]</code>. The other side's column, <code>ord@3</code>, was gone from the plan.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The cause</h2>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-code"><Code code={CAUSE} lang="rust" theme="css-variables" /></div>
+      <figcaption>late_materialization.rs, before the fix</figcaption>
+    </figure>
+    <p>
+      This line removed duplicate deferred columns by name. In a self-join, <code>a.ord</code> and <code>b.ord</code> both
+      resolve to the string "ord", so two columns became one. The planner then dropped the second sort key, and the
+      lookup node never materialized it.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The first fix</h2>
+    <p>
+      I removed the name-based dedup and rewrote the projection to follow each column by its physical index,
+      <code>col.index()</code>, replacing name lookups across <code>late_materialization.rs</code>,
+      <code>segmented_topk_rule.rs</code>, <code>tantivy_lookup_exec.rs</code> and <code>pre_filter.rs</code>. The
+      ignored test from the report passed.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Where my fix was wrong</h2>
+    <p>
+      During review I had relaxed an assertion that kept failing, on the theory that it was only tripping over
+      aliases. A maintainer suspected it was catching something real and asked me to run a second case: two different
+      tables that both output a column called <code>name</code>. JoinScan and Postgres disagreed again.
+    </p>
+    <figure class="cs-figure">
+      <dl class="cs-panel cs-term cs-kv">
+        <div><dt>HashJoinExec projection</dt><dd>[ctid_0@0, name@1, ctid_1@3, name@5]</dd></div>
+        <div><dt>the sort wanted</dt><dd class="is-good">p.name, at physical index 3</dd></div>
+        <div><dt>SegmentedTopKExec got</dt><dd class="is-bad">col_2@1, which is index 1: s.name</dd></div>
+      </dl>
+      <figcaption>From EXPLAIN VERBOSE on the second case, as I reported it in the thread.</figcaption>
+    </figure>
+    <p>
+      My rewrite trusted <code>Column.index()</code> from the DataFusion sort node without accounting for how the
+      JoinScan projection rearranges the schema. Swapping names for indices had fixed one binding mistake and
+      introduced another.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The rebuild</h2>
+    <p>
+      The merged version resolves each sort column against the child schema, and treats the three possible outcomes
+      differently.
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-code"><Code code={RESOLVE} lang="rust" theme="css-variables" /></div>
+      <figcaption>From resolve_physical_index in segmented_topk_rule.rs, as merged. "// …" marks lines left out.</figcaption>
+    </figure>
+    <p>
+      Both cases now have regression tests that compare JoinScan with Postgres row by row. The self-join test also
+      asserts that both sort keys appear in the plan, so it cannot pass by accident if a later change collapses them
+      again:
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-term"><span class="is-good">SegmentedTopKExec: expr=[ord@3 ASC NULLS LAST, ord@1 ASC NULLS LAST], k=3</span></div>
+    </figure>
+  </section>
+
+  <section class="cs-section">
+    <h2>What it still does not handle</h2>
+    <p>
+      The duplicate-name branch leans on a DataFusion invariant, not on a real guarantee. A three-way self-join, or a
+      projection that reorders columns with the same name, would map to the wrong column silently. That is written
+      down in the code as a TODO and tracked as
+      <a href="https://github.com/paradedb/paradedb/issues/5093" target="_blank" rel="noopener noreferrer" class="link">#5093</a>,
+      which proposes explicit column lineage in place of the heuristic.
+    </p>
+  </section>
+</CaseStudy>

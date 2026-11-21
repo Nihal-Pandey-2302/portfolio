@@ -1,13 +1,12 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { SITE_CONFIG } from "@config";
+import { SITE_CONFIG, SITE_CONTENT } from "@config";
 import "../styles/global.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/600.css";
-import "@fontsource/inter/800.css";
-import "@fontsource/fira-code/400.css";
-import "@fontsource/fira-code/600.css";
+import "@fontsource-variable/instrument-sans/wght.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
+// The headline is set in this face at display size: preload it so the first paint isn't the fallback
+import sansUrl from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
 
 export interface Props {
   title?: string;
@@ -24,24 +23,53 @@ const {
 if (!Astro.site) throw new Error("Set `site` in astro.config.mjs: canonical and OG URLs derive from it.");
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
 const socialImageURL = new URL(image, Astro.site).href;
+
+// Who the site is about, in the form search engines read (schema.org Person)
+const current = SITE_CONTENT.experience[0];
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE_CONFIG.author,
+  url: Astro.site.href,
+  jobTitle: current.position,
+  worksFor: { "@type": "Organization", name: current.company, url: current.url },
+  sameAs: SITE_CONFIG.socialLinks.map((link) => link.href),
+};
 ---
 
 <!doctype html>
-<html lang={SITE_CONFIG.lang}>
+<html lang={SITE_CONFIG.lang} data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="color-scheme" content="dark light" />
+    <!-- matches --color-bg; the inline script and the theme toggle keep it in step -->
+    <meta name="theme-color" content="#0c0e0d" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" href={sansUrl} crossorigin />
     <meta name="generator" content={Astro.generator} />
-    
+
+    <!-- Theme: dark unless the visitor has switched to light. Inline so it runs before first paint. -->
+    <script is:inline>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem("theme");
+        } catch {}
+        document.documentElement.dataset.theme = theme === "light" ? "light" : "dark";
+        if (theme === "light") document.querySelector('meta[name="theme-color"]').content = "#fbfcfb";
+      })();
+    </script>
+
     <!-- SEO -->
     <title>{title}</title>
     <meta name="robots" content="index, follow" />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Backend Engineer, Database Systems Engineer, PostgreSQL, Postgres Internals, ParadeDB, Correctness, Rust, Distributed Systems, Senior Founding Engineer, Tech Lead, Tvaram, Nihal Pandey" />
+    <meta name="keywords" content="Backend Engineer, Database Systems Engineer, PostgreSQL, Postgres Internals, poolproof, Connection Poolers, ParadeDB, Correctness, Rust, Go, Distributed Systems, Senior Founding Engineer, Tech Lead, Tvaram, Nihal Pandey" />
     <meta name="author" content={SITE_CONFIG.author} />
     <link rel="canonical" href={canonicalURL} />
-    
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(person)} />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
@@ -57,8 +85,9 @@ const socialImageURL = new URL(image, Astro.site).href;
     <meta property="twitter:image" content={socialImageURL} />
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <Header />
-    <main>
+    <main id="main">
       <slot />
     </main>
     <Footer />
@@ -67,7 +96,22 @@ const socialImageURL = new URL(image, Astro.site).href;
 
 <style>
   main {
-    padding-top: var(--header-height);
-    min-height: calc(100vh - 200px); /* Adjust based on footer height */
+    min-height: calc(100vh - var(--header-height) - 8rem);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: var(--gutter);
+    top: -4rem;
+    z-index: 200;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    background: var(--color-text-main);
+    color: var(--color-bg);
+    font-size: var(--text-small);
+  }
+
+  .skip-link:focus {
+    top: 0.5rem;
   }
 </style>

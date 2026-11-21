@@ -1,420 +1,154 @@
 ---
-import type { Project, ProjectSubsection } from "../types";
+import type { Project } from "../types";
+import { rich } from "../utils/rich";
+import Arrow from "../icons/Arrow.astro";
 
 export interface Props {
   projects: Project[];
-  hideTitle?: boolean;
+  more: string;
 }
 
-const { projects, hideTitle = false } = Astro.props;
-
-// Typed against ProjectSubsection, so renaming a subsection here or in config
-// without updating the union in src/types is a compile error.
-const SUBSECTIONS: { label: ProjectSubsection; gridClass: string }[] = [
-  { label: "Current Work", gridClass: "production-grid" },
-  { label: "Open Source", gridClass: "open-source-grid" },
-  { label: "Systems & Performance", gridClass: "" },
-  { label: "Earlier Work", gridClass: "" },
-];
-const grouped = new Map<string, Project[]>();
-for (const { label } of SUBSECTIONS) grouped.set(label, []);
-for (const project of projects) {
-  const key = project.subsection ?? "Other";
-  if (!grouped.has(key)) grouped.set(key, []);
-  grouped.get(key)!.push(project);
-}
-const gridClassFor = (label: string) =>
-  SUBSECTIONS.find((s) => s.label === label)?.gridClass ?? "";
-const groupEntries = [...grouped.entries()].filter(([, items]) => items.length > 0);
-const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+const { projects, more } = Astro.props;
 ---
 
-<section id="projects" class={hideTitle ? "" : "section-padding"}>
-  <div class="container">
-    {!hideTitle && <h2 class="section-title mono">Featured Projects</h2>}
+<div class="projects">
+  {projects.map((project) => (
+    <article class="project">
+      <!-- Each project shows something: a screenshot, or failing that its headline figure -->
+      <a href={project.live ?? project.source} target="_blank" rel="noopener noreferrer" class="panel project-figure" tabindex="-1" aria-hidden="true">
+        {project.image ? (
+          <img src={project.image} alt="" loading="lazy" decoding="async" />
+        ) : project.figure && (
+          <span class="project-stat">
+            <span class="project-stat-value mono">{project.figure.value}</span>
+            <span class="project-stat-label">{project.figure.label}</span>
+          </span>
+        )}
+      </a>
 
-    <!-- Sub-tab navigation -->
-    <div class="sub-tabs-header">
-      <div class="sub-tabs-scroller">
-        {groupEntries.map(([label], i) => (
-          <button
-            class={`sub-tab-btn mono${i === 0 ? " sub-tab-active" : ""}`}
-            data-subtab={slug(label)}
-          >
-            {label}
-          </button>
-        ))}
-        <div class="sub-tab-indicator"></div>
-      </div>
-    </div>
-
-    <!-- Sub-tab content panels: non-active ones use `hidden` attribute so browser hides them natively -->
-    {groupEntries.map(([label, groupProjects], i) => (
-      <div
-        class="sub-tab-panel"
-        id={`subtab-${slug(label)}`}
-        hidden={i !== 0 ? true : undefined}
-      >
-        <div class:list={["projects-grid", gridClassFor(label)]}>
-          {groupProjects.map((project) => (
-            <article class={`project-card${project.flagship ? " project-flagship" : ""}`}>
-              {project.image && (
-                <div class="project-image">
-                  <img src={project.image} alt={project.name} loading="lazy" />
-                  {project.badge && <div class="project-badge">{project.badge}</div>}
-                </div>
-              )}
-
-              <div class="project-content">
-                {!project.image && project.badge && (
-                  <div class="badge-accent project-badge-inline">{project.badge}</div>
-                )}
-                <h3 class="project-title">{project.name}</h3>
-                <p class="project-summary">{project.summary}</p>
-
-                {project.metrics && (
-                  <div class="metrics-list">
-                    {project.metrics.map(metric => (
-                      <span class="badge-accent metric-badge">{metric}</span>
-                    ))}
-                  </div>
-                )}
-
-                {project.technologies && (
-                  <div class="tech-stack">
-                    {project.technologies.map(tech => (
-                      <span class="tech-badge">{tech}</span>
-                    ))}
-                  </div>
-                )}
-
-                <div class="project-links gap-sm flex mt-auto">
-                  {project.linkSource && (
-                    <a href={project.linkSource} target="_blank" rel="noopener noreferrer" class="link-icon" aria-label="GitHub Source">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                      </svg>
-                    </a>
-                  )}
-                  {project.linkPreview && (
-                    <a href={project.linkPreview} target="_blank" rel="noopener noreferrer" class="link-icon" aria-label="Live Preview">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <>
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </>
-                      </svg>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </article>
-          ))}
+      <div class="project-body">
+        <div class="project-top">
+          <h3 class="project-name">{project.name}</h3>
+          <p class="project-links">
+            <a href={project.source} target="_blank" rel="noopener noreferrer" class="out">Source<Arrow /></a>
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noopener noreferrer" class="out">Live demo<Arrow /></a>
+            )}
+          </p>
         </div>
+        <p class="project-stack mono">{project.stack.join(" · ")}</p>
+        <p class="project-summary" set:html={rich(project.summary)} />
       </div>
-    ))}
-  </div>
-</section>
+    </article>
+  ))}
+</div>
 
-<script>
-  function setupProjectSubTabs() {
-    const section = document.getElementById("projects");
-    if (!section) return;
-
-    const btns = Array.from(section.querySelectorAll<HTMLElement>(".sub-tab-btn"));
-    const indicator = section.querySelector<HTMLElement>(".sub-tab-indicator");
-
-    function moveIndicator(el: HTMLElement) {
-      if (!indicator) return;
-      indicator.style.width = `${el.offsetWidth}px`;
-      indicator.style.left = `${el.offsetLeft}px`;
-    }
-
-    function switchTab(tabId: string) {
-      btns.forEach(b => b.classList.remove("sub-tab-active"));
-      // Hide all panels
-      section!.querySelectorAll<HTMLElement>(".sub-tab-panel").forEach(p => { p.hidden = true; });
-
-      const btn = section!.querySelector<HTMLElement>(`.sub-tab-btn[data-subtab="${tabId}"]`);
-      if (btn) {
-        btn.classList.add("sub-tab-active");
-        moveIndicator(btn);
-      }
-
-      const panel = document.getElementById(`subtab-${tabId}`);
-      if (panel) {
-        panel.hidden = false;
-        panel.style.animation = "none";
-        void panel.offsetWidth; // reflow
-        panel.style.animation = "";
-      }
-    }
-
-    const firstActive = section.querySelector<HTMLElement>(".sub-tab-btn.sub-tab-active");
-    if (firstActive) {
-      requestAnimationFrame(() => moveIndicator(firstActive));
-      window.addEventListener("resize", () => {
-        const current = section!.querySelector<HTMLElement>(".sub-tab-btn.sub-tab-active");
-        if (current) moveIndicator(current);
-      });
-    }
-
-    btns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-subtab");
-        if (id) switchTab(id);
-      });
-    });
-
-    // Edge fade while the sub-tab strip has more content to the right
-    const scroller = section.querySelector<HTMLElement>(".sub-tabs-scroller");
-    if (scroller) {
-      const updateFade = () => {
-        scroller.classList.toggle(
-          "has-overflow-right",
-          scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 4
-        );
-      };
-      scroller.addEventListener("scroll", updateFade, { passive: true });
-      window.addEventListener("resize", updateFade);
-      updateFade();
-    }
-  }
-
-  setupProjectSubTabs();
-  document.addEventListener("astro:page-load", setupProjectSubTabs);
-</script>
-
-<!-- is:global needed for classes toggled by JS at runtime -->
-<style is:global>
-  #projects .sub-tab-panel[hidden] {
-    display: none !important;
-  }
-
-  #projects .sub-tab-panel {
-    animation: projectsFadeIn 0.35s ease forwards;
-  }
-
-  @keyframes projectsFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-</style>
+<p class="more" set:html={rich(more)} />
 
 <style>
-  .section-padding {
-    padding: var(--space-xl) 0;
+  .project {
+    display: grid;
+    grid-template-columns: 19rem minmax(0, 1fr);
+    gap: 1.25rem 2.25rem;
+    align-items: start;
+    padding: 2rem 0;
+    border-top: 1px solid var(--color-border);
   }
 
-  /* ── Sub-tab bar ─────────────────────────────── */
-  .sub-tabs-header {
-    display: flex;
-    position: relative;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--space-md);
+  .project:first-child {
+    padding-top: 0;
+    border-top: none;
   }
 
-  .sub-tabs-scroller {
-    display: flex;
-    gap: var(--space-lg);
-    position: relative;
-    padding-bottom: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .sub-tabs-scroller::-webkit-scrollbar { display: none; }
-
-  /* Hint that more sub-tabs exist past the right edge */
-  .sub-tabs-scroller.has-overflow-right {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);
-    mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);
-  }
-
-  .sub-tab-btn {
-    background: transparent;
-    border: none;
-    color: var(--color-text-muted);
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.65rem 0.25rem;
-    transition: color 0.3s ease;
-    opacity: 0.55;
-    white-space: nowrap;
-  }
-
-  .sub-tab-btn:hover {
-    opacity: 1;
-    color: var(--color-text-main);
-  }
-
-  .sub-tab-btn.sub-tab-active {
-    color: var(--color-accent);
-    opacity: 1;
-    font-weight: 600;
-  }
-
-  .sub-tab-indicator {
-    position: absolute;
-    bottom: -1px;
-    height: 2px;
-    background: var(--color-accent);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 -2px 10px rgba(var(--color-accent-rgb), 0.4);
-  }
-
-  /* ── Grid ────────────────────────────────────── */
-  .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--space-md);
-}
-
-.projects-grid.open-source-grid {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.projects-grid.production-grid {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.production-grid .project-card {
-  min-height: 0;
-}
-
-.production-grid .project-content {
-  padding: var(--space-md) var(--space-md) var(--space-sm);
-}
-
-@media (max-width: 900px) {
-  .projects-grid.production-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 1200px) {
-  .projects-grid.open-source-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .projects-grid { grid-template-columns: 1fr; }
-  .projects-grid.open-source-grid { grid-template-columns: 1fr; }
-}
-
-  /* ── Cards ───────────────────────────────────── */
-  .project-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+  .project-figure {
+    display: block;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    min-height: 480px;
-    position: relative;
+    transition: border-color 0.2s ease;
   }
 
-  .project-flagship {
-    border-color: rgba(var(--color-accent-rgb), 0.35);
-    box-shadow: 0 0 30px -10px rgba(var(--color-accent-rgb), 0.15);
+  .project:hover .project-figure {
+    border-color: var(--color-border-strong);
   }
 
-  .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    border-color: var(--color-accent);
-  }
-
-  .project-image {
-    height: 180px;
-    background: #1a1a1a;
-    border-bottom: 1px solid var(--color-border);
-    overflow: hidden;
-    position: relative;
-  }
-
-  .project-badge {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: var(--color-accent);
-    color: var(--color-bg);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    z-index: 10;
-  }
-
-  .project-image img {
+  .project-figure img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    object-position: top left;
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  .project-card:hover .project-image img { transform: scale(1.05); }
+  .project:hover .project-figure img {
+    transform: scale(1.03);
+  }
 
-  .project-content {
-    padding: var(--space-md);
-    flex-grow: 1;
+  .project-stat {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 1.1rem 1.2rem;
   }
 
-  .project-title {
+  .project-stat-value {
+    font-size: 2.5rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .project-stat-label {
+    font-size: var(--text-tiny);
+    line-height: 1.4;
+    color: var(--color-text-muted);
+  }
+
+  .project-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1.5rem;
+  }
+
+  .project-name {
     font-size: 1.25rem;
-    margin-bottom: var(--space-xs);
-    color: var(--color-text-main);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  .project-stack {
+    margin: 0.4rem 0 0.8rem;
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
   }
 
   .project-summary {
-    font-size: 0.9rem;
+    max-width: 40rem;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-md);
-    line-height: 1.6;
-    flex-grow: 1;
   }
 
-  .metrics-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: var(--space-md);
-  }
-
-  /* shares .badge-accent (global.css); softer fill for dense metric lists */
-  .metric-badge {
-    background: rgba(var(--color-accent-rgb), 0.05);
-  }
-
-  .tech-stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: var(--space-md);
-  }
-
-  .tech-badge {
-    background: rgba(255, 255, 255, 0.05);
+  .more {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9375rem;
     color: var(--color-text-muted);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
   }
 
-  .link-icon {
-    color: var(--color-text-muted);
-    transition: color 0.2s ease;
+  @media (max-width: 700px) {
+    .project {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* a figure tile needs less height than a screenshot once it spans the column */
+    .project-figure:has(.project-stat) {
+      aspect-ratio: 5 / 2;
+    }
   }
-
-  .link-icon:hover { color: var(--color-accent); }
-
-  /* shares .badge-accent (global.css); only spacing differs */
-  .project-badge-inline {
-    align-self: flex-start;
-    padding: 3px 10px;
-    margin-bottom: var(--space-xs);
-  }
-
 </style>

@@ -1,0 +1,22 @@
+---
+// The executor stack at one moment, top frame first, and what happens next.
+interface Props {
+  label: string;
+  frames: { code: string; note: string; empty?: boolean }[];
+  then: string;
+  outcome: "bad" | "good";
+}
+
+const { label, frames, then, outcome } = Astro.props;
+---
+
+<div class="cs-panel cs-frames">
+  <p class="cs-frames-label">{label}</p>
+  {frames.map((frame) => (
+    <div class:list={["cs-frame", { "is-empty": frame.empty }]}>
+      <code>{frame.code}</code>
+      <span>{frame.note}</span>
+    </div>
+  ))}
+  <p class:list={["cs-frames-then", `is-${outcome}`]}>{then}</p>
+</div>

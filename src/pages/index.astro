@@ -2,24 +2,45 @@
 import Layout from "../layouts/Layout.astro";
 import { SITE_CONTENT } from "@config";
 import Hero from "../components/Hero.astro";
-import ShowcaseTabs from "../components/ShowcaseTabs.astro";
-import About from "../components/About.astro";
+import Section from "../components/Section.astro";
+import Poolproof from "../components/Poolproof.astro";
+import Contributions from "../components/Contributions.astro";
+import Experience from "../components/Experience.astro";
+import Projects from "../components/Projects.astro";
+import Achievements from "../components/Achievements.astro";
+import Writing from "../components/Writing.astro";
+import Skills from "../components/Skills.astro";
 import Contact from "../components/Contact.astro";
-import Seeking from "../components/Seeking.astro";
-import Metrics from "../components/Metrics.astro";
 
-import "../styles/global.css";
+const { openSource } = SITE_CONTENT;
 ---
 
 <Layout>
-  <Hero
-    name={SITE_CONTENT.hero.name}
-    specialty={SITE_CONTENT.hero.specialty}
-    summary={SITE_CONTENT.hero.summary}
-  />
-  <Seeking seeking={SITE_CONTENT.seeking} />
-  <Metrics highlights={SITE_CONTENT.highlights} />
-  <ShowcaseTabs content={SITE_CONTENT} />
-  <About {...SITE_CONTENT.about} name={SITE_CONTENT.hero.name} />
-  <Contact email={SITE_CONTENT.hero.email} />
+  <Hero hero={SITE_CONTENT.hero} />
+
+  <!-- Section ids are link targets (nav, shared URLs): keep them stable -->
+  <Section id="open-source" title="Open Source">
+    <Poolproof project={openSource.poolproof} />
+    <Contributions groups={openSource.contributions} />
+  </Section>
+  <Section id="experience" title="Experience">
+    <Experience experience={SITE_CONTENT.experience} education={SITE_CONTENT.education} />
+  </Section>
+  <Section id="projects" title="Selected Projects">
+    <Projects projects={SITE_CONTENT.projects} more={SITE_CONTENT.moreProjects} />
+  </Section>
+  <Section id="awards" title="Hackathons">
+    <!-- older links used #achievements -->
+    <span id="achievements"></span>
+    <Achievements hackathons={SITE_CONTENT.hackathons} />
+  </Section>
+  <Section id="writing" title="Writing">
+    <Writing writing={SITE_CONTENT.writing} />
+  </Section>
+  <Section id="skills" title="Skills">
+    <Skills skills={SITE_CONTENT.skills} />
+  </Section>
+  <Section id="contact" title="Get in Touch">
+    <Contact email={SITE_CONTENT.hero.email} />
+  </Section>
 </Layout>

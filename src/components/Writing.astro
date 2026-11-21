@@ -1,120 +1,95 @@
 ---
 import type { WritingItem } from "../types";
+import Arrow from "../icons/Arrow.astro";
 
 export interface Props {
   writing: WritingItem[];
-  hideTitle?: boolean;
 }
 
-const { writing, hideTitle = false } = Astro.props;
+const { writing } = Astro.props;
 ---
 
-<section id="writing" class={hideTitle ? "" : "section-padding"}>
-  <div class="container">
-    {!hideTitle && <h2 class="section-title mono">Technical Writing</h2>}
-    
-    <div class="writing-grid">
-      {writing.map((item) => {
-        const published = item.status === "published";
-        const Wrapper = published ? "a" : "div";
-        return (
-          <Wrapper
-            class:list={["writing-card", { "writing-card-upcoming": !published }]}
-            href={item.link}
-            target={published ? "_blank" : undefined}
-            rel={published ? "noopener noreferrer" : undefined}
-          >
-            <div class="card-content">
-              {item.badge && <span class="badge-accent badge">{item.badge}</span>}
-              <h3 class="article-title">{item.title}</h3>
-              <p class="article-summary">{item.summary}</p>
-              {published ? (
-                <div class="read-more mono text-accent">Read Article ↗</div>
-              ) : (
-                <div class="read-more mono in-progress-label">In Progress</div>
-              )}
-            </div>
-          </Wrapper>
-        );
-      })}
-    </div>
-  </div>
-</section>
+<div class="posts">
+  {writing.map((item) => {
+    const published = item.status === "published";
+    const Wrapper = published ? "a" : "div";
+    return (
+      <Wrapper
+        class:list={["post", { "post-upcoming": !published }]}
+        href={item.link}
+        target={published ? "_blank" : undefined}
+        rel={published ? "noopener noreferrer" : undefined}
+      >
+        <div class="post-body">
+          <h3 class="post-title">{item.title}</h3>
+          <p class="post-summary">{item.summary}</p>
+          {item.badge && <p class="post-badge">{item.badge}</p>}
+        </div>
+        {published ? (
+          <span class="out">Read<Arrow /></span>
+        ) : (
+          <span class="post-status">In progress</span>
+        )}
+      </Wrapper>
+    );
+  })}
+</div>
 
 <style>
-  .section-padding {
-    padding: var(--space-xl) 0;
-  }
-
-  .writing-grid {
+  .post {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--space-lg);
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.4rem 2rem;
+    align-items: baseline;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--color-border);
   }
 
-  .writing-card {
-    display: block;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: var(--space-md);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    height: 100%;
+  .post:first-child {
+    padding-top: 0;
+    border-top: none;
   }
 
-  .writing-card:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.05);
+  .post-title {
+    margin-bottom: 0.35rem;
+    font-size: 1.125rem;
   }
 
-  /* shares .badge-accent (global.css); only spacing/fill differ */
-  .badge {
-    margin-bottom: var(--space-sm);
-    background: rgba(var(--color-accent-rgb), 0.05);
-  }
-
-  .writing-card-upcoming {
-    opacity: 0.75;
-    border-style: dashed;
-  }
-
-  .writing-card-upcoming:hover {
-    transform: none;
-    border-color: var(--color-border);
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  .in-progress-label {
+  .post-summary {
+    max-width: 40rem;
     color: var(--color-text-muted);
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
   }
 
-  .article-title {
-    font-size: 1.2rem;
+  .post-badge {
+    margin-top: 0.5rem;
+    font-size: var(--text-tiny);
+    color: var(--color-text-faint);
+  }
+
+  a.post:hover .post-title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  a.post:hover .out {
     color: var(--color-text-main);
-    margin-bottom: var(--space-xs);
-    line-height: 1.4;
   }
 
-  .article-summary {
-    font-size: 0.95rem;
+  /* not yet readable: stepped back, and no hover affordance */
+  .post-upcoming .post-title {
     color: var(--color-text-muted);
-    margin-bottom: var(--space-md);
-    line-height: 1.6;
   }
 
-  .read-more {
-    font-size: 0.9rem;
-    font-weight: 500;
+  .post-status {
+    font-size: var(--text-small);
+    color: var(--color-text-faint);
+    white-space: nowrap;
   }
 
-  @media (max-width: 600px) {
-    .writing-grid {
-      grid-template-columns: 1fr;
+  @media (max-width: 560px) {
+    .post {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

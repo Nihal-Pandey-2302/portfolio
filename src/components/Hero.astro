@@ -1,130 +1,195 @@
 ---
 import { SITE_CONFIG } from "@config";
+import type { HeroContent } from "../types";
+import { rich } from "../utils/rich";
+import Arrow from "../icons/Arrow.astro";
+import Map from "./Map.astro";
 
 export interface Props {
-  name: string;
-  specialty: string;
-  summary: string;
+  hero: HeroContent;
 }
 
-const { name, specialty, summary } = Astro.props;
+const { hero } = Astro.props;
 
-const github = SITE_CONFIG.socialLinks.find((l) => l.text === "Github");
-const linkedin = SITE_CONFIG.socialLinks.find((l) => l.text === "LinkedIn");
+// Split the headline around the flagged phrase so it can carry the squiggle
+const { headline, flag } = hero;
+const at = flag ? headline.indexOf(flag.phrase) : -1;
+const flagged = flag && at !== -1
+  ? { before: headline.slice(0, at), after: headline.slice(at + flag.phrase.length), ...flag }
+  : null;
 ---
 
-<section id="hero" class="hero-section flex items-center">
-  <div class="container">
-    <div class="hero-content animate-fade-in">
-      <h1 class="name">{name}</h1>
-      <h2 class="specialty mono text-accent">{specialty}</h2>
-      <p class="hero-summary text-muted">
-        {summary}
-      </p>
+<!-- #about is kept as a target for links to the old About section -->
+<section id="hero" class="hero">
+  <span id="about"></span>
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <p class="hero-role">{hero.role}</p>
 
-      <div class="hero-actions flex gap-sm" style="flex-wrap: wrap;">
-        <a href="#projects" class="btn btn-primary">
-          See What I'm Building
-        </a>
-        {github && (
-          <a href={github.href} target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-            GitHub
-          </a>
+      <div class="hero-headline-wrap">
+        {flagged ? (
+          <h1 class="hero-headline">
+            {flagged.before}<span class="flag" tabindex="0" aria-describedby="flag-note">{flagged.phrase}</span>{flagged.after}
+          </h1>
+        ) : (
+          <h1 class="hero-headline">{headline}</h1>
         )}
-        {linkedin && (
-          <a href={linkedin.href} target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-            LinkedIn
-          </a>
+        {flagged && (
+          // Outside the h1 so the joke isn't part of the page's main heading
+          <p class="diag mono" id="flag-note" role="tooltip">
+            <span><b>{flagged.code}</b>: {flagged.message}</span>
+            <span set:html={rich(flagged.detail)} />
+          </p>
         )}
-        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-          Resume
-        </a>
+      </div>
+
+      <div class="hero-summary">
+        {hero.summary.map((paragraph) => <p set:html={rich(paragraph)} />)}
+      </div>
+
+      <div class="hero-actions">
+        <a href="#contact" class="btn">Get in touch</a>
+        <ul class="hero-links">
+          {SITE_CONFIG.socialLinks.map((link) => (
+            <li>
+              <a href={link.href} target="_blank" rel="noopener noreferrer" class="out">
+                {link.text}<Arrow />
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
+
+    <!-- An overview before the detail: where the work below sits around Postgres -->
+    <Map stops={hero.map} />
   </div>
 </section>
 
 <style>
-  .hero-section {
+  .hero {
+    padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+
+  .hero-role {
+    margin-bottom: 1.25rem;
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+  }
+
+  .hero-headline-wrap {
     position: relative;
-    padding-top: calc(var(--header-height) + 6rem);
-    padding-bottom: 3rem;
+    margin-bottom: 1.75rem;
   }
 
-  @media (max-width: 768px) {
-    .hero-section {
-      padding-top: calc(var(--header-height) + 2.5rem);
-      padding-bottom: 1.5rem;
-    }
+  .hero-headline {
+    font-size: clamp(2.1rem, 1.15rem + 2.9vw, 3.35rem);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
   }
 
-  .hero-content {
-    max-width: 900px;
+  /* "nearly correct", flagged the way an editor flags an error */
+  .flag {
+    text-decoration: underline wavy var(--color-silent);
+    text-decoration-thickness: 0.055em;
+    text-underline-offset: 0.16em;
+    text-decoration-skip-ink: none;
+    cursor: help;
+    outline-offset: 6px;
   }
 
-  .name {
-    font-size: clamp(2.8rem, 7vw, 5rem);
-    line-height: 1.1;
-    margin-bottom: var(--space-xs);
-    background: linear-gradient(to right, #fff, #a0a0a0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  /* the diagnostic for it, in the compiler's voice */
+  .diag {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    left: 0;
+    z-index: 5;
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    pointer-events: none;
   }
 
-  .specialty {
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  .diag b {
     font-weight: 500;
-    color: var(--color-text-main);
-    margin-bottom: var(--space-md);
-    opacity: 0.9;
+    color: var(--color-silent-ink);
+  }
+
+  .diag span + span {
+    padding-left: 1.1rem;
+  }
+
+  .diag :global(code) {
+    padding: 0;
+    background: none;
+    font-size: inherit;
+  }
+
+  .hero-headline-wrap:has(.flag:hover) .diag,
+  .hero-headline-wrap:has(.flag:focus) .diag {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
   }
 
   .hero-summary {
-    font-size: 1.05rem;
-    margin-bottom: var(--space-md);
-    max-width: 640px;
-    line-height: 1.75;
+    display: grid;
+    gap: 0.9rem;
+    max-width: 33rem;
+    margin-bottom: 2.25rem;
+    font-size: 1.0625rem;
+    color: var(--color-text-muted);
   }
 
-  /* Buttons */
-  .btn {
-    display: inline-flex;
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    padding: 0.8rem 1.5rem;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-    transition: all 0.2s ease;
-    font-family: var(--font-sans); /* Use sans-serif for cleaner look */
-    text-decoration: none;
-    line-height: 1;
+    gap: 1rem 1.75rem;
   }
 
-  .btn-primary {
-    background: var(--color-accent);
+  .btn {
+    padding: 0.7rem 1.15rem;
+    border-radius: 9px;
+    background: var(--color-text-main);
     color: var(--color-bg);
-    border: 1px solid var(--color-accent);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: opacity 0.15s ease;
   }
 
-  .btn-primary:hover {
-    background: transparent;
-    color: var(--color-accent);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.15);
-    transform: translateY(-1px);
+  .btn:hover {
+    opacity: 0.86;
   }
 
-  .btn-outline {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--color-text-main);
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.4rem;
   }
 
-  .btn-outline:hover {
-    border-color: var(--color-text-main);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-1px);
+  @media (max-width: 960px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
-
 </style>

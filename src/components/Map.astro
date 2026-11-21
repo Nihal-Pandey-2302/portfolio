@@ -1,0 +1,288 @@
+---
+// Hero figure: a small sketch of the path into Postgres, with the work done at
+// each place beside it. Applications fan into a pooler, the pooler holds a
+// couple of connections into Postgres, and a pipeline feeds it from behind.
+import type { MapStop } from "../types";
+
+interface Props {
+  stops: MapStop[];
+}
+
+// The drawing is fixed at these three places; the words come from config
+const [pooler, postgres, pipeline] = Astro.props.stops;
+const CLIENTS = [16, 52, 88, 124, 160];
+---
+
+<div class="map panel">
+  <p class="map-label">Where I work around Postgres</p>
+
+  <div class="map-row">
+    <div class="map-draw">
+      <!-- many applications, one pooler -->
+      <svg class="map-fan" viewBox="0 0 176 56" aria-hidden="true">
+        {CLIENTS.map((x) => <circle cx={x} cy="6" r="3.5" />)}
+        {CLIENTS.map((x) => <path d={`M${x} 12C${x} 36 88 30 88 56`} />)}
+      </svg>
+    </div>
+    <p class="map-aside">applications</p>
+  </div>
+
+  <a class="map-row map-stop" href={pooler.href}>
+    <div class="map-draw">
+      <span class="map-node is-mine">pooler</span>
+      <span class="map-wire map-wire-pair"></span>
+    </div>
+    <div class="map-text">
+      <p class="map-where">{pooler.where} <span>{pooler.layer}</span></p>
+      <p class="map-name">{pooler.name}</p>
+      <p class="map-note">{pooler.note}</p>
+    </div>
+  </a>
+
+  <a class="map-row map-stop" href={postgres.href}>
+    <div class="map-draw">
+      <span class="map-node map-pg">
+        <span class="map-pg-name">PostgreSQL</span>
+        <span class="map-stages"><i>parse</i><i>plan</i><i class="is-mine">execute</i></span>
+      </span>
+      <span class="map-wire map-wire-up"></span>
+    </div>
+    <div class="map-text">
+      <p class="map-where">{postgres.where} <span>{postgres.layer}</span></p>
+      <p class="map-name">{postgres.name}</p>
+      <p class="map-note">{postgres.note}</p>
+    </div>
+  </a>
+
+  <a class="map-row map-stop" href={pipeline.href}>
+    <div class="map-draw">
+      <span class="map-node is-mine">pipeline</span>
+    </div>
+    <div class="map-text">
+      <p class="map-where">{pipeline.where} <span>{pipeline.layer}</span></p>
+      <p class="map-name">{pipeline.name}</p>
+      <p class="map-note">{pipeline.note}</p>
+    </div>
+  </a>
+</div>
+
+<style>
+  .map {
+    padding: clamp(1rem, 2.4vw, 1.6rem);
+    --wire: var(--color-border-strong);
+  }
+
+  .map-label {
+    margin-bottom: 1.1rem;
+    font-size: var(--text-tiny);
+    color: var(--color-text-muted);
+  }
+
+  /* drawing on the left, the words for it on the right */
+  .map-row {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    column-gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  /* each drawing cell is a column: its node, then a wire running down to the next row */
+  .map-draw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .map-fan {
+    display: block;
+    width: 100%;
+  }
+
+  .map-fan circle {
+    fill: var(--color-text-faint);
+  }
+
+  .map-fan path {
+    fill: none;
+    stroke: var(--wire);
+    stroke-width: 1;
+  }
+
+  .map-aside {
+    padding-top: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    color: var(--color-text-faint);
+  }
+
+  .map-node {
+    display: block;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--wire);
+    border-radius: 8px;
+    background: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: var(--color-text-muted);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* the parts I have worked on */
+  .is-mine {
+    border-color: var(--color-pass-ink);
+    color: var(--color-text-main);
+  }
+
+  .map-pg {
+    width: 100%;
+    padding: 0.6rem 0.6rem 0.65rem;
+    text-align: center;
+  }
+
+  .map-pg-name {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .map-stages {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+
+  .map-stages i {
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-size: 0.6875rem;
+    font-style: normal;
+  }
+
+  .map-stages i.is-mine {
+    border-color: var(--color-pass-ink);
+  }
+
+  /* ── Wires, with something moving along them ─── */
+  .map-wire {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 1.75rem;
+  }
+
+  /* the pooler keeps a couple of server connections open */
+  .map-wire-pair {
+    width: 9px;
+    border-inline: 1px solid var(--wire);
+  }
+
+  /* the pipeline writes upward into the database */
+  .map-wire-up {
+    width: 0;
+    border-left: 1px dashed var(--wire);
+  }
+
+  .map-wire::before,
+  .map-wire-pair::after {
+    content: "";
+    position: absolute;
+    left: -3px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-text-main);
+    animation: map-down 2.6s linear infinite;
+  }
+
+  .map-wire-pair::after {
+    left: auto;
+    right: -3px;
+    animation-delay: 1.3s;
+  }
+
+  .map-wire-up::before {
+    left: -3px;
+    border-radius: 1px;
+    animation-name: map-up;
+    animation-duration: 3.2s;
+  }
+
+  @keyframes map-down {
+    0% { top: 0; opacity: 0; }
+    15%, 85% { opacity: 1; }
+    100% { top: calc(100% - 5px); opacity: 0; }
+  }
+
+  @keyframes map-up {
+    0% { top: calc(100% - 5px); opacity: 0; }
+    15%, 85% { opacity: 1; }
+    100% { top: 0; opacity: 0; }
+  }
+
+  /* ── Words ───────────────────────────────────── */
+  .map-text {
+    padding-bottom: 1.35rem;
+  }
+
+  .map-stop:last-child .map-text {
+    padding-bottom: 0;
+  }
+
+  .map-where {
+    font-size: var(--text-tiny);
+    color: var(--color-text-muted);
+  }
+
+  .map-where span {
+    color: var(--color-text-faint);
+  }
+
+  .map-where span::before {
+    content: "·";
+    margin-inline: 0.35em;
+  }
+
+  .map-name {
+    margin: 0.1rem 0 0.2rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .map-note {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .map-stop:hover .map-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .map-stop:hover .map-node.is-mine,
+  .map-stop:hover .map-stages .is-mine {
+    background: color-mix(in srgb, var(--color-pass-ink) 12%, var(--color-bg));
+  }
+
+  @media (max-width: 480px) {
+    .map-row {
+      grid-template-columns: 8.5rem minmax(0, 1fr);
+    }
+
+    .map-stages {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* the layer drops to its own line, so it no longer needs the separator */
+    .map-where span {
+      display: block;
+    }
+
+    .map-where span::before {
+      content: none;
+    }
+  }
+</style>

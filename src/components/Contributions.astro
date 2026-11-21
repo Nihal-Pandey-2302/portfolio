@@ -1,0 +1,128 @@
+---
+import type { ContributionGroup } from "../types";
+import { rich } from "../utils/rich";
+import Arrow from "../icons/Arrow.astro";
+
+export interface Props {
+  groups: ContributionGroup[];
+}
+
+const { groups } = Astro.props;
+---
+
+{groups.map((group) => (
+  <article class="contrib" id={group.anchor}>
+    <header class="contrib-head">
+      <h3 class="contrib-project">
+        <a href={group.url} target="_blank" rel="noopener noreferrer" class="out">{group.project}<Arrow /></a>
+      </h3>
+      <p class="contrib-meta">
+        <span class="mono">{group.stack}</span>
+        <span>{group.summary}</span>
+      </p>
+    </header>
+
+    <ul class="contrib-items">
+      {group.items.map((item) => (
+        <li class="contrib-item">
+          <p class="contrib-ref">
+            <a href={item.url} target="_blank" rel="noopener noreferrer" class="mono link">{item.ref}</a>
+            <span class:list={["contrib-status", `is-${item.status}`]}>{item.status}</span>
+          </p>
+          <div>
+            <p class="contrib-text" set:html={rich(item.text)} />
+            {item.story && (
+              <p class="contrib-story"><a href={item.story} class="link">Read how it went</a></p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </article>
+))}
+
+<style>
+  .contrib {
+    margin-top: 4rem;
+    scroll-margin-top: calc(var(--header-height) + 1.5rem);
+  }
+
+  .contrib-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .contrib-project :global(.out) {
+    font-size: 1.25rem;
+    color: var(--color-text-main);
+  }
+
+  .contrib-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-size: var(--text-tiny);
+    color: var(--color-text-faint);
+  }
+
+  .contrib-item {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.4rem 2rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .contrib-ref {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: var(--text-small);
+  }
+
+  /* state is marked the way the results grid marks it: filled square, hollow square */
+  .contrib-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: var(--text-tiny);
+    color: var(--color-text-muted);
+  }
+
+  .contrib-status::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--color-pass-ink);
+  }
+
+  .contrib-status.is-proposed::before {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--color-text-faint);
+  }
+
+  .contrib-text {
+    color: var(--color-text-muted);
+  }
+
+  .contrib-story {
+    margin-top: 0.5rem;
+    font-size: var(--text-small);
+  }
+
+  @media (max-width: 600px) {
+    .contrib-item {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .contrib-ref {
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+</style>

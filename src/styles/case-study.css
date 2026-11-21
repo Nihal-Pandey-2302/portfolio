@@ -1,0 +1,392 @@
+/* Shared styles for /work/* case-study pages.
+   A reading column with figures. The .cs-* and .diag-* names are the ones the
+   case-study drafts already use, so those pages take this look when published. */
+
+.cs-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding-block: clamp(2rem, 6vw, 4rem) var(--space-xl);
+}
+
+.cs-back {
+  display: inline-block;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+  transition: color 0.15s ease;
+}
+
+.cs-back:hover {
+  color: var(--color-text-main);
+}
+
+.cs-title {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.cs-tagline {
+  max-width: 40rem;
+  font-size: clamp(1.0625rem, 1rem + 0.5vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Facts under the title: where it lives, when it merged, how big it was */
+.cs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0;
+  margin-top: 1.75rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.cs-chip + .cs-chip::before {
+  content: "·";
+  margin-inline: 0.75em;
+  color: var(--color-text-faint);
+}
+
+.cs-chip-muted {
+  color: var(--color-text-faint);
+}
+
+.cs-add { color: var(--color-pass-ink); }
+.cs-del { color: var(--color-silent-ink); }
+
+/* ── Sections ──────────────────────────────────── */
+.cs-section {
+  margin-top: clamp(2.75rem, 6vw, 4rem);
+}
+
+.cs-section h2 {
+  margin-bottom: 0.9rem;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
+
+.cs-section h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.0625rem;
+}
+
+.cs-section p {
+  color: var(--color-text-muted);
+}
+
+.cs-section p + p,
+.cs-section p + .cs-list,
+.cs-section .cs-list + p {
+  margin-top: 0.9rem;
+}
+
+/* running text picks up again after a figure */
+.cs-section .cs-figure + p {
+  margin-top: 1.25rem;
+}
+
+.cs-list {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.cs-list li {
+  position: relative;
+  padding-left: 1.15rem;
+}
+
+.cs-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.78em;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--color-border-strong);
+}
+
+.cs-stack {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  color: var(--color-text-faint);
+}
+
+/* A decision or aside set apart from the running text */
+.cs-decision,
+.cs-writeup {
+  margin-top: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-secondary);
+}
+
+.cs-decision .title {
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.cs-decision .note,
+.cs-writeup {
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+/* ── Figures ───────────────────────────────────── */
+.cs-figure {
+  margin-top: 1.5rem;
+}
+
+.cs-figure figcaption {
+  margin-top: 0.75rem;
+  font-size: var(--text-tiny);
+  line-height: 1.55;
+  color: var(--color-text-faint);
+}
+
+.cs-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-secondary);
+  overflow: hidden;
+}
+
+/* Code, as highlighted by Astro's Code component (theme "css-variables").
+   Long lines scroll inside the figure, never the page. */
+.cs-code pre {
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  tab-size: 4;
+}
+
+.cs-code code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* Output a program printed: an error, a plan line */
+.cs-term {
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* labelled lines of output: what it is, then what it said */
+.cs-kv > div {
+  display: grid;
+  grid-template-columns: 13.5rem minmax(0, 1fr);
+  column-gap: 1rem;
+}
+
+.cs-kv dt {
+  color: var(--color-text-faint);
+}
+
+.cs-term .is-bad { color: var(--color-silent-ink); }
+.cs-term .is-good { color: var(--color-pass-ink); }
+.cs-term .is-dim { color: var(--color-text-faint); }
+
+/* Two result sets side by side; cells that differ from the reference are marked */
+.cs-rows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cs-rows > div {
+  padding: 1rem 1.25rem 1.1rem;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.cs-rows > div + div {
+  border-left: 1px solid var(--color-border);
+}
+
+.cs-rows-title {
+  margin-bottom: 0.7rem;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.cs-rows table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-rows th {
+  padding: 0 0.75rem 0.4rem 0;
+  font-weight: 400;
+  text-align: left;
+  color: var(--color-text-faint);
+}
+
+.cs-rows td {
+  padding: 0.3rem 0.75rem 0.3rem 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.cs-rows td.is-off {
+  color: var(--color-silent-ink);
+}
+
+.cs-rows .is-reference td {
+  color: var(--color-pass-ink);
+}
+
+/* The executor stack at one moment: frames top-first, then what happens next */
+.cs-frames {
+  padding: 1.1rem 1.25rem 1.2rem;
+}
+
+.cs-frames-label {
+  margin-bottom: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-faint);
+}
+
+.cs-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 0.25rem 1.25rem;
+  align-items: baseline;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.cs-frame:first-of-type { border-radius: 8px 8px 0 0; }
+.cs-frame:last-of-type { border-radius: 0 0 8px 8px; }
+.cs-frame:only-of-type { border-radius: 8px; }
+.cs-frame + .cs-frame { border-top: none; }
+
+.cs-frame code {
+  justify-self: start;
+  padding: 0;
+  background: none;
+  color: var(--color-text-main);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cs-frame.is-empty code {
+  color: var(--color-text-faint);
+}
+
+.cs-frames-then {
+  margin-top: 0.8rem;
+  font-size: var(--text-small);
+}
+
+.cs-frames-then.is-bad { color: var(--color-silent-ink); }
+.cs-frames-then.is-good { color: var(--color-pass-ink); }
+
+/* Boxes and arrows, for the drafts' diagrams */
+.cs-diagram {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-secondary);
+  overflow-x: auto;
+}
+
+.diag-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.diag-box {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-bg);
+  text-align: center;
+}
+
+.diag-box-accent {
+  border-color: var(--color-pass-ink);
+}
+
+.diag-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  color: var(--color-text-main);
+}
+
+.diag-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-faint);
+}
+
+.diag-arrow {
+  padding: 0.4rem 0;
+  text-align: center;
+  color: var(--color-text-faint);
+}
+
+.diag-boundary {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 8px;
+}
+
+/* ── Footer of a case study ────────────────────── */
+.cs-next {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-top: clamp(3rem, 7vw, 4.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-small);
+}
+
+@media (max-width: 600px) {
+  .cs-rows {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-rows > div + div {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .cs-frame {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-kv > div {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 0.4rem;
+  }
+}

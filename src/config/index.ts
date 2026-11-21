@@ -5,336 +5,260 @@ export const SITE_CONFIG: SiteConfig = {
   title: "Nihal Pandey | Backend & Database Systems Engineer",
   author: "Nihal Pandey",
   description:
-    "Backend and database systems engineer focused on PostgreSQL internals and correctness. Open source contributor to ParadeDB (YC S23). Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan.",
+    "Backend and database systems engineer focused on PostgreSQL internals and correctness. Author of poolproof, contributor to ParadeDB (YC S23). Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan.",
   lang: "en",
   navLinks: [
-    { text: "Work", href: "/#projects" },
+    { text: "Open Source", href: "/#open-source" },
     { text: "Experience", href: "/#experience" },
+    { text: "Projects", href: "/#projects" },
     { text: "Writing", href: "/#writing" },
-    { text: "About", href: "/#about" },
     { text: "Contact", href: "/#contact" },
   ],
   socialLinks: [
-    { text: "X", href: "https://x.com/PandeyNihal23" },
+    { text: "GitHub", href: "https://github.com/Nihal-Pandey-2302" },
     { text: "LinkedIn", href: "https://www.linkedin.com/in/nihal-pandey-8529b6257/" },
-    { text: "Github", href: "https://github.com/Nihal-Pandey-2302" },
+    { text: "X", href: "https://x.com/PandeyNihal23" },
   ],
   socialImage: "/nihal-og.png",
+  location: { city: "Bengaluru", timeZone: "Asia/Kolkata" },
 };
 
 // PAGE-SPECIFIC CONTENT
+// Strings accept `code`, **bold** and [text](url) where the type says "rich".
 export const SITE_CONTENT: SiteContent = {
   // Hero Section
   hero: {
     name: "Nihal Pandey",
-    specialty: "Senior Founding Engineer & Tech Lead @ Tvaram",
-    summary:
-      "I'm Tvaram's senior founding engineer and tech lead, building the backend behind Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both are launching soon. I also land PostgreSQL internals fixes in ParadeDB (YC S23).",
+    role: "Senior Founding Engineer & Tech Lead @ Tvaram",
+    headline: "I build backend and data systems where being nearly correct is not good enough.",
+    flag: {
+      phrase: "nearly correct",
+      code: "error[E0308]",
+      message: "mismatched types",
+      detail: "expected `correct`, found `nearly correct`",
+    },
+    map: [
+      {
+        where: "In front of it",
+        layer: "connection poolers",
+        name: "poolproof",
+        note: "Tests what a pooler changes: 50 scenarios, 14 upstream bugs reproduced.",
+        href: "#open-source",
+      },
+      {
+        where: "Inside it",
+        layer: "executor internals",
+        name: "ParadeDB (YC S23)",
+        note: "3 PRs merged: wrong rows from JoinScan, a nested ExecutorRun panic, ctid lookups.",
+        href: "#paradedb",
+      },
+      {
+        where: "Behind it",
+        layer: "ingestion pipelines",
+        name: "Ethereum EVM Indexer",
+        note: "10M+ transactions indexed with atomic SQL, zero integrity failures.",
+        href: "#projects",
+      },
+    ],
+    summary: [
+      "Most of my time goes into PostgreSQL: its executor internals at ParadeDB, and the connection poolers in front of it with poolproof. At Tvaram I'm building Tasvam and MailTitan, both launching soon.",
+      "Before that I wrote Rust security tooling at the Prime Minister's Office, and shipped production systems on Solana, EVM, Stellar and Kaspa, winning five hackathons along the way.",
+    ],
     email: "pandeynihal232@gmail.com",
+    image: "/avatar.jpg", // 112px square, cut from nihal-real.jpg
   },
 
-  // "Now Building" card
-  seeking: {
-    status: "Now Building",
-    role: "Senior Founding Engineer & Tech Lead",
-    company: "Tvaram",
-    companyUrl: "https://tvaram.com",
-    description:
-      "Building two products at Tvaram: Tasvam, the data intelligence layer, and MailTitan, email sending infrastructure. Both announced, launching soon.",
-    meta: [
-      { label: "Building", value: "Tasvam · MailTitan", accent: true },
-      { label: "Open Source", value: "ParadeDB (YC S23) · PostgreSQL internals" },
+  // Open Source Section
+  openSource: {
+    poolproof: {
+      name: "poolproof",
+      tagline: "Find out what breaks when you put a connection pooler in front of Postgres",
+      stack: "Rust",
+      summary:
+        "Poolers like PgBouncer, PgDog and Supavisor are meant to be invisible. In transaction mode they mostly are, until a `SET` leaks to another client, a temp table appears in someone else's session, or half a query string silently never runs. poolproof replays small scenarios against plain Postgres and then through the pooler, and reports every step where the two differ. Postgres is the oracle, so no scenario hardcodes expected output.",
+      points: [
+        "**50 scenarios** across **PgBouncer, PgDog, Supavisor, PgCat and Odyssey**, multiple versions each, on Postgres 17 and 18, with a [results site](https://nihal-pandey-2302.github.io/poolproof/) showing every step's trace and the version where a behaviour broke or got fixed",
+        "Reproduces **14 upstream bugs** in PgBouncer, PgDog and Supavisor, e.g. PgDog acknowledging only the `BEGIN` of `BEGIN; INSERT; COMMIT` and never committing the insert ([pgdog#1849](https://github.com/pgdogdev/pgdog/issues/1849)), and Supavisor hanging on 4 pipelined requests in 9 of 10 runs ([supavisor#1239](https://github.com/supabase/supavisor/issues/1239))",
+        "`poolproof scan` reads `pg_stat_statements` exports, Postgres logs or `.sql` files, parses them with the real Postgres parser, and flags queries that break under transaction pooling, checked against what your pooler version actually did. SARIF output for code scanning",
+        "Runs real drivers (psycopg, pgx, node-postgres, pgjdbc) through each pooler; classifies failures as silent, error or hang, and separates documented limitations from bugs",
+        "Ships as signed binaries for Linux, macOS and Windows (SHA256SUMS + build attestation) and as a GitHub Action for CI",
+      ],
+      repo: "https://github.com/Nihal-Pandey-2302/poolproof",
+      results: "https://nihal-pandey-2302.github.io/poolproof/",
+      // becomes { status: "published", href: "/work/..." } once the page exists
+      caseStudy: { status: "in-progress" },
+    },
+    contributions: [
+      {
+        project: "ParadeDB (YC S23)",
+        anchor: "paradedb",
+        url: "https://github.com/paradedb/paradedb",
+        stack: "Rust · PostgreSQL · Tantivy",
+        summary: "3 merged, 867 lines across 15 files",
+        items: [
+          {
+            ref: "#4763",
+            url: "https://github.com/paradedb/paradedb/pull/4763",
+            status: "merged",
+            text: "`JoinScan` returned wrong rows on self-joins with duplicate sort keys. Traced it to late materialization in the optimizer and rewrote physical projection to bind columns by index instead of by name; caught a misbinding in my own fix during review and rebuilt it",
+            story: "/work/joinscan-wrong-rows",
+          },
+          {
+            ref: "#4924",
+            url: "https://github.com/paradedb/paradedb/pull/4924",
+            status: "merged",
+            text: "Nested `ExecutorRun` panicked in `fake_aminsertcleanup` on PG16. Review found a second bug in my first fix, on the recursive DML path, so I replaced the depth counter with an RAII `FrameGuard` that gives every nesting level its own frame",
+            story: "/work/nested-executor-run",
+          },
+          {
+            ref: "#4765",
+            url: "https://github.com/paradedb/paradedb/pull/4765",
+            status: "merged",
+            text: "Removed `ctid` from `SearchIndexScore` in favour of batched lookups, folding 5 duplicated ctid-lookup blocks into a single helper across 6 execution paths",
+          },
+          {
+            ref: "#5093",
+            url: "https://github.com/paradedb/paradedb/issues/5093",
+            status: "proposed",
+            text: "Replace the `resolve_physical_index` heuristic with explicit column lineage tracking, the structural follow-up to #4763",
+          },
+        ],
+      },
     ],
   },
-
-  // Engineering Highlights (Metrics bar)
-  highlights: [
-    {
-      value: "2",
-      unit: "systems",
-      label: "Building Tasvam and MailTitan end to end",
-      sub: "Sr. Founding Engineer & Tech Lead @ Tvaram",
-    },
-    {
-      value: "4",
-      unit: "PRs",
-      label: "ParadeDB (YC S23) · PostgreSQL internals",
-      sub: "3 merged · 1 in review",
-    },
-    {
-      value: "648K",
-      unit: "msgs/sec",
-      label: "WebSocket throughput benchmark",
-      sub: "Kraken Market Data Engine",
-    },
-    {
-      value: "10M+",
-      unit: "transactions",
-      label: "Atomic SQL guarantees, zero data loss",
-      sub: "Production EVM Indexer",
-    },
-    {
-      value: "6x",
-      unit: "Winner",
-      label: "Hackathon wins incl. Smart India Hackathon",
-      sub: "Client: Government of India (NTRO)",
-    },
-  ],
 
   // Experience Section
   experience: [
     {
       company: "Tvaram",
       position: "Senior Founding Engineer & Tech Lead",
-      startDate: "Jun 2026",
-      endDate: "Present",
+      location: "Bengaluru",
+      startDate: "June 2026",
+      endDate: "present",
       url: "https://tvaram.com",
       summary: [
-        "Built the backend for both products solo: MailTitan (email sending infrastructure) and Tasvam (the data intelligence layer), both launching soon.",
+        "Built the backend for both products solo, and own it end to end.",
         "Promoted from Founding Engineer to Senior Founding Engineer & Tech Lead within three months.",
-        "Now leading a team of interns as the first full-time engineers are hired.",
-        "Own the backend end to end on both products.",
-        "Engineering write-ups and case studies coming once the products are live.",
+        "Leading a team of engineers.",
+      ],
+      // Unreleased: keep to the product sites' own public wording
+      products: [
+        {
+          name: "Tasvam",
+          url: "https://tasvam.ai",
+          summary: "The data intelligence layer of the Tvaram ecosystem.",
+          status: "Launching soon",
+        },
+        {
+          name: "MailTitan",
+          url: "https://mailtitan.ai",
+          summary: "Enterprise email sending infrastructure for high-volume, mission-critical delivery.",
+          status: "Launching soon",
+        },
       ],
     },
     {
-      company: "ParadeDB (YC S23)",
-      position: "Open Source Contributor · Rust / PostgreSQL",
-      startDate: "Apr 2026",
-      endDate: "Present",
-      url: "https://www.paradedb.com",
-      summary: [
-        "Multiple PRs merged into the production Rust codebase: query pipeline, scan execution, and PostgreSQL executor hooks",
-        "PR #4924 (merged): fixed a nested ExecutorRun panic on PG16, found a second bug on the recursive DML path during review, and replaced a depth counter with an RAII FrameGuard",
-        "PR #4763 (merged): fixed JoinScan returning wrong rows on self-joins with duplicate sort keys by rewriting physical projection to use column indices instead of name-based dedup",
-        "PR #4765 (merged): refactored ctid lookup across the query pipeline and removed five duplicate code blocks",
-        "PR #4752 (in review): partition-aware BM25 search via SPI expansion, plus lifecycle panic fixes in begin_custom_scan and rescan",
-      ],
-    },
-    {
-      company: "Prime Minister's Office, Government of India",
+      company: "Prime Minister's Office (PMO), Government of India",
       position: "Cybersecurity Research Intern",
-      startDate: "Jun 2025",
+      location: "New Delhi",
+      startDate: "June",
       endDate: "Sept 2025",
       summary: [
-        "Built Rust/Tokio vulnerability scanner deployed across critical government infrastructure",
-        "Cut manual vulnerability assessment time by 60% with zero downtime across distributed systems",
-        "Adopted by 2 internal security teams. Details under NDA.",
+        "Wrote Tokio-based Rust tooling that automated vulnerability scanning across critical government infrastructure, cutting manual assessment time by **over 60%** with no downtime during rollout",
+        "Threat-modelling workflows I built were picked up by **2 internal teams**",
+        "Details under NDA",
       ],
     },
   ],
 
-  // Achievements Section
-  achievements: [
-    {
-      company: "Winner: UK AI Agent Hackathon 2026 (Kaspa Track)",
-      position: "Team KaspaSwarm",
-      startDate: "Prize",
-      endDate: "1st Place",
-      summary: [
-        "1st place in the Kaspa track with KaspaSwarm",
-        "AI agent hackathon hosted by Imperial College London",
-      ],
-    },
-    {
-      company: "Winner: aOS Andromeda Hackathon 2025",
-      position: "Team Lead",
-      startDate: "Prize",
-      endDate: "$2,500",
-      summary: [
-        "1st place out of 2,500+ global teams",
-        "Built production RWA tokenization platform with ERC-721 contracts and IPFS metadata in 48 hours",
-      ],
-    },
-    {
-      company: "Winner: Smart India Hackathon 2024 (NTRO)",
-      position: "Tech Lead & Backend Developer",
-      startDate: "Prize",
-      endDate: "INR 100K",
-      summary: [
-        "1st place out of 50,000+ participants",
-        "Built agentless Windows vulnerability scanner reducing manual security analysis by 80%",
-        "Client: Government of India (NTRO)",
-      ],
-    },
-    {
-      company: "4th Place: Kaspa Hackathon 2024",
-      position: "Backend Developer",
-      startDate: "Prize",
-      endDate: "$1,250",
-      summary: [
-        "4th overall out of international field",
-        "Won Most Creative Use of Kaspa and Best Real-Time Data Project",
-      ],
-    },
-    {
-      company: "Finalist: Kraken Forge Hackathon 2025",
-      position: "Backend Developer",
-      startDate: "Prize",
-      endDate: "Global Top Tier",
-      summary: [
-        "Selected as global top-tier finalist in performance optimization category",
-      ],
-    },
-    {
-      company: "Winner: Graph-e-thon 2.0",
-      position: "Blockchain Developer",
-      startDate: "Prize",
-      endDate: "INR 175K",
-      summary: [
-        "Built blockchain-based analytics solution for Technology Business Incubator event",
-        "Host: TBI Graphic Era",
-      ],
-    },
-  ],
+  education: {
+    degree: "B.Tech, Electronics Engineering",
+    school: "Rajiv Gandhi Institute of Petroleum Technology",
+    years: "2022 – 2026",
+  },
 
   // Projects Section
   projects: [
-    // Current Work (Tvaram)
     {
-      name: "Tasvam",
+      name: "KaspaSwarm",
       summary:
-        "The data intelligence layer of the Tvaram ecosystem. Designed and built end to end as the sole engineer.",
-      linkPreview: "https://tasvam.ai",
-      badge: "Tvaram · Launching soon",
-      flagship: true,
-      subsection: "Current Work",
-      metrics: ["Case study coming after launch"],
+        "Autonomous AI agents post, bid on, solve and settle tasks as real Kaspa transactions, with an LLM verifier checking results before payment. Auction, escrow, transport and LLM services behind a React dashboard; PyTest, CI and one-command Docker Compose.",
+      stack: ["Python", "FastAPI", "React", "WebSockets", "Kaspa SDK"],
+      source: "https://github.com/Nihal-Pandey-2302/kaspaswarm",
+      live: "https://kaspaswarm.vercel.app/",
+      image: "/kaspaswarm.png",
     },
     {
-      name: "MailTitan",
+      name: "Kraken Market Data SDK",
       summary:
-        "Enterprise email sending infrastructure for high-volume, mission-critical delivery. Built solo, backend to deploy.",
-      linkPreview: "https://mailtitan.ai",
-      badge: "Tvaram · Launching soon",
-      flagship: true,
-      subsection: "Current Work",
-      metrics: ["Case study coming after launch"],
-    },
-    // ParadeDB (Open Source)
-    {
-      name: "ParadeDB: ctid Refactor (Merged)",
-      summary:
-        "Removed ctid from SearchIndexScore and consolidated duplicate lookup logic into a centralized resolve_ctid helper across 5 execution paths in the query pipeline.",
-      linkSource: "https://github.com/paradedb/paradedb/pull/4765",
-      badge: "Open Source · Merged",
-      subsection: "Open Source",
-      metrics: [
-        "265 lines changed across 6 files",
-        "Merged into production codebase",
-        "Eliminated 5 duplicate code blocks",
-      ],
-      technologies: ["Rust", "PostgreSQL", "Tantivy", "pgrx"],
-    },
-    {
-      name: "ParadeDB: RAII FrameGuard Fix (Merged)",
-      summary:
-        "Fixed nested ExecutorRun panic in fake_aminsertcleanup on PG16. Identified a second correctness bug mid-review and replaced depth-counter approach with a proper RAII FrameGuard.",
-      linkSource: "https://github.com/paradedb/paradedb/pull/4924",
-      badge: "Open Source · Merged",
-      subsection: "Open Source",
-      metrics: [
-        "Fixes unreachable! panic on PG16",
-        "RAII guard handles nested DML correctly",
-        "282 lines changed",
-      ],
-      technologies: ["Rust", "PostgreSQL", "pgrx"],
-    },
-    {
-      name: "ParadeDB: JoinScan Sort Key Fix (Merged)",
-      summary:
-        "Fixed JoinScan returning wrong rows on self-joins with duplicate sort keys. Caught a column misbinding in my own fix during review and rebuilt using physical index mapping.",
-      linkSource: "https://github.com/paradedb/paradedb/pull/4763",
-      badge: "Open Source · Merged",
-      subsection: "Open Source",
-      metrics: [
-        "Fixes incorrect row ordering on self-joins",
-        "Rebuilt column mapping using physical indices",
-        "261 lines changed",
-      ],
-      technologies: ["Rust", "PostgreSQL", "DataFusion"],
-    },
-    {
-      name: "ParadeDB: Partitioned Table BM25",
-      summary:
-        "Added partition-aware BM25 search via SPI expansion. Fixed lifecycle panics in begin_custom_scan and rescan for partitioned index relations.",
-      linkSource: "https://github.com/paradedb/paradedb/pull/4752",
-      badge: "Open Source · In Review",
-      subsection: "Open Source",
-      metrics: [
-        "BM25 search now works on partitioned tables",
-        "Fixed begin_custom_scan lifecycle panic",
-        "225 lines changed",
-      ],
-      technologies: ["Rust", "PostgreSQL", "pgrx", "SPI"],
-    },
-    // Systems & Performance
-    {
-      name: "Low-Latency Market Data Ingestion System",
-      summary:
-        "High-throughput async WebSocket ingestion system designed for real-time financial market data processing.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/kraken-rs",
-      linkSource: "https://github.com/Nihal-Pandey-2302/kraken-rs",
+        "Async WebSocket ingestion benchmarked at **648,000 msgs/sec** via zero-copy deserialization and ring-buffer reuse; 100% message delivery across 50+ simulated network partitions.",
+      stack: ["Rust", "Tokio", "Serde", "WebSockets"],
+      source: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       image: "/kraken.gif",
-      badge: "Rust Infrastructure",
-      subsection: "Systems & Performance",
-      metrics: [
-        "648,000 msgs/sec throughput",
-        "Backpressure-aware pipeline",
-        "Deterministic ordering",
-      ],
-      technologies: ["Rust", "Tokio", "WebSockets", "Serde", "Async Systems"],
     },
     {
-      name: "Crash-Safe High-Throughput EVM Indexer",
+      name: "Ethereum EVM Indexer",
       summary:
-        "Production Rust ingestion pipeline indexing 10M+ transactions from Ethereum RPC with atomic SQL guarantees, zero data integrity failures across crash and block-reorg scenarios, and a low-latency REST API.",
-      linkPreview: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
-      linkSource: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
-      image: "/evm-indexer.png",
-      badge: "Backend Systems",
-      subsection: "Systems & Performance",
-      metrics: [
-        "10M+ transactions indexed",
-        "Crash-safe atomic transactions",
-        "Sub-ms PostgreSQL queries",
-      ],
-      technologies: ["Rust", "Axum", "SQLx", "PostgreSQL", "Docker", "Async"],
+        "Indexed **10M+ transactions** with atomic SQL transactions: zero data-integrity failures across crash and block-reorg tests, idempotent reorg detection and rollback, read API on Axum.",
+      stack: ["Rust", "Tokio", "Axum", "SQLx", "PostgreSQL"],
+      source: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
+      figure: { value: "10M+", label: "transactions indexed, zero integrity failures" },
     },
-    // Earlier Work
     {
-      name: "Solana Stablecoin Standard (SSS)",
+      name: "Solana Stablecoin Standard",
       summary:
-        "OpenZeppelin-equivalent SDK for Solana stablecoins using Token-2022. Three standards: SSS-1 minimal, SSS-2 compliant with Transfer Hook blacklist enforcement and Permanent Delegate seizure, SSS-3 private with ZK Confidential Transfers proof of concept.",
-      linkPreview: "https://sss-solana-stablecoin-sdk.vercel.app/",
-      linkSource: "https://github.com/Nihal-Pandey-2302/sss-solana-stablecoin-sdk",
+        "OpenZeppelin-style SDK for Solana stablecoins in three tiers: minimal, compliant (Transfer Hook blacklist, Permanent Delegate seizure) and private (ZK Confidential Transfers PoC). TypeScript SDK, 15-command CLI, Helius indexer, admin dashboard; **19/19 Anchor tests** on Devnet.",
+      stack: ["Rust", "Anchor", "Token-2022", "TypeScript"],
+      source: "https://github.com/Nihal-Pandey-2302/sss-solana-stablecoin-sdk",
+      live: "https://sss-solana-stablecoin-sdk.vercel.app/",
       image: "/Solana Stablecoin Standard (SSS).png",
-      badge: "Solana / DeFi Infrastructure",
-      subsection: "Earlier Work",
-      metrics: [
-        "19/19 Anchor tests passing",
-        "Transfer Hook intercepts every token transfer",
-        "ZK Confidential Transfers PoC (SSS-3)",
-        "TypeScript SDK + 15-command CLI",
-      ],
-      technologies: ["Rust", "Anchor", "Token-2022", "TypeScript", "Next.js", "Docker"],
     },
     {
-      name: "Solana Job Queue",
+      name: "A.R.I.A.",
       summary:
-        "Redis and SQS style job queue rebuilt as a Solana program: worker lifecycles, DAG dependencies, dead letter queues, and scheduled execution.",
-      linkPreview: "https://solana-job-queue.vercel.app/",
-      linkSource: "https://github.com/Nihal-Pandey-2302/solana-job-queue",
-      image: "/Solana Job Queue.png",
-      badge: "On-Chain Backend Infrastructure",
-      subsection: "Earlier Work",
-      metrics: [
-        "Native O(log n) binary max-heap in Queue PDA",
-        "DAG task dependencies via cryptographic prerequisite validation",
-        "Full worker lifecycle with DLQ and scheduled execution",
-        "17/17 tests, benchmarked at 400 TPS per Queue PDA",
-      ],
-      technologies: ["Rust", "Anchor", "TypeScript", "Next.js"],
+        "RWA tokenization protocol: ERC-721 minting, on-chain marketplace and fractionalized ownership, with IPFS-anchored metadata and on-chain document hash verification.",
+      stack: ["Solidity", "Hardhat", "IPFS", "React"],
+      source: "https://github.com/Nihal-Pandey-2302/ARIA-QIE",
+      figure: { value: "1st", label: "of 2,500+ teams, Andromeda aOS Buildathon" },
+    },
+  ],
+  moreProjects:
+    "More in [my repositories](https://github.com/Nihal-Pandey-2302?tab=repositories), including Solana Job Queue, Solana Webhook Processor, InjectiveQL, EVM Event Watchdog and VatanPay.",
+
+  // Hackathons Section
+  hackathons: [
+    {
+      year: "2026",
+      title:
+        "1st Prize, UK AI Agent Hackathon, Kaspa Track ([KaspaSwarm](https://github.com/Nihal-Pandey-2302/kaspaswarm))",
+      prize: "USD 1,000",
+    },
+    {
+      year: "2026",
+      title:
+        "3 prizes at Kaspathon (Top 5 Main Prize, Real-Time Data, Most Creative Use of Kaspa), 500+ global teams",
+      prize: "USD 1,200",
+    },
+    {
+      year: "2025",
+      title:
+        "1st place, Andromeda aOS Buildathon, 2,500+ global teams ([A.R.I.A.](https://github.com/Nihal-Pandey-2302/ARIA-QIE))",
+      prize: "USD 2,500",
+    },
+    {
+      year: "2025",
+      title:
+        "Global Top-Tier Finalist, Kraken Forge Hackathon, Performance Optimization ([kraken-rs](https://github.com/Nihal-Pandey-2302/kraken-rs))",
+    },
+    {
+      year: "2024",
+      title: "Winner, Smart India Hackathon, NTRO Govt. of India, 50,000+ participants",
+      prize: "INR 100K",
+    },
+    {
+      year: "2024",
+      title: "Winner, Graph-e-thon 2.0, Graphic Era TBI",
+      prize: "INR 175K",
     },
   ],
 
@@ -372,17 +296,21 @@ export const SITE_CONTENT: SiteContent = {
     },
   ],
 
-  // About Section
-  about: {
-    description: `
-I build backend systems where mistakes are expensive: customer data, email delivery, query execution. Most of the work is finding the invariant the system has to hold and making the database or the design enforce it, instead of trusting review to catch violations.
-Right now that means Tasvam and MailTitan at Tvaram, plus PRs into ParadeDB's Rust codebase. Before that, Rust security tooling at the Prime Minister's Office.`,
-    image: "/nihal-real.jpg",
-    skills: [
-      "Go", "Python", "Rust", "TypeScript / Node.js",
-      "PostgreSQL", "Redis", "Docker",
-    ],
-    systemsInterests:
-      "PostgreSQL internals · Distributed systems · Email infrastructure · Rust",
-  },
+  // Skills Section
+  skills: [
+    { label: "Languages", items: "Rust, Go, TypeScript, Python, SQL, Solidity" },
+    {
+      label: "Backend",
+      items: "Tokio, Axum, SQLx, Express, Bull, FastAPI, GraphQL, WebSockets, zero-copy deserialization",
+    },
+    {
+      label: "Data",
+      items: "PostgreSQL (executor internals, extensions, wire protocol, connection poolers), Redis",
+    },
+    {
+      label: "Chains",
+      items: "Solana (Anchor, Token-2022), EVM (Solidity, Hardhat), Stellar (Soroban), Kaspa",
+    },
+    { label: "Infra", items: "Docker Compose, GitHub Actions, AWS (EC2, S3), Prometheus/Grafana" },
+  ],
 };

@@ -1,53 +1,43 @@
 ---
 import { SITE_CONFIG, SITE_CONTENT } from "@config";
-const currentYear = new Date().getFullYear();
+
+// Stamped at build time, so it reads as the date of the last deploy
+const now = new Date();
+const updated = now.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 ---
 
 <footer class="site-footer">
-  <div class="container flex flex-col items-center">
-    <div class="footer-content text-center">
-      <div class="social-links flex justify-center gap-md mb-md">
-        {SITE_CONFIG.socialLinks.map((link) => (
-          <a href={link.href} target="_blank" rel="noopener noreferrer" class="social-link mono text-muted">
-            {link.text}
-          </a>
-        ))}
-      </div>
-
-      <p class="copyright text-muted mono">
-        &copy; {currentYear} {SITE_CONTENT.hero.name}. All rights reserved.
-      </p>
+  <div class="container">
+    <div class="footer-content">
+      <p>&copy; {now.getFullYear()} {SITE_CONTENT.hero.name}. All rights reserved.</p>
+      <!-- the script appends the current time in that city -->
+      <p class="footer-place" data-zone={SITE_CONFIG.location.timeZone}>{SITE_CONFIG.location.city}</p>
+      <p>Updated {updated}</p>
     </div>
   </div>
 </footer>
 
+<script>
+  // "Bengaluru" -> "Bengaluru, 4:12 pm": the hour it is for me, wherever the reader is
+  const place = document.querySelector<HTMLElement>('.footer-place');
+  if (place?.dataset.zone) {
+    const city = place.textContent;
+    const clock = new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: place.dataset.zone });
+    const tick = () => { place.textContent = `${city}, ${clock.format(new Date())}`; };
+    tick();
+    setInterval(tick, 30_000);
+  }
+</script>
+
 <style>
-  .site-footer {
-    padding: var(--space-lg) 0;
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.4rem 2rem;
+    padding: 1.5rem 0 2.5rem;
     border-top: 1px solid var(--color-border);
-    margin-top: var(--space-xl);
-    background: var(--color-bg-secondary);
-  }
-
-  .social-links {
-    margin-bottom: var(--space-sm);
-  }
-
-  .social-link {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-  }
-
-  .social-link:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    background: var(--color-accent-dim);
-  }
-
-  .copyright {
-    font-size: 0.8rem;
+    font-size: var(--text-tiny);
+    color: var(--color-text-faint);
   }
 </style>

@@ -6,17 +6,129 @@ export interface SiteConfig {
   navLinks: { text: string; href: string }[];
   socialLinks: { text: string; href: string }[];
   socialImage: string;
+  // Where I am; the footer shows the current time there
+  location: { city: string; timeZone: string };
 }
 
+// Strings marked "rich" accept the inline formatting in src/utils/rich.ts:
+// `code`, **bold** and [text](url).
 export interface SiteContent {
-  hero: HeroProps;
-  seeking: SeekingContent;
-  highlights: MetricHighlight[];
+  hero: HeroContent;
+  openSource: OpenSourceContent;
   experience: ExperienceItem[];
-  achievements: ExperienceItem[];
+  education: EducationItem;
   projects: Project[];
+  moreProjects: string; // rich
+  hackathons: Hackathon[];
   writing: WritingItem[];
-  about: AboutProps;
+  skills: SkillGroup[];
+}
+
+export interface HeroContent {
+  name: string;
+  role: string;
+  headline: string;
+  // A phrase in the headline to underline like a compiler error, and the
+  // diagnostic shown when it is hovered or focused
+  flag?: { phrase: string; code: string; message: string; detail: string };
+  summary: string[]; // paragraphs, rich
+  // The hero figure: places around Postgres and the work done at each.
+  // Map.astro draws exactly three, in this order: pooler, Postgres, pipeline.
+  map: MapStop[];
+  email: string;
+  image: string;
+}
+
+export interface MapStop {
+  where: string;
+  layer: string;
+  name: string;
+  note: string;
+  href: string;
+}
+
+export interface OpenSourceContent {
+  poolproof: OwnProject;
+  contributions: ContributionGroup[];
+}
+
+// A project of my own, featured at length
+export interface OwnProject {
+  name: string;
+  tagline: string;
+  stack: string;
+  summary: string; // rich
+  points: string[]; // rich
+  repo: string;
+  results: string;
+  caseStudy?: CaseStudyLink;
+}
+
+// Same rule as WritingItem: a published case study must carry its page,
+// one still being written cannot.
+export type CaseStudyLink =
+  | { status: "published"; href: string }
+  | { status: "in-progress"; href?: undefined };
+
+// Changes sent to someone else's project
+export interface ContributionGroup {
+  project: string;
+  anchor: string; // id on the page, for links to this group
+  url: string;
+  stack: string;
+  summary: string;
+  items: Contribution[];
+}
+
+export interface Contribution {
+  ref: string;
+  url: string;
+  status: "merged" | "proposed";
+  text: string; // rich
+  story?: string; // path of its case-study page under /work
+}
+
+export interface ExperienceItem {
+  company: string;
+  position: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  summary: string[]; // rich
+  url?: string;
+  products?: Product[];
+}
+
+// A product built in a role. For unreleased products, summary and status
+// carry only what the company itself has made public.
+export interface Product {
+  name: string;
+  url: string;
+  summary: string;
+  status: string;
+}
+
+export interface EducationItem {
+  degree: string;
+  school: string;
+  years: string;
+}
+
+export interface Project {
+  name: string;
+  summary: string; // rich
+  stack: string[];
+  source: string;
+  live?: string;
+  // The project's picture: a screenshot when there is one, else its headline figure
+  image?: string;
+  figure?: { value: string; label: string };
+}
+
+export interface Hackathon {
+  year: string;
+  title: string; // rich
+  prize?: string;
 }
 
 interface WritingBase {
@@ -31,62 +143,7 @@ export type WritingItem =
   | (WritingBase & { status: "published"; link: string })
   | (WritingBase & { status: "in-progress"; link?: undefined });
 
-export interface MetricHighlight {
-  value: string;
-  unit: string;
+export interface SkillGroup {
   label: string;
-  sub: string;
-}
-
-export interface SeekingContent {
-  status: string;
-  role: string;
-  company: string;
-  companyUrl: string;
-  description: string;
-  meta: { label: string; value: string; accent?: boolean }[];
-}
-
-export interface HeroProps {
-  name: string;
-  specialty: string;
-  summary: string;
-  email: string;
-}
-
-export interface ExperienceItem {
-  company: string;
-  position: string;
-  startDate: string;
-  endDate: string;
-  summary: string[];
-  url?: string;
-}
-
-// Single source of truth for project grouping — renaming a subsection
-// in config without updating this union is a compile error.
-export type ProjectSubsection =
-  | "Current Work"
-  | "Open Source"
-  | "Systems & Performance"
-  | "Earlier Work";
-
-export interface Project {
-  name: string;
-  summary: string;
-  image?: string;
-  linkPreview?: string;
-  linkSource?: string;
-  metrics?: string[];
-  technologies?: string[];
-  badge?: string;
-  flagship?: boolean;
-  subsection?: ProjectSubsection;
-}
-
-export interface AboutProps {
-  description: string;
-  image: string;
-  skills: string[];
-  systemsInterests?: string;
+  items: string;
 }
