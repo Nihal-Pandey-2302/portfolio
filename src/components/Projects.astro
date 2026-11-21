@@ -16,7 +16,12 @@ const { projects, more } = Astro.props;
     <article class="project">
       <!-- Each project shows something: a screenshot, or failing that its headline figure -->
       <a href={project.live ?? project.source} target="_blank" rel="noopener noreferrer" class="panel project-figure" tabindex="-1" aria-hidden="true">
-        {project.image ? (
+        {project.video ? (
+          // started by the script below once it scrolls into view
+          <video poster={project.image} muted loop playsinline preload="none" data-inview-play>
+            {project.video.map((src) => <source src={src} type={`video/${src.split(".").pop()}`} />)}
+          </video>
+        ) : project.image ? (
           <img src={project.image} alt="" loading="lazy" decoding="async" />
         ) : project.figure && (
           <span class="project-stat">
@@ -45,6 +50,23 @@ const { projects, more } = Astro.props;
 
 <p class="more" set:html={rich(more)} />
 
+<script>
+  // Videos play only while on screen, and not at all for readers who ask for reduced motion
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-inview-play]');
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (videos.length > 0 && !still.matches) {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) video.play().catch(() => { /* autoplay refused: the poster stays */ });
+        else video.pause();
+      }
+    }, { threshold: 0.25 });
+    videos.forEach((video) => observer.observe(video));
+  }
+</script>
+
 <style>
   .project {
     display: grid;
@@ -71,7 +93,8 @@ const { projects, more } = Astro.props;
     border-color: var(--color-border-strong);
   }
 
-  .project-figure img {
+  .project-figure img,
+  .project-figure video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -79,7 +102,8 @@ const { projects, more } = Astro.props;
     transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  .project:hover .project-figure img {
+  .project:hover .project-figure img,
+  .project:hover .project-figure video {
     transform: scale(1.03);
   }
 

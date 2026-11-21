@@ -113,9 +113,16 @@
 }
 
 .cs-stack {
+  display: flex;
+  flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: var(--text-tiny);
   color: var(--color-text-faint);
+}
+
+.cs-stack > span + span::before {
+  content: "·";
+  margin-inline: 0.6em;
 }
 
 /* A decision or aside set apart from the running text */

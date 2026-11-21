@@ -194,7 +194,8 @@ export const SITE_CONTENT: SiteContent = {
         "Async WebSocket ingestion benchmarked at **648,000 msgs/sec** via zero-copy deserialization and ring-buffer reuse; 100% message delivery across 50+ simulated network partitions.",
       stack: ["Rust", "Tokio", "Serde", "WebSockets"],
       source: "https://github.com/Nihal-Pandey-2302/kraken-rs",
-      image: "/kraken.gif",
+      image: "/kraken-poster.jpg",
+      video: ["/kraken.webm", "/kraken.mp4"],
     },
     {
       name: "Ethereum EVM Indexer",
@@ -281,18 +282,20 @@ export const SITE_CONTENT: SiteContent = {
       status: "published",
     },
     {
-      title: "Fixing Wrong Rows: Debugging ParadeDB's JoinScan on Self-Joins",
+      title: "Wrong Rows From a Self-Join",
       summary:
-        "A self-join with duplicate sort keys was returning wrong rows. How I traced it through the optimizer and rebuilt physical projection on column indices.",
-      badge: "PostgreSQL Internals",
-      status: "in-progress",
+        "A self-join with duplicate sort keys was returning wrong rows. How I traced it through the optimizer, where my first fix went wrong, and how physical projection got rebuilt on column indices.",
+      link: "/work/joinscan-wrong-rows",
+      badge: "PostgreSQL Internals · Case study",
+      status: "published",
     },
     {
-      title: "RAII in Postgres Extensions: Surviving Nested ExecutorRun",
+      title: "A Panic on PG16, and the Fix That Needed Fixing",
       summary:
-        "Why a depth counter can't model recursive DML in executor hooks, and how an RAII FrameGuard fixes it.",
-      badge: "PostgreSQL Internals",
-      status: "in-progress",
+        "Why a depth counter can't model recursive DML in executor hooks, the test that proved nothing, and how an RAII FrameGuard fixes it.",
+      link: "/work/nested-executor-run",
+      badge: "PostgreSQL Internals · Case study",
+      status: "published",
     },
   ],
 

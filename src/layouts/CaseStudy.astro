@@ -8,14 +8,18 @@ import "../styles/case-study.css";
 export interface Props {
   title: string;
   dek: string;
-  // the pull request the story is about
-  pr: { ref: string; url: string; merged: string; additions: number; deletions: number; files: number };
+  // the pull request the story is about...
+  pr?: { ref: string; url: string; merged: string; additions: number; deletions: number; files: number };
   issue?: { ref: string; url: string };
+  // ...or, for a project of its own, its facts and where its source lives
+  meta?: { text: string; href?: string }[];
+  source?: { label: string; url: string };
   // another case study to read next
   next?: { title: string; href: string };
 }
 
-const { title, dek, pr, issue, next } = Astro.props;
+const { title, dek, pr, issue, meta, source, next } = Astro.props;
+const external = source ?? (pr && { label: "The full pull request on GitHub", url: pr.url });
 ---
 
 <Layout title={`${title} | ${SITE_CONFIG.author}`} description={dek}>
@@ -26,7 +30,7 @@ const { title, dek, pr, issue, next } = Astro.props;
       <h1 class="cs-title">{title}</h1>
       <p class="cs-tagline">{dek}</p>
 
-      <p class="cs-chips">
+      {pr && <p class="cs-chips">
         <span class="cs-chip">
           <a href={pr.url} target="_blank" rel="noopener noreferrer" class="link">paradedb {pr.ref}</a>
         </span>
@@ -39,12 +43,21 @@ const { title, dek, pr, issue, next } = Astro.props;
             <a href={issue.url} target="_blank" rel="noopener noreferrer" class="link">issue {issue.ref}</a>
           </span>
         )}
-      </p>
+      </p>}
+      {meta && (
+        <p class="cs-chips">
+          {meta.map((item) => (
+            <span class="cs-chip">
+              {item.href ? <a href={item.href} target="_blank" rel="noopener noreferrer" class="link">{item.text}</a> : item.text}
+            </span>
+          ))}
+        </p>
+      )}
 
       <slot />
 
       <p class="cs-next">
-        <a href={pr.url} target="_blank" rel="noopener noreferrer" class="out">The full pull request on GitHub<Arrow /></a>
+        {external && <a href={external.url} target="_blank" rel="noopener noreferrer" class="out">{external.label}<Arrow /></a>}
         {next && <a href={next.href} class="link">Next: {next.title}</a>}
       </p>
     </article>

@@ -39,7 +39,6 @@ const day = (iso: string) =>
         <span>{facts.release}</span>
         <span>released {day(facts.releasedAt)}</span>
         <span>last push {day(facts.pushedAt)}</span>
-        {facts.license && <span>{facts.license}</span>}
       </p>
     </div>
     <p class="own-summary" set:html={rich(project.summary)} />

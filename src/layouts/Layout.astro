@@ -1,6 +1,9 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+// Cookieless page-view counts; reported only when served from Vercel, and
+// only once Web Analytics is switched on for the project in the dashboard
+import Analytics from "@vercel/analytics/astro";
 import { SITE_CONFIG, SITE_CONTENT } from "@config";
 import "../styles/global.css";
 import "@fontsource-variable/instrument-sans/wght.css";
@@ -91,6 +94,7 @@ const person = {
       <slot />
     </main>
     <Footer />
+    <Analytics />
   </body>
 </html>
 

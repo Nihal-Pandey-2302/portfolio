@@ -1,0 +1,179 @@
+---
+// DRAFT, not published: Astro does not route files whose name starts with "_".
+// To publish: rename to poolproof.astro, add it to the sitemap check, and set
+// openSource.poolproof.caseStudy in src/config to { status: "published", href: "/work/poolproof" }.
+//
+// Facts here come from the poolproof README, src/data/poolproof.json and the
+// public issue threads (pgdog#1849, supavisor#1239). Those bugs were reported by
+// other people; poolproof reproduces them. My part in #1849 is the fix branch
+// linked below, which was not merged when this was written.
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import Matrix from "../../components/Matrix.astro";
+import data from "../../data/poolproof.json";
+
+const { trace, counts, scenarios } = data;
+const targets = data.groups.reduce((n, g) => n + g.targets.length, 0);
+const sql = (action: string) => action.replace(/^[a-z]+:\s*/, "");
+const pooler = trace.target.split(" ")[0];
+
+// The trace as lines of text, each with the class that colours it
+const lines = trace.steps.flatMap((step, i) => {
+  const out = [
+    { cls: "is-dim", text: `${i + 1}  ${step.actor.padEnd(15)}` },
+    { cls: "", text: `${sql(step.action)}\n` },
+  ];
+  if (step.differs) {
+    out.push(
+      { cls: "is-dim", text: "   Postgres       " },
+      { cls: "is-good", text: `${step.postgres}\n` },
+      { cls: "is-dim", text: `   ${pooler.padEnd(15)}` },
+      { cls: "is-bad", text: `${step.pooler}\n` },
+    );
+  } else {
+    out.push({ cls: "is-dim", text: "   both           " }, { cls: "", text: `${step.postgres}\n` });
+  }
+  return out;
+});
+---
+
+<CaseStudy
+  title="What a connection pooler changes"
+  dek="Poolers are meant to be invisible to the application. poolproof checks that claim: it runs the same small scenarios against Postgres and through a pooler, and reports every step where the answers differ."
+  source={{ label: "The repository on GitHub", url: "https://github.com/Nihal-Pandey-2302/poolproof" }}
+  meta={[
+    { text: "Nihal-Pandey-2302/poolproof", href: "https://github.com/Nihal-Pandey-2302/poolproof" },
+    { text: `${data.repo.release}, released 4 Nov 2026` },
+    { text: "Rust" },
+    { text: "results site", href: data.source },
+  ]}
+>
+  <section class="cs-section">
+    <h2>The problem</h2>
+    <p>
+      PgBouncer, PgDog, Supavisor, PgCat and Odyssey sit between an application and Postgres and share a few server
+      connections among many clients. In transaction mode a client only holds a server connection for the length of a
+      transaction, so anything that lives on the connection instead of in the transaction is at risk: a
+      <code>SET</code>, a temp table, a prepared statement, an advisory lock.
+    </p>
+    <p>
+      Each pooler documents some of this. Nobody had a way to check, for a given pooler and version, which of these
+      actually break and how.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Postgres as the oracle</h2>
+    <p>
+      A poolproof scenario is a short script of steps from one or more clients. It runs twice: once against Postgres
+      directly, once through the pooler. Every step's result is compared. Postgres is the reference, so no scenario
+      hardcodes the answer it expects, and the same scenario works on any Postgres version.
+    </p>
+    <p>One scenario, as it ran against {trace.target}:</p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-term">{lines.map((line) => (
+        <span class:list={[line.cls]}>{line.text}</span>
+      ))}</div>
+      <figcaption>
+        multi-statement-begin. Postgres runs all three statements; through {pooler} the client gets back only the
+        BEGIN, and a direct check afterwards finds no row.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-section">
+    <h2>Four kinds of failure</h2>
+    <p>A difference is not just a failure. It matters how the application finds out:</p>
+    <ul class="cs-list">
+      <li><strong>Silent</strong>: the pooler answers, and the answer is wrong. The application has no way to know.</li>
+      <li><strong>Error</strong>: the pooler refuses. The application finds out, at least.</li>
+      <li><strong>Hang</strong>: no reply at all, until something times out.</li>
+      <li>
+        <strong>Documented</strong>: a failure the pooler's own docs describe. Still a failure, because an app that
+        relies on the feature still breaks, but not a bug.
+      </li>
+    </ul>
+  </section>
+
+  <section class="cs-section">
+    <h2>The results</h2>
+    <p>
+      On Postgres {data.postgres}, {scenarios.length} scenarios across {targets} pooler versions and configurations:
+      {counts.pass} pass, {counts.silent} fail silently, {counts.errorOrHang} error or hang, and {counts.expected} are
+      documented limitations. Select a cell to see what it checks and where the answers split.
+    </p>
+    <div class="cs-wide">
+      <Matrix />
+    </div>
+  </section>
+
+  <section class="cs-section">
+    <h2>What it found</h2>
+    <ul class="cs-list">
+      <li>
+        PgDog 0.1.50 to 0.1.62 answers only the <code>BEGIN</code> of <code>BEGIN; INSERT; COMMIT</code> sent as one
+        string, and never commits the insert if the client disconnects
+        (<a href="https://github.com/pgdogdev/pgdog/issues/1849" target="_blank" rel="noopener noreferrer" class="link">pgdog#1849</a>).
+      </li>
+      <li>
+        Supavisor 2.9.13 hangs on four pipelined requests in 9 of 10 runs
+        (<a href="https://github.com/supabase/supavisor/issues/1239" target="_blank" rel="noopener noreferrer" class="link">supavisor#1239</a>).
+        2.10.0-rc.1 answers them.
+      </li>
+      <li>
+        PgBouncer 1.26.1 on Postgres 18 drops a client that set an empty <code>search_path</code> with
+        <code>set_config()</code>, once another client has changed it
+        (<a href="https://github.com/pgbouncer/pgbouncer/issues/1663" target="_blank" rel="noopener noreferrer" class="link">pgbouncer#1663</a>).
+      </li>
+      <li>Every pooler but Odyssey, with default settings, keeps a session advisory lock after the client that took it disconnects.</li>
+    </ul>
+    <p>
+      In all, it reproduces 14 upstream bugs, and the results show the version where each behaviour broke or got
+      fixed.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>From a red cell to a fix</h2>
+    <p>
+      The PgDog bug is the clearest case of why silent failures matter. On the issue, a team reported running a
+      migration through PgDog as one multi-statement transaction and disconnecting. The client saw success. Neither
+      the <code>ALTER TABLE</code> nor the <code>UPDATE</code> ran.
+    </p>
+    <p>
+      The cause is in how PgDog routes a multi-statement query on a single shard: by its first statement only. When
+      that statement is <code>BEGIN</code>, <code>COMMIT</code> or <code>ROLLBACK</code>, PgDog answers it itself, and
+      the rest of the string is either replayed later with its results thrown away, or dropped.
+    </p>
+    <p>
+      I posted a fix on the issue: in that case the whole string goes to the server unchanged, which is what already
+      happens with PgDog's query parser off, so every result and error reaches the client. It comes with a unit test
+      and an integration test that fails on main
+      (<a href="https://github.com/Nihal-Pandey-2302/pgdog/tree/fix/multi-stmt-begin" target="_blank" rel="noopener noreferrer" class="link">branch</a>).
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Before it reaches production</h2>
+    <p>
+      <code>poolproof scan</code> reads a <code>pg_stat_statements</code> export, Postgres logs or a
+      <code>.sql</code> file, parses each query with the real Postgres parser, and flags the ones that break under
+      transaction pooling, checked against what that pooler version actually did in the runs above. It writes SARIF,
+      so findings show up in code scanning, and the repository doubles as a GitHub Action.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Not covered yet</h2>
+    <p>
+      RDS Proxy and hosted poolers are not in the test bed; the docs have recipes for testing them by hand. Session
+      mode, a larger pool and five non-default settings run nightly on Postgres 18.4 only.
+    </p>
+  </section>
+</CaseStudy>
+
+<style>
+  /* the results grid needs the page's full width more than the reading column */
+  .cs-wide {
+    margin-top: 1.5rem;
+  }
+</style>

@@ -12,21 +12,25 @@ const { writing } = Astro.props;
 <div class="posts">
   {writing.map((item) => {
     const published = item.status === "published";
+    // pieces on this site open in place; articles elsewhere open in a new tab
+    const external = published && /^https?:/.test(item.link);
     const Wrapper = published ? "a" : "div";
     return (
       <Wrapper
         class:list={["post", { "post-upcoming": !published }]}
         href={item.link}
-        target={published ? "_blank" : undefined}
-        rel={published ? "noopener noreferrer" : undefined}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
       >
         <div class="post-body">
           <h3 class="post-title">{item.title}</h3>
           <p class="post-summary">{item.summary}</p>
           {item.badge && <p class="post-badge">{item.badge}</p>}
         </div>
-        {published ? (
+        {external ? (
           <span class="out">Read<Arrow /></span>
+        ) : published ? (
+          <span class="out">Read</span>
         ) : (
           <span class="post-status">In progress</span>
         )}

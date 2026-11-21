@@ -120,8 +120,10 @@ export interface Project {
   stack: string[];
   source: string;
   live?: string;
-  // The project's picture: a screenshot when there is one, else its headline figure
+  // The project's picture: a screenshot when there is one, else its headline figure.
+  // With a video, image is its poster (the first frame).
   image?: string;
+  video?: string[]; // sources, most efficient format first
   figure?: { value: string; label: string };
 }
 
