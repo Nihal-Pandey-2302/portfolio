@@ -1,0 +1,152 @@
+---
+// Two clients through a pooler. Left: they land on different backends, so a
+// matching result tests nothing. Right: they share one, which poolproof proves
+// by reading the backend's pid through the pooler before it counts the run.
+// Backend pids are illustrative.
+const PANELS = [
+  {
+    title: "What a pass used to mean",
+    backends: [{ x: 75, pid: "4127" }, { x: 225, pid: "4188" }],
+    routes: [75, 225],
+    verdict: "Results match, so it passed. But b never reached a's backend: nothing was tested.",
+    tone: "bad",
+  },
+  {
+    title: "What counts now",
+    backends: [{ x: 150, pid: "4127" }],
+    routes: [150, 150],
+    verdict: "Both clients read pid 4127 through the pooler. Only a run like this counts; if none does, the result is a skip, with the reason.",
+    tone: "good",
+  },
+];
+---
+
+<div class="shared">
+  {PANELS.map((panel) => (
+    <figure class:list={["shared-panel", `is-${panel.tone}`]}>
+      <p class="shared-title">{panel.title}</p>
+      <svg viewBox="0 0 300 196" role="img" aria-label={`${panel.title}. ${panel.verdict}`}>
+        <!-- clients -->
+        <rect class="box" x="30" y="6" width="90" height="30" rx="7"></rect>
+        <text x="75" y="25">client a</text>
+        <rect class="box" x="180" y="6" width="90" height="30" rx="7"></rect>
+        <text x="225" y="25">client b</text>
+        <text class="note" x="75" y="52">SET work_mem</text>
+        <text class="note" x="225" y="52">SHOW work_mem</text>
+
+        <!-- the pooler -->
+        <path class="wire" d="M75 58V78"></path>
+        <path class="wire wire-b" d="M225 58V78"></path>
+        <rect class="box box-pooler" x="20" y="78" width="260" height="28" rx="7"></rect>
+        <text x="150" y="96">pooler</text>
+
+        <!-- pooler to backends -->
+        <path class="wire" d={`M75 106C75 124 ${panel.routes[0]} 124 ${panel.routes[0]} 148`}></path>
+        <path class="wire wire-b" d={`M225 106C225 124 ${panel.routes[1]} 124 ${panel.routes[1]} 148`}></path>
+        {panel.backends.map((b) => (
+          <>
+            <rect class="box box-backend" x={b.x - 50} y="148" width="100" height="40" rx="7"></rect>
+            <text x={b.x} y="165">backend</text>
+            <text class="pid" x={b.x} y="181">pid {b.pid}</text>
+          </>
+        ))}
+      </svg>
+      <figcaption>{panel.verdict}</figcaption>
+    </figure>
+  ))}
+</div>
+
+<style>
+  .shared {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .shared-panel {
+    padding: 1rem 1.1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-secondary);
+  }
+
+  .shared-title {
+    margin-bottom: 0.75rem;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-text-main);
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .box {
+    fill: var(--color-bg);
+    stroke: var(--color-border-strong);
+    stroke-width: 1;
+  }
+
+  .box-pooler {
+    fill: var(--color-bg-raised);
+  }
+
+  .is-bad .box-backend {
+    stroke: var(--color-silent-ink);
+  }
+
+  .is-good .box-backend {
+    stroke: var(--color-pass-ink);
+  }
+
+  text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-anchor: middle;
+    fill: var(--color-text-main);
+  }
+
+  .note {
+    font-size: 9.5px;
+    fill: var(--color-text-faint);
+  }
+
+  .pid {
+    font-size: 10px;
+    fill: var(--color-text-muted);
+  }
+
+  .wire {
+    fill: none;
+    stroke: var(--color-text-muted);
+    stroke-width: 1.2;
+  }
+
+  /* client b's path is dashed so the two routes can be told apart */
+  .wire-b {
+    stroke-dasharray: 4 3;
+  }
+
+  figcaption {
+    margin-top: 0.75rem;
+    font-size: var(--text-tiny);
+    line-height: 1.55;
+  }
+
+  .is-bad figcaption {
+    color: var(--color-silent-ink);
+  }
+
+  .is-good figcaption {
+    color: var(--color-pass-ink);
+  }
+
+  @media (max-width: 600px) {
+    .shared {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

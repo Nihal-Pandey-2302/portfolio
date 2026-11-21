@@ -42,7 +42,7 @@ export const SITE_CONTENT: SiteContent = {
         where: "In front of it",
         layer: "connection poolers",
         name: "poolproof",
-        note: "Tests what a pooler changes: 50 scenarios, 14 upstream bugs reproduced.",
+        note: "Tests what a pooler changes: 50 scenarios, built from real bug reports.",
         href: "#open-source",
       },
       {
@@ -78,15 +78,14 @@ export const SITE_CONTENT: SiteContent = {
         "Poolers like PgBouncer, PgDog and Supavisor are meant to be invisible. In transaction mode they mostly are, until a `SET` leaks to another client, a temp table appears in someone else's session, or half a query string silently never runs. poolproof replays small scenarios against plain Postgres and then through the pooler, and reports every step where the two differ. Postgres is the oracle, so no scenario hardcodes expected output.",
       points: [
         "**50 scenarios** across **PgBouncer, PgDog, Supavisor, PgCat and Odyssey**, multiple versions each, on Postgres 17 and 18, with a [results site](https://nihal-pandey-2302.github.io/poolproof/) showing every step's trace and the version where a behaviour broke or got fixed",
-        "Reproduces **14 upstream bugs** in PgBouncer, PgDog and Supavisor, e.g. PgDog acknowledging only the `BEGIN` of `BEGIN; INSERT; COMMIT` and never committing the insert ([pgdog#1849](https://github.com/pgdogdev/pgdog/issues/1849)), and Supavisor hanging on 4 pipelined requests in 9 of 10 runs ([supavisor#1239](https://github.com/supabase/supavisor/issues/1239))",
+        "Scenarios built from **14 upstream issues** in PgBouncer, PgDog and Supavisor, with the versions where each reproduces or stays fixed, e.g. PgDog acknowledging only the `BEGIN` of `BEGIN; INSERT; COMMIT` and never committing the insert ([pgdog#1849](https://github.com/pgdogdev/pgdog/issues/1849)), and Supavisor hanging on 4 pipelined requests in 9 of 10 runs ([supavisor#1239](https://github.com/supabase/supavisor/issues/1239))",
         "`poolproof scan` reads `pg_stat_statements` exports, Postgres logs or `.sql` files, parses them with the real Postgres parser, and flags queries that break under transaction pooling, checked against what your pooler version actually did. SARIF output for code scanning",
         "Runs real drivers (psycopg, pgx, node-postgres, pgjdbc) through each pooler; classifies failures as silent, error or hang, and separates documented limitations from bugs",
         "Ships as signed binaries for Linux, macOS and Windows (SHA256SUMS + build attestation) and as a GitHub Action for CI",
       ],
       repo: "https://github.com/Nihal-Pandey-2302/poolproof",
       results: "https://nihal-pandey-2302.github.io/poolproof/",
-      // becomes { status: "published", href: "/work/..." } once the page exists
-      caseStudy: { status: "in-progress" },
+      caseStudy: { status: "published", href: "/work/poolproof" },
     },
     contributions: [
       {

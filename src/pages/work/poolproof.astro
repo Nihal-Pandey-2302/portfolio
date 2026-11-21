@@ -1,0 +1,258 @@
+---
+// Case study for poolproof.
+//
+// Facts were checked by the poolproof session against the repo (main fcb058d),
+// GitHub and crates.io on 2026-11-22. Rules for this page:
+// - Name only bugs that are public upstream. Unreported findings stay off it,
+//   including the pooler that allowed one connection over its pool size.
+// - The upstream issues were filed by other people; poolproof reproduces them.
+//   Nihal's part in pgdog#1849 is the cause analysis and fix branch, not merged.
+// - No adoption claims. Supavisor 2.10.0-rc.1 is a release candidate.
+// - No em dashes in the copy.
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import Matrix from "../../components/Matrix.astro";
+import SharedBackend from "../../components/cs/SharedBackend.astro";
+import data from "../../data/poolproof.json";
+
+const { trace, counts, scenarios } = data;
+const targets = data.groups.reduce((n, g) => n + g.targets.length, 0);
+const sql = (action: string) => action.replace(/^[a-z]+:\s*/, "");
+const pooler = trace.target.split(" ")[0];
+
+// The trace as lines of text, each with the class that colours it
+const lines = trace.steps.flatMap((step, i) => {
+  const out = [
+    { cls: "is-dim", text: `${i + 1}  ${step.actor.padEnd(15)}` },
+    { cls: "", text: `${sql(step.action)}\n` },
+  ];
+  if (step.differs) {
+    out.push(
+      { cls: "is-dim", text: "   Postgres       " },
+      { cls: "is-good", text: `${step.postgres}\n` },
+      { cls: "is-dim", text: `   ${pooler.padEnd(15)}` },
+      { cls: "is-bad", text: `${step.pooler}\n` },
+    );
+  } else {
+    out.push({ cls: "is-dim", text: "   both           " }, { cls: "", text: `${step.postgres}\n` });
+  }
+  return out;
+});
+
+// as in poolproof's docs/scenarios.md
+const SCENARIO = `send = ["parse s1 SELECT 'a'::text", "bind - s1", "execute -", "sync"]`;
+---
+
+<CaseStudy
+  title="What a connection pooler changes"
+  dek="Poolers are meant to be invisible to the application. poolproof checks that claim: it runs the same small scenarios against Postgres and through a pooler, and reports every step where the answers differ. Most of the work went into making sure a pass actually means something."
+  source={{ label: "The repository on GitHub", url: "https://github.com/Nihal-Pandey-2302/poolproof" }}
+  meta={[
+    { text: "Nihal-Pandey-2302/poolproof", href: "https://github.com/Nihal-Pandey-2302/poolproof" },
+    { text: "v0.1.1, 4 Nov 2026" },
+    { text: "Rust" },
+    { text: "MIT OR Apache-2.0" },
+    { text: "results site", href: data.source },
+  ]}
+>
+  <section class="cs-section">
+    <h2>The problem</h2>
+    <p>
+      PgBouncer, PgDog, Supavisor, PgCat and Odyssey sit between an application and Postgres and share a few server
+      connections among many clients. In transaction mode a client holds a server connection only for the length of a
+      transaction, so anything that lives on the connection instead of in the transaction is at risk: a
+      <code>SET</code>, a temp table, a prepared statement, an advisory lock.
+    </p>
+    <p>
+      Most poolers document some of this. There was no way to check across poolers and versions which of these
+      actually break and how.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Postgres as the oracle</h2>
+    <p>
+      A poolproof scenario is a short script of steps from one or more clients. It runs twice: once against Postgres
+      directly, once through the pooler, and every step's result is compared. Postgres is the reference, so no
+      scenario hardcodes the answer it expects.
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-term">{lines.map((line) => (
+        <span class:list={[line.cls]}>{line.text}</span>
+      ))}</div>
+      <figcaption>
+        multi-statement-begin through {trace.target}. Postgres runs all three statements; through {pooler} the client
+        gets back only the BEGIN, and a direct check afterwards finds no row.
+      </figcaption>
+    </figure>
+    <p>A difference is not just a failure. What matters is how the application finds out:</p>
+    <ul class="cs-list">
+      <li><strong>Silent</strong>: the pooler answers, and the answer is wrong.</li>
+      <li><strong>Error</strong>: the pooler refuses, so at least the application knows.</li>
+      <li><strong>Hang</strong>: no reply at all, until something times out.</li>
+      <li><strong>Documented</strong>: a failure the pooler's own docs describe. Still a failure, but not a bug.</li>
+    </ul>
+  </section>
+
+  <section class="cs-section">
+    <h2>A pass that meant nothing</h2>
+    <p>
+      The first version compared the two runs step by step and called it a pass when they matched. That turned out to
+      be weaker than it looked. To test whether a <code>SET</code> leaks from one client to another, the two clients
+      have to land on the same server connection. In transaction mode they may simply never do so, and then "no leak"
+      only means "never shared".
+    </p>
+    <p>
+      So steps can now be marked as evidence. Through the pooler they read the backend's process id; on Postgres
+      directly, its start time. A run counts only if the clients really did share a backend. If no run does, the
+      result is not a pass but a skip, with the reason spelled out: the second client never reached the first one's
+      server connection.
+    </p>
+    <SharedBackend />
+  </section>
+
+  <section class="cs-section">
+    <h2>Checking the pool before trusting it</h2>
+    <p>
+      Before any scenario runs, poolproof probes the pool's real shape: when a second client arrives while the first is
+      busy, does it wait, get its own backend, or get refused? Scenarios that need exactly one server connection skip
+      when the pool turns out to have several, so a result is never trusted on a pool that isn't the shape its
+      configuration claims.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>A failure blamed on the wrong pooler</h2>
+    <p>
+      With several poolers in one test bed, one pooler's leaked advisory lock (a backend that kept it after its client
+      left) made a scenario on a different pooler hang, and the failure looked like that pooler's bug.
+    </p>
+    <p>
+      The fix is a reset before each scenario that ends only the target pooler's backends, matched by process id,
+      start time, user and address, and then waits for the pooler to answer again. Later a CI run still found a
+      disconnected client's lock held, because a backend exits asynchronously; the check now waits for those backends
+      to be gone before reading their state.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Results that flip</h2>
+    <p>
+      Some results are timing-sensitive and change between runs. Retrying until they pass would hide exactly the
+      behaviour worth reporting. Instead a scenario can run several times, fails if any run fails, and reports how many
+      did. A known-flaky list covers the rest, each entry as narrow as possible and citing the CI run that showed it.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Documented is a claim that needs a source</h2>
+    <p>
+      A failure is marked documented only when an entry quotes the pooler's own documentation word for word, at a
+      pinned commit. A test checks every entry against the committed results, so a stale entry fails CI. And a bug
+      that has been reported upstream is never marked documented, even when the docs half cover it.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Speaking the protocol directly</h2>
+    <p>
+      Some bugs live below SQL. The Rust client poolproof started on gives every prepared statement a globally unique
+      name, which made it impossible to test two clients using the same statement name. So scenarios can also send
+      raw wire-protocol messages through a small client of its own, with SCRAM and MD5 authentication:
+    </p>
+    <figure class="cs-figure">
+      <div class="cs-panel cs-term">{SCENARIO}</div>
+    </figure>
+    <p>That is how it tests Flush, pipelining, COPY and statement-name collisions.</p>
+  </section>
+
+  <section class="cs-section">
+    <h2>The results</h2>
+    <p>
+      The grid below is Postgres {data.postgres}: {scenarios.length} scenarios across {targets} pooler versions and
+      configurations, 13 core targets plus 11 variants (session mode, a pool of four, non-default settings) that run
+      nightly. {counts.pass} pass, {counts.silent} fail silently, {counts.errorOrHang} error or hang, and
+      {" "}{counts.expected} are documented limitations. The core targets also run on Postgres 17.11. Select a cell to see what
+      it checks and where the answers split.
+    </p>
+    <div class="cs-wide">
+      <Matrix />
+    </div>
+  </section>
+
+  <section class="cs-section">
+    <h2>What it found</h2>
+    <p>
+      The scenarios are built from 14 upstream issues. Some reproduce on the versions tested; others show a fix
+      holding. Four of the clearest:
+    </p>
+    <ul class="cs-list">
+      <li>
+        PgDog 0.1.50 to 0.1.62 answers only the <code>BEGIN</code> of <code>BEGIN; INSERT; COMMIT</code> sent as one
+        string, and never commits the insert if the client disconnects
+        (<a href="https://github.com/pgdogdev/pgdog/issues/1849" target="_blank" rel="noopener noreferrer" class="link">pgdog#1849</a>,
+        reported by ewhauser).
+      </li>
+      <li>
+        Supavisor 2.9.13 hangs on four pipelined requests in 9 of 10 runs
+        (<a href="https://github.com/supabase/supavisor/issues/1239" target="_blank" rel="noopener noreferrer" class="link">supavisor#1239</a>,
+        reported by richardwattie). The 2.10.0 release candidate answers them.
+      </li>
+      <li>
+        PgBouncer 1.26.1 on Postgres 18 drops a client that set an empty <code>search_path</code> with
+        <code>set_config()</code>, once another client has changed it
+        (<a href="https://github.com/pgbouncer/pgbouncer/issues/1663" target="_blank" rel="noopener noreferrer" class="link">pgbouncer#1663</a>,
+        reported by AKutlakhmetov).
+      </li>
+      <li>
+        Every pooler but Odyssey, with default settings, keeps a session advisory lock after the client that took it
+        disconnects
+        (<a href="https://github.com/pgdogdev/pgdog/issues/1407" target="_blank" rel="noopener noreferrer" class="link">pgdog#1407</a>,
+        reported by mhenrixon). PgBouncer, PgDog, PgCat and Supavisor document this one.
+      </li>
+    </ul>
+  </section>
+
+  <section class="cs-section">
+    <h2>From a red cell to a fix</h2>
+    <p>
+      The PgDog bug shows why silent failures matter. On the issue, a team reported running a migration through PgDog
+      as one multi-statement transaction and disconnecting. The client saw success. Neither the
+      <code>ALTER TABLE</code> nor the <code>UPDATE</code> ran.
+    </p>
+    <p>
+      The cause is in how PgDog routes a multi-statement query on a single shard: by its first statement only. When
+      that statement is <code>BEGIN</code>, <code>COMMIT</code> or <code>ROLLBACK</code>, PgDog answers it itself, and
+      the rest of the string is either replayed later with its results thrown away, or dropped.
+    </p>
+    <p>
+      PgDog currently takes outside fixes as linked branches rather than pull requests, so I posted the cause on the issue with a
+      branch: in that case the whole string goes to the server unchanged, which is what already happens with PgDog's
+      query parser off. It has a unit test and an integration test that fails on main
+      (<a href="https://github.com/Nihal-Pandey-2302/pgdog/tree/fix/multi-stmt-begin" target="_blank" rel="noopener noreferrer" class="link">fix/multi-stmt-begin</a>).
+      It is not merged.
+    </p>
+    <p>
+      Running poolproof against the branch and its parent, multi-statement-begin goes from fail to pass on Postgres 17
+      and 18, and nothing else regresses. The related shapes pass on the branch too: <code>COMMIT</code> first, a
+      <code>BEGIN</code> left open, other spellings of <code>BEGIN</code>, and the extended-protocol shape.
+    </p>
+  </section>
+
+  <section class="cs-section">
+    <h2>What is still open</h2>
+    <p>
+      Two shapes still fail on the branch, for a separate reason. And the branch's own test expects
+      <code>SELECT 1</code> to succeed after the aborted string, where Postgres returns <code>25P02</code>: the test
+      encodes the pooler's behaviour, not Postgres's. Exactly the kind of difference poolproof exists to catch.
+    </p>
+    <p>
+      RDS Proxy and hosted poolers are not in the test bed yet; the docs have recipes for testing them by hand.
+    </p>
+  </section>
+</CaseStudy>
+
+<style>
+  .cs-wide {
+    margin-top: 1.5rem;
+  }
+</style>
