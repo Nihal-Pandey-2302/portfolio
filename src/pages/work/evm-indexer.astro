@@ -34,7 +34,7 @@ const ROLLBACK = `pub async fn rollback_to(pool: &PgPool, keep_height: u64) -> R
     tx.commit().await
 }`;
 
-// What each test showed on 1741604, the commit before the fixes
+// What each test showed on f44a694, the commit before the fixes
 const TESTS = [
   ["one_block_reorg_reingests_replaced_block", "checkpoint 103, expected 102: the replaced block is never fetched again"],
   ["two_block_reorg_rolls_back_to_fork_point", "checkpoint 103, expected 101: a stale block from the old fork stays"],
