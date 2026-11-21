@@ -56,7 +56,7 @@ export const SITE_CONTENT: SiteContent = {
         where: "Behind it",
         layer: "ingestion pipelines",
         name: "Ethereum EVM Indexer",
-        note: "10M+ transactions indexed with atomic SQL, zero integrity failures.",
+        note: "Each block, its transactions and logs, and the sync checkpoint commit in one Postgres transaction.",
         href: "#projects",
       },
     ],
@@ -190,7 +190,7 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "Kraken Market Data SDK",
       summary:
-        "Async WebSocket ingestion benchmarked at **648,000 msgs/sec** via zero-copy deserialization and ring-buffer reuse; 100% message delivery across 50+ simulated network partitions.",
+        "Async client for Kraken's WebSocket market data. One task owns the socket and replays subscriptions after a reconnect, and typed events fan out to any number of consumers. Parses **648,000 messages/sec** into typed events in a local benchmark (parsing only, no network).",
       stack: ["Rust", "Tokio", "Serde", "WebSockets"],
       source: "https://github.com/Nihal-Pandey-2302/kraken-rs",
       image: "/kraken-poster.jpg",
@@ -199,10 +199,10 @@ export const SITE_CONTENT: SiteContent = {
     {
       name: "Ethereum EVM Indexer",
       summary:
-        "Indexed **10M+ transactions** with atomic SQL transactions: zero data-integrity failures across crash and block-reorg tests, idempotent reorg detection and rollback, read API on Axum.",
+        "Ingests Ethereum blocks, transactions and logs into Postgres. Each block and the sync checkpoint commit in **one transaction**, so a crash never leaves a half-written block or a checkpoint ahead of the data. Detects reorgs by parent hash; read API on Axum with cursor pagination.",
       stack: ["Rust", "Tokio", "Axum", "SQLx", "PostgreSQL"],
       source: "https://github.com/Nihal-Pandey-2302/rust-evm-indexer",
-      figure: { value: "10M+", label: "transactions indexed, zero integrity failures" },
+      figure: { value: "1", label: "Postgres transaction per block, checkpoint included" },
     },
     {
       name: "Solana Stablecoin Standard",
@@ -264,22 +264,6 @@ export const SITE_CONTENT: SiteContent = {
 
   // Writing Section
   writing: [
-    {
-      title: "Building a Deterministic, High-Throughput WebSocket Ingestor",
-      summary:
-        "A deep dive into building resilient Rust systems that handle 648k msgs/sec with zero drops. Covers actor patterns, buffer management, and error handling.",
-      link: "https://dev.to/nihalpandey2302/building-a-deterministic-high-throughput-websocket-ingestion-system-in-rust-38ia",
-      badge: "High-Performance Rust",
-      status: "published",
-    },
-    {
-      title: "Designing a Crash-Safe, Idempotent EVM Indexer",
-      summary:
-        "Architecting a production-grade indexer using Rust and PostgreSQL. Focuses on atomic transactions, reorganization handling, and data integrity.",
-      link: "https://dev.to/nihalpandey2302/designing-a-crash-safe-idempotent-evm-indexer-in-rust-3ca8",
-      badge: "Distributed Systems",
-      status: "published",
-    },
     {
       title: "Wrong Rows From a Self-Join",
       summary:
