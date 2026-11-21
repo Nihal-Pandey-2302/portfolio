@@ -188,15 +188,6 @@ export const SITE_CONTENT: SiteContent = {
       image: "/kaspaswarm.png",
     },
     {
-      name: "Kraken Market Data SDK",
-      summary:
-        "Async client for Kraken's WebSocket market data. One task owns the socket and replays subscriptions after a reconnect, and typed events fan out to any number of consumers. Parses **648,000 messages/sec** into typed events in a local benchmark (parsing only, no network).",
-      stack: ["Rust", "Tokio", "Serde", "WebSockets"],
-      source: "https://github.com/Nihal-Pandey-2302/kraken-rs",
-      image: "/kraken-poster.jpg",
-      video: ["/kraken.webm", "/kraken.mp4"],
-    },
-    {
       name: "Ethereum EVM Indexer",
       summary:
         "Ingests Ethereum blocks, transactions and logs into Postgres. Each block and the sync checkpoint commit in **one transaction**, so a crash never leaves a half-written block or a checkpoint ahead of the data. Detects reorgs by parent hash; read API on Axum with cursor pagination.",
@@ -223,7 +214,7 @@ export const SITE_CONTENT: SiteContent = {
     },
   ],
   moreProjects:
-    "More in [my repositories](https://github.com/Nihal-Pandey-2302?tab=repositories), including Solana Job Queue, Solana Webhook Processor, InjectiveQL, EVM Event Watchdog and VatanPay.",
+    "More in [my repositories](https://github.com/Nihal-Pandey-2302?tab=repositories), including the Kraken Market Data SDK, Solana Job Queue, Solana Webhook Processor, InjectiveQL, EVM Event Watchdog and VatanPay.",
 
   // Hackathons Section
   hackathons: [
