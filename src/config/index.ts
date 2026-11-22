@@ -5,13 +5,13 @@ export const SITE_CONFIG: SiteConfig = {
   title: "Nihal Pandey | Backend & Database Systems Engineer",
   author: "Nihal Pandey",
   description:
-    "Backend and database systems engineer focused on PostgreSQL internals and correctness. Author of poolproof, contributor to ParadeDB (YC S23). Senior founding engineer and tech lead at Tvaram, building Tasvam and MailTitan.",
+    "Backend and database systems engineer working on PostgreSQL internals and correctness. Author of poolproof, contributor to ParadeDB (YC S23), tech lead at Tvaram.",
   lang: "en",
   navLinks: [
     { text: "Open Source", href: "/#open-source" },
     { text: "Experience", href: "/#experience" },
     { text: "Projects", href: "/#projects" },
-    { text: "Writing", href: "/#writing" },
+    { text: "Case Studies", href: "/#writing" },
     { text: "Contact", href: "/#contact" },
   ],
   socialLinks: [
@@ -30,26 +30,20 @@ export const SITE_CONTENT: SiteContent = {
   hero: {
     name: "Nihal Pandey",
     role: "Senior Founding Engineer & Tech Lead @ Tvaram",
-    headline: "I build backend and data systems where being nearly correct is not good enough.",
-    flag: {
-      phrase: "nearly correct",
-      code: "error[E0308]",
-      message: "mismatched types",
-      detail: "expected `correct`, found `nearly correct`",
-    },
+    headline: "Backend and database engineer, working in and around Postgres.",
     map: [
       {
         where: "In front of it",
         layer: "connection poolers",
         name: "poolproof",
-        note: "Tests what a pooler changes: 50 scenarios, built from real bug reports.",
+        note: "Runs 50 scenarios against Postgres and through five poolers, and reports every step where the answers differ.",
         href: "#open-source",
       },
       {
         where: "Inside it",
         layer: "executor internals",
         name: "ParadeDB (YC S23)",
-        note: "3 PRs merged: wrong rows from JoinScan, a nested ExecutorRun panic, ctid lookups.",
+        note: "3 PRs merged: a self-join returning wrong rows, a panic on nested executor runs, a ctid lookup cleanup.",
         href: "#paradedb",
       },
       {
@@ -61,8 +55,8 @@ export const SITE_CONTENT: SiteContent = {
       },
     ],
     summary: [
-      "Most of my time goes into PostgreSQL: its executor internals at ParadeDB, and the connection poolers in front of it with poolproof. At Tvaram I'm building Tasvam and MailTitan, both launching soon.",
-      "Before that I wrote Rust security tooling at the Prime Minister's Office, and shipped production systems on Solana, EVM, Stellar and Kaspa, winning five hackathons along the way.",
+      "Most of my open-source work is on PostgreSQL: executor fixes in ParadeDB, and poolproof, which tests the connection poolers in front of it. At Tvaram I built the backends for Tasvam and MailTitan, both launching soon.",
+      "Before that I wrote Rust security tooling at the Prime Minister's Office and built on Solana, EVM, Stellar and Kaspa, winning five hackathons along the way.",
     ],
     email: "pandeynihal232@gmail.com",
     image: "/avatar.jpg", // 112px square, cut from nihal-real.jpg
@@ -77,11 +71,11 @@ export const SITE_CONTENT: SiteContent = {
       summary:
         "Poolers like PgBouncer, PgDog and Supavisor are meant to be invisible. In transaction mode they mostly are, until a `SET` leaks to another client, a temp table appears in someone else's session, or half a query string silently never runs. poolproof replays small scenarios against plain Postgres and then through the pooler, and reports every step where the two differ. Postgres is the oracle, so no scenario hardcodes expected output.",
       points: [
-        "**50 scenarios** across **PgBouncer, PgDog, Supavisor, PgCat and Odyssey**, multiple versions each, on Postgres 17 and 18, with a [results site](https://nihal-pandey-2302.github.io/poolproof/) showing every step's trace and the version where a behaviour broke or got fixed",
-        "Scenarios built from **14 upstream issues** in PgBouncer, PgDog and Supavisor, with the versions where each reproduces or stays fixed, e.g. PgDog acknowledging only the `BEGIN` of `BEGIN; INSERT; COMMIT` and never committing the insert ([pgdog#1849](https://github.com/pgdogdev/pgdog/issues/1849)), and Supavisor hanging on 4 pipelined requests in 9 of 10 runs ([supavisor#1239](https://github.com/supabase/supavisor/issues/1239))",
-        "`poolproof scan` reads `pg_stat_statements` exports, Postgres logs or `.sql` files, parses them with the real Postgres parser, and flags queries that break under transaction pooling, checked against what your pooler version actually did. SARIF output for code scanning",
-        "Runs real drivers (psycopg, pgx, node-postgres, pgjdbc) through each pooler; classifies failures as silent, error or hang, and separates documented limitations from bugs",
-        "Ships as signed binaries for Linux, macOS and Windows (SHA256SUMS + build attestation) and as a GitHub Action for CI",
+        "**50 scenarios** through **PgBouncer, PgDog, Supavisor, PgCat and Odyssey**, several versions of each, on Postgres 17 and 18. The [results site](https://nihal-pandey-2302.github.io/poolproof/) shows every step's trace and the version where a behaviour broke or was fixed.",
+        "Scenarios built from **14 upstream issues** in PgBouncer, PgDog and Supavisor, each with the versions where it reproduces or stays fixed. PgDog answers only the `BEGIN` of `BEGIN; INSERT; COMMIT` and never commits the insert if the client disconnects ([pgdog#1849](https://github.com/pgdogdev/pgdog/issues/1849)). Supavisor hangs on 4 pipelined requests in 9 of 10 runs ([supavisor#1239](https://github.com/supabase/supavisor/issues/1239)).",
+        "`poolproof scan` reads `pg_stat_statements` exports, Postgres logs or `.sql` files, parses them with the real Postgres parser, and flags the queries that break under transaction pooling, checked against what your pooler version actually did. SARIF output for code scanning.",
+        "Runs real drivers (psycopg, pgx, node-postgres, pgjdbc) through each pooler. Failures are classed as silent, error or hang, and documented limitations are kept apart from bugs.",
+        "Ships as signed binaries for Linux, macOS and Windows (SHA256SUMS and build attestation) and as a GitHub Action for CI.",
       ],
       repo: "https://github.com/Nihal-Pandey-2302/poolproof",
       results: "https://nihal-pandey-2302.github.io/poolproof/",
@@ -99,27 +93,27 @@ export const SITE_CONTENT: SiteContent = {
             ref: "#4763",
             url: "https://github.com/paradedb/paradedb/pull/4763",
             status: "merged",
-            text: "`JoinScan` returned wrong rows on self-joins with duplicate sort keys. Traced it to late materialization in the optimizer and rewrote physical projection to bind columns by index instead of by name; caught a misbinding in my own fix during review and rebuilt it",
+            text: "`JoinScan` returned wrong rows when a self-join sorted on a column name both sides share. Late materialization was deduplicating columns by name, so I rewrote physical projection to bind them by index. A second case run during review showed my fix misbinding, and I rebuilt it.",
             story: "/work/joinscan-wrong-rows",
           },
           {
             ref: "#4924",
             url: "https://github.com/paradedb/paradedb/pull/4924",
             status: "merged",
-            text: "Nested `ExecutorRun` panicked in `fake_aminsertcleanup` on PG16. Review found a second bug in my first fix, on the recursive DML path, so I replaced the depth counter with an RAII `FrameGuard` that gives every nesting level its own frame",
+            text: "A nested `ExecutorRun` panicked in `fake_aminsertcleanup` on PG16. Review found a second bug in my first fix, on the recursive DML path, so I replaced its depth counter with an RAII `FrameGuard` that gives every nesting level its own frame.",
             story: "/work/nested-executor-run",
           },
           {
             ref: "#4765",
             url: "https://github.com/paradedb/paradedb/pull/4765",
             status: "merged",
-            text: "Removed `ctid` from `SearchIndexScore` in favour of batched lookups, folding 5 duplicated ctid-lookup blocks into a single helper across 6 execution paths",
+            text: "Removed `ctid` from `SearchIndexScore` in favour of batched lookups, folding 5 duplicated ctid-lookup blocks into one helper used by 6 execution paths.",
           },
           {
             ref: "#5093",
             url: "https://github.com/paradedb/paradedb/issues/5093",
             status: "proposed",
-            text: "Replace the `resolve_physical_index` heuristic with explicit column lineage tracking, the structural follow-up to #4763",
+            text: "Replace the `resolve_physical_index` heuristic with explicit column lineage tracking: the structural follow-up to #4763.",
           },
         ],
       },
@@ -163,9 +157,9 @@ export const SITE_CONTENT: SiteContent = {
       startDate: "June",
       endDate: "Sept 2025",
       summary: [
-        "Wrote Tokio-based Rust tooling that automated vulnerability scanning across critical government infrastructure, cutting manual assessment time by **over 60%** with no downtime during rollout",
-        "Threat-modelling workflows I built were picked up by **2 internal teams**",
-        "Details under NDA",
+        "Wrote Tokio-based Rust tooling that automated vulnerability scanning across critical government infrastructure, cutting manual assessment time by **over 60%** with no downtime during rollout.",
+        "Threat-modelling workflows I built were picked up by **2 internal teams**.",
+        "Details under NDA.",
       ],
     },
   ],
@@ -254,22 +248,38 @@ export const SITE_CONTENT: SiteContent = {
     },
   ],
 
-  // Writing Section
+  // Case studies. The section keeps the id #writing: it is a link target
   writing: [
     {
-      title: "Wrong Rows From a Self-Join",
+      title: "What a connection pooler changes",
       summary:
-        "A self-join with duplicate sort keys was returning wrong rows. How I traced it through the optimizer, where my first fix went wrong, and how physical projection got rebuilt on column indices.",
-      link: "/work/joinscan-wrong-rows",
-      badge: "PostgreSQL Internals · Case study",
+        "How poolproof compares Postgres with the pooler in front of it, and the work it took before a pass meant anything: proving two clients shared a backend, probing the pool's real shape, and results that flip between runs.",
+      link: "/work/poolproof",
+      badge: "poolproof · Connection poolers",
       status: "published",
     },
     {
-      title: "A Panic on PG16, and the Fix That Needed Fixing",
+      title: "Wrong rows from a self-join",
       summary:
-        "Why a depth counter can't model recursive DML in executor hooks, the test that proved nothing, and how an RAII FrameGuard fixes it.",
+        "A self-join that sorted on a shared column name returned the wrong rows. The cause was one line comparing columns by name, my first fix made the same kind of mistake, and the merged one resolves each sort column against the child schema.",
+      link: "/work/joinscan-wrong-rows",
+      badge: "ParadeDB #4763 · PostgreSQL internals",
+      status: "published",
+    },
+    {
+      title: "A panic on PG16, and the fix that needed fixing",
+      summary:
+        "Why a depth counter can't model recursive DML in executor hooks, the test that proved nothing, and the RAII FrameGuard that replaced it.",
       link: "/work/nested-executor-run",
-      badge: "PostgreSQL Internals · Case study",
+      badge: "ParadeDB #4924 · PostgreSQL internals",
+      status: "published",
+    },
+    {
+      title: "Re-reading a crash-safe indexer",
+      summary:
+        "One Postgres transaction per block, checkpoint included, held up. A re-read eighteen months later found three ways the rest could still lose or duplicate data, and the tests written to fix them found two more.",
+      link: "/work/evm-indexer",
+      badge: "Ethereum EVM Indexer · Data integrity",
       status: "published",
     },
   ],

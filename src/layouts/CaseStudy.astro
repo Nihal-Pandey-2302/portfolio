@@ -16,16 +16,18 @@ export interface Props {
   source?: { label: string; url: string };
   // another case study to read next
   next?: { title: string; href: string };
+  // the homepage section this work is listed under
+  back?: { label: string; href: string };
 }
 
-const { title, dek, pr, issue, meta, source, next } = Astro.props;
+const { title, dek, pr, issue, meta, source, next, back = { label: "Back to open source", href: "/#open-source" } } = Astro.props;
 const external = source ?? (pr && { label: "The full pull request on GitHub", url: pr.url });
 ---
 
 <Layout title={`${title} | ${SITE_CONFIG.author}`} description={dek}>
   <div class="container">
     <article class="cs-page">
-      <a href="/#open-source" class="cs-back">Back to open source</a>
+      <a href={back.href} class="cs-back">{back.label}</a>
 
       <h1 class="cs-title">{title}</h1>
       <p class="cs-tagline">{dek}</p>

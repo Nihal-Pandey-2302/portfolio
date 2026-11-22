@@ -28,9 +28,6 @@ export interface HeroContent {
   name: string;
   role: string;
   headline: string;
-  // A phrase in the headline to underline like a compiler error, and the
-  // diagnostic shown when it is hovered or focused
-  flag?: { phrase: string; code: string; message: string; detail: string };
   summary: string[]; // paragraphs, rich
   // The hero figure: places around Postgres and the work done at each.
   // Map.astro draws exactly three, in this order: pooler, Postgres, pipeline.

@@ -10,13 +10,6 @@ export interface Props {
 }
 
 const { hero } = Astro.props;
-
-// Split the headline around the flagged phrase so it can carry the squiggle
-const { headline, flag } = hero;
-const at = flag ? headline.indexOf(flag.phrase) : -1;
-const flagged = flag && at !== -1
-  ? { before: headline.slice(0, at), after: headline.slice(at + flag.phrase.length), ...flag }
-  : null;
 ---
 
 <!-- #about is kept as a target for links to the old About section -->
@@ -26,22 +19,7 @@ const flagged = flag && at !== -1
     <div class="hero-text">
       <p class="hero-role">{hero.role}</p>
 
-      <div class="hero-headline-wrap">
-        {flagged ? (
-          <h1 class="hero-headline">
-            {flagged.before}<span class="flag" tabindex="0" aria-describedby="flag-note">{flagged.phrase}</span>{flagged.after}
-          </h1>
-        ) : (
-          <h1 class="hero-headline">{headline}</h1>
-        )}
-        {flagged && (
-          // Outside the h1 so the joke isn't part of the page's main heading
-          <p class="diag mono" id="flag-note" role="tooltip">
-            <span><b>{flagged.code}</b>: {flagged.message}</span>
-            <span set:html={rich(flagged.detail)} />
-          </p>
-        )}
-      </div>
+      <h1 class="hero-headline">{hero.headline}</h1>
 
       <div class="hero-summary">
         {hero.summary.map((paragraph) => <p set:html={rich(paragraph)} />)}
@@ -84,70 +62,11 @@ const flagged = flag && at !== -1
     color: var(--color-text-muted);
   }
 
-  .hero-headline-wrap {
-    position: relative;
-    margin-bottom: 1.75rem;
-  }
-
   .hero-headline {
+    margin-bottom: 1.75rem;
     font-size: clamp(2.1rem, 1.15rem + 2.9vw, 3.35rem);
     line-height: 1.06;
     letter-spacing: -0.035em;
-  }
-
-  /* "nearly correct", flagged the way an editor flags an error */
-  .flag {
-    text-decoration: underline wavy var(--color-silent);
-    text-decoration-thickness: 0.055em;
-    text-underline-offset: 0.16em;
-    text-decoration-skip-ink: none;
-    cursor: help;
-    outline-offset: 6px;
-  }
-
-  /* the diagnostic for it, in the compiler's voice */
-  .diag {
-    position: absolute;
-    top: calc(100% + 0.6rem);
-    left: 0;
-    z-index: 5;
-    display: grid;
-    gap: 0.1rem;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 8px;
-    background: var(--color-bg-secondary);
-    font-size: 0.75rem;
-    line-height: 1.6;
-    color: var(--color-text-muted);
-    box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.55);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-4px);
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-    pointer-events: none;
-  }
-
-  .diag b {
-    font-weight: 500;
-    color: var(--color-silent-ink);
-  }
-
-  .diag span + span {
-    padding-left: 1.1rem;
-  }
-
-  .diag :global(code) {
-    padding: 0;
-    background: none;
-    font-size: inherit;
-  }
-
-  .hero-headline-wrap:has(.flag:hover) .diag,
-  .hero-headline-wrap:has(.flag:focus) .diag {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
   }
 
   .hero-summary {
