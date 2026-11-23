@@ -128,7 +128,6 @@ export interface Project {
 export interface Hackathon {
   year: string;
   title: string; // rich
-  prize?: string;
 }
 
 interface WritingBase {

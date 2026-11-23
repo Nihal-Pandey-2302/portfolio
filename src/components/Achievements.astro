@@ -14,7 +14,6 @@ const { hackathons } = Astro.props;
     <li class="award">
       <span class="award-year mono">{item.year}</span>
       <span class="award-title" set:html={rich(item.title)} />
-      <span class="award-prize mono">{item.prize ?? ""}</span>
     </li>
   ))}
 </ul>
@@ -22,7 +21,7 @@ const { hackathons } = Astro.props;
 <style>
   .award {
     display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
     gap: 0.25rem 1.5rem;
     align-items: baseline;
     padding: 1rem 0;
@@ -39,19 +38,9 @@ const { hackathons } = Astro.props;
     color: var(--color-text-faint);
   }
 
-  .award-prize {
-    font-size: var(--text-tiny);
-    color: var(--color-text-muted);
-    white-space: nowrap;
-  }
-
   @media (max-width: 560px) {
     .award {
       grid-template-columns: 3rem minmax(0, 1fr);
-    }
-
-    .award-prize {
-      grid-column: 2;
     }
   }
 </style>

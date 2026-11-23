@@ -87,7 +87,7 @@ export const SITE_CONTENT: SiteContent = {
         anchor: "paradedb",
         url: "https://github.com/paradedb/paradedb",
         stack: "Rust · PostgreSQL · Tantivy",
-        summary: "3 merged, 867 lines across 15 files",
+        summary: "3 merged",
         items: [
           {
             ref: "#4763",
@@ -217,34 +217,28 @@ export const SITE_CONTENT: SiteContent = {
       year: "2026",
       title:
         "1st Prize, UK AI Agent Hackathon, Kaspa Track ([KaspaSwarm](https://github.com/Nihal-Pandey-2302/kaspaswarm))",
-      prize: "USD 1,000",
     },
     {
       year: "2026",
-      title:
-        "3 prizes at Kaspathon (Top 5 Main Prize, Real-Time Data, Most Creative Use of Kaspa), 500+ global teams",
-      prize: "USD 1,200",
+      title: "3 prizes at Kaspathon (Top 5 Main Prize, Real-Time Data, Most Creative Use of Kaspa), 500+ teams",
     },
     {
       year: "2025",
       title:
-        "1st place, Andromeda aOS Buildathon, 2,500+ global teams ([A.R.I.A.](https://github.com/Nihal-Pandey-2302/ARIA-QIE))",
-      prize: "USD 2,500",
+        "1st place, Andromeda aOS Buildathon, 2,500+ teams ([A.R.I.A.](https://github.com/Nihal-Pandey-2302/ARIA-QIE))",
     },
     {
       year: "2025",
       title:
-        "Global Top-Tier Finalist, Kraken Forge Hackathon, Performance Optimization ([kraken-rs](https://github.com/Nihal-Pandey-2302/kraken-rs))",
+        "Finalist, Kraken Forge Hackathon, Performance Optimization ([kraken-rs](https://github.com/Nihal-Pandey-2302/kraken-rs))",
     },
     {
       year: "2024",
       title: "Winner, Smart India Hackathon, NTRO Govt. of India, 50,000+ participants",
-      prize: "INR 100K",
     },
     {
       year: "2024",
       title: "Winner, Graph-e-thon 2.0, Graphic Era TBI",
-      prize: "INR 175K",
     },
   ],
 
@@ -285,12 +279,10 @@ export const SITE_CONTENT: SiteContent = {
   ],
 
   // Skills Section
+  // Kept to what the work on this page shows
   skills: [
     { label: "Languages", items: "Rust, Go, TypeScript, Python, SQL, Solidity" },
-    {
-      label: "Backend",
-      items: "Tokio, Axum, SQLx, Express, Bull, FastAPI, GraphQL, WebSockets, zero-copy deserialization",
-    },
+    { label: "Backend", items: "Tokio, Axum, SQLx, FastAPI, WebSockets" },
     {
       label: "Data",
       items: "PostgreSQL (executor internals, extensions, wire protocol, connection poolers), Redis",
@@ -299,6 +291,6 @@ export const SITE_CONTENT: SiteContent = {
       label: "Chains",
       items: "Solana (Anchor, Token-2022), EVM (Solidity, Hardhat), Stellar (Soroban), Kaspa",
     },
-    { label: "Infra", items: "Docker Compose, GitHub Actions, AWS (EC2, S3), Prometheus/Grafana" },
+    { label: "Infra", items: "Docker Compose, GitHub Actions" },
   ],
 };
