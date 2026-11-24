@@ -233,12 +233,12 @@ export const SITE_CONTENT: SiteContent = {
         "Finalist, Kraken Forge Hackathon, Performance Optimization ([kraken-rs](https://github.com/Nihal-Pandey-2302/kraken-rs))",
     },
     {
-      year: "2024",
-      title: "Winner, Smart India Hackathon, NTRO Govt. of India, 50,000+ participants",
+      year: "2025",
+      title: "Winner, Graph-e-thon 2.0, Graphic Era TBI",
     },
     {
       year: "2024",
-      title: "Winner, Graph-e-thon 2.0, Graphic Era TBI",
+      title: "Winner, Smart India Hackathon, NTRO Govt. of India, 50,000+ participants",
     },
   ],
 
