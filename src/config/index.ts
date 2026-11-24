@@ -16,7 +16,7 @@ export const SITE_CONFIG: SiteConfig = {
   ],
   socialLinks: [
     { text: "GitHub", href: "https://github.com/Nihal-Pandey-2302" },
-    { text: "LinkedIn", href: "https://www.linkedin.com/in/nihal-pandey-8529b6257/" },
+    { text: "LinkedIn", href: "https://www.linkedin.com/in/nihalpandeydev/" },
     { text: "X", href: "https://x.com/PandeyNihal23" },
   ],
   socialImage: "/nihal-og.png",
